@@ -15,6 +15,10 @@ void InputSystem::handleKeyDown(const SDL_Keycode& code) {
     case SDLK_d:
       keyState |= Key::D;
       break;
+    case SDLK_LSHIFT:
+    case SDLK_RSHIFT:
+      keyState |= Key::SHIFT;
+      break;
   }
 }
 
@@ -31,6 +35,10 @@ void InputSystem::handleKeyUp(const SDL_Keycode& code) {
       break;
     case SDLK_d:
       keyState &= ~Key::D;
+      break;
+    case SDLK_LSHIFT:
+    case SDLK_RSHIFT:
+      keyState &= ~Key::SHIFT;
       break;
   }
 }

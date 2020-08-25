@@ -190,7 +190,19 @@ void Object::updateNormals() {
  * Mesh
  * ----
  */
-void Mesh::create(int w, int h, float tileSize) {
+void Mesh::displace(std::function<void(Vec3f&, int, int)> offsetHandler) {
+  for (int i = 0; i < (height + 1); i++) {
+    for (int j = 0; j < (width + 1); j++) {
+      int idx = i * (width + 1) + j;
+
+      offsetHandler(vertices[idx]->position, j, i);
+    }
+  }
+
+  updateNormals();
+}
+
+void Mesh::setSize(int w, int h, float tileSize) {
   width = w;
   height = h;
 
@@ -226,18 +238,6 @@ void Mesh::create(int w, int h, float tileSize) {
     int v3i = isTopPolygon ? vOffset + 1 : vOffset + w + 2;
 
     addPolygon(v1i, v2i, v3i);
-  }
-
-  updateNormals();
-}
-
-void Mesh::defineOffsets(std::function<void(Vec3f&, int, int)> offsetHandler) {
-  for (int i = 0; i < (height + 1); i++) {
-    for (int j = 0; j < (width + 1); j++) {
-      int idx = i * (width + 1) + j;
-
-      offsetHandler(vertices[idx]->position, j, i);
-    }
   }
 
   updateNormals();

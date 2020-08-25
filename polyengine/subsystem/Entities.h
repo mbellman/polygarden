@@ -95,8 +95,8 @@ private:
 
 class Mesh : public Object {
 public:
-  void create(int w, int h, float tileSize);
-  void defineOffsets(std::function<void(Vec3f&, int, int)> offsetHandler);
+  void displace(std::function<void(Vec3f&, int, int)> offsetHandler);
+  void setSize(int w, int h, float tileSize);
 
 private:
   int width;

@@ -16,7 +16,8 @@ enum Key {
   W = 1 << 0,
   A = 1 << 1,
   S = 1 << 2,
-  D = 1 << 3
+  D = 1 << 3,
+  SHIFT = 1 << 4
 };
 
 class InputSystem {
