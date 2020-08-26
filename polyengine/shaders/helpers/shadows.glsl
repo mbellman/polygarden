@@ -51,5 +51,5 @@ float getShadowFactor(vec3 worldPosition, mat4 lightMatrix, sampler2D lightMap, 
     }
   }
 
-  return min(1.75 * shadowSum / 25.0, 1.0);
+  return min(2.0 * shadowSum / 25.0, 1.0);
 }

@@ -136,7 +136,7 @@ void Object::recomputeMatrix() {
   matrix = (
     Matrix4::translate({ position.x, position.y, -1.0f * position.z }) *
     Matrix4::rotate(orientation) *
-    Matrix4::scale({ scale, scale, scale })
+    Matrix4::scale(scale)
   ).transpose();
 }
 
@@ -168,10 +168,14 @@ void Object::setReference(const Object* reference) {
   this->reference = reference;
 }
 
-void Object::setScale(float scale) {
+void Object::setScale(const Vec3f& scale) {
   this->scale = scale;
 
   recomputeMatrix();
+}
+
+void Object::setScale(float scale) {
+  setScale(Vec3f(scale));
 }
 
 void Object::updateNormals() {

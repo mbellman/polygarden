@@ -57,8 +57,7 @@ public:
 
 class Object : public Entity {
 public:
-  // TODO represent scale as a Vec3f
-  float scale = 1.0f;
+  Vec3f scale = Vec3f(1.0f, 1.0f, 1.0f);
   const Texture* texture = nullptr;
   const Texture* normalMap = nullptr;
   const char* shader = nullptr;
@@ -74,6 +73,7 @@ public:
   void setOrientation(const Vec3f& orientation);
   void setPosition(const Vec3f& position);
   void setReference(const Object* reference);
+  void setScale(const Vec3f& scale);
   void setScale(float scale);
 
 protected:
