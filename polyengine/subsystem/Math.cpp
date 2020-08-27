@@ -95,6 +95,10 @@ Vec3f Vec3f::unit() const {
   };
 }
 
+Vec3f Vec3f::xz() const {
+  return *this * Vec3f(1.0f, 0.0f, 1.0f);
+}
+
 /**
  * Matrix4
  * -------

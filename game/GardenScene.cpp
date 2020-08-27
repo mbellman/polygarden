@@ -1,5 +1,7 @@
 #include <cmath>
 #include <subsystem/Entities.h>
+#include <subsystem/ObjLoader.h>
+#include <subsystem/RNG.h>
 
 #include "GardenScene.h"
 
@@ -9,12 +11,36 @@ static float getMapHeight(float x, float z) {
 
   return (
     5.0f * (sinf(fx) + cosf(fz)) +
-    20.0f * sinf(fx * 0.3f) + 10.0f * cosf(fz * 0.2f)
+    20.0f * sinf(fx * 0.3f) +
+    10.0f * cosf(fz * 0.2f)
   );
 };
 
+void GardenScene::addFlower() {
+  Vec3f position = camera.position + camera.getDirection().xz() * 100.0f;
+
+  position.y = getMapHeight(1250.0f + position.x , -position.z + 1250.0f);
+
+  stage.add<Model>([&](Model* flower) {
+    flower->from(*objLoaderMap.at("flowerObj"));
+    flower->setPosition(position);
+    flower->setScale(10.0f);
+    flower->setColor(Vec3f(RNG::random(), RNG::random(), RNG::random()));
+
+    float spawnTime = getRunningTime();
+
+    flower->onUpdate = [=](float dt) {
+      flower->setScale(std::min(getRunningTime() - spawnTime, 10.0f));
+    };
+  });
+}
+
 void GardenScene::onInit() {
-  stage.add<Light>([](auto* light) {
+  ObjLoader* flowerObj = new ObjLoader("./game/dummy-flower.obj");
+
+  objLoaderMap.emplace("flowerObj", flowerObj);
+
+  stage.add<Light>([=](Light* light) {
     light->type = Light::LightType::DIRECTIONAL;
     light->color = Vec3f(1.0f, 1.0f, 0.5f);
     light->direction = Vec3f(1.0f, -0.5f, 1.0f);
@@ -30,7 +56,8 @@ void GardenScene::onInit() {
   stage.add<Mesh>([=](Mesh* mesh) {
     mesh->setSize(250, 250, 10.0f);
     mesh->setColor(Vec3f(0.5f));
-    mesh->setPosition({ 0.0f, -50.0f, 0.0f });
+    mesh->setPosition(Vec3f(0.0f));
+
     mesh->texture = assets.createTexture("./game/grass-texture.png");
 
     mesh->displace([=](Vec3f& vertex, int x, int z) {
@@ -45,7 +72,7 @@ void GardenScene::onInit() {
   });
 
   stage.add<Skybox>([=](Skybox* skybox) {
-    skybox->from(assets.createTexture("./game/dummy-skybox.png"));
+    skybox->from(assets.createTexture("./game/dummy-day-skybox.png"));
     skybox->setScale(5000.0f);
     skybox->setColor(Vec3f(1.0f));
   });
@@ -59,6 +86,10 @@ void GardenScene::onInit() {
 
   inputSystem.onMouseButton([=](const SDL_MouseButtonEvent& event) {
     if (event.type == SDL_MOUSEBUTTONDOWN) {
+      if (SDL_GetRelativeMouseMode() == SDL_TRUE) {
+        addFlower();
+      }
+
       SDL_SetRelativeMouseMode(SDL_TRUE);
     }
   });
@@ -71,24 +102,23 @@ void GardenScene::onInit() {
 }
 
 void GardenScene::onUpdate(float dt) {
-  Vec3f xz = Vec3f(1.0f, 0.0f, 1.0f);
   float speedFactor = dt * (inputSystem.isKeyHeld(Key::SHIFT) ? 200.0f : 100.0f);
 
   if (inputSystem.isKeyHeld(Key::W)) {
-    camera.position += camera.getDirection() * xz * speedFactor;
+    camera.position += camera.getDirection().xz() * speedFactor;
   }
 
   if (inputSystem.isKeyHeld(Key::A)) {
-    camera.position += camera.getLeftDirection() * xz * speedFactor;
+    camera.position += camera.getLeftDirection().xz() * speedFactor;
   }
 
   if (inputSystem.isKeyHeld(Key::S)) {
-    camera.position -= camera.getDirection() * xz * speedFactor;
+    camera.position -= camera.getDirection().xz() * speedFactor;
   }
 
   if (inputSystem.isKeyHeld(Key::D)) {
-    camera.position += camera.getRightDirection() * xz * speedFactor;
+    camera.position += camera.getRightDirection().xz() * speedFactor;
   }
 
-  camera.position.y = 10.0f + getMapHeight(1250.0f + camera.position.x, -camera.position.z + 1250.0f);
+  camera.position.y = 60.0f + getMapHeight(1250.0f + camera.position.x, -camera.position.z + 1250.0f);
 }

@@ -61,6 +61,7 @@ struct Vec3f : Vec2f {
   Vec3f invert() const;
   float magnitude() const;
   Vec3f unit() const;
+  Vec3f xz() const;
 };
 
 /**
