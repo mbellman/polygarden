@@ -4,6 +4,7 @@
 #include <subsystem/RNG.h>
 
 #include "GardenScene.h"
+#include "Easing.h"
 
 static float getMapHeight(float x, float z) {
   float fx = M_PI / 150.0f * x;
@@ -21,24 +22,52 @@ void GardenScene::addFlower() {
 
   position.y = getMapHeight(1250.0f + position.x , -position.z + 1250.0f);
 
-  stage.add<Model>([&](Model* flower) {
-    flower->from(*objLoaderMap.at("flowerObj"));
-    flower->setPosition(position);
-    flower->setScale(10.0f);
-    flower->setColor(Vec3f(RNG::random(), RNG::random(), RNG::random()));
+  stage.add<Model>([&](Model* sprout) {
+    sprout->from(modelMap.at("sprout"));
+    sprout->setPosition(position);
+    sprout->setScale(10.0f);
+    sprout->setOrientation(Vec3f(0.0f, RNG::random() * M_PI * 2.0f, 0.0f));
 
     float spawnTime = getRunningTime();
 
-    flower->onUpdate = [=](float dt) {
-      flower->setScale(std::min(getRunningTime() - spawnTime, 10.0f));
+    sprout->onUpdate = [=](float dt) {
+      float t = (getRunningTime() - spawnTime) / 1.0f;
+
+      sprout->setScale(Easing::bounceOut(t) * 5.0f);
     };
   });
 }
 
 void GardenScene::onInit() {
-  ObjLoader* flowerObj = new ObjLoader("./game/dummy-flower.obj");
+  ObjLoader sproutObj("./game/sprout.obj");
+  ObjLoader lanternObj("./game/lantern.obj");
+  Model* sprout = new Model();
 
-  objLoaderMap.emplace("flowerObj", flowerObj);
+  sprout->from(sproutObj);
+  sprout->setColor(Vec3f(0.25f, 1.0f, 0.5f));
+
+  modelMap.emplace("sprout", sprout);
+
+  for (int i = 0; i < 10; i++) {
+    stage.add<Model>([=](Model* lantern) {
+      float x = RNG::random() * 2500.0f - 1250.0f;
+      float z = RNG::random() * 2500.0f - 1250.0f;
+      float y = getMapHeight(1250.0f + x, -z + 1250.0f) - 10.0f;
+
+      lantern->from(lanternObj);
+      lantern->texture = assets.createTexture("./game/lantern-texture.png");
+      lantern->normalMap = assets.createTexture("./game/lantern-normal-map.png");
+      lantern->setScale(100.0f);
+      lantern->setPosition(Vec3f(x, y, z));
+
+      stage.add<Light>([=](Light* light) {
+        light->color = Vec3f(1.0f, 1.0f, 0.2f);
+        light->position = Vec3f(x, y + 70.0f, z);
+        light->radius = 750.0f;
+        light->power = 4.0f;
+      });
+    });
+  }
 
   stage.add<Light>([=](Light* light) {
     light->type = Light::LightType::DIRECTIONAL;
@@ -63,12 +92,6 @@ void GardenScene::onInit() {
     mesh->displace([=](Vec3f& vertex, int x, int z) {
       vertex.y += getMapHeight(x * 10.0f, z * 10.0f);
     });
-  });
-
-  stage.add<Cube>([](Cube* cube) {
-    cube->setScale({ 50.0f, 200.0f, 50.0f });
-    cube->setPosition({ 0.0f, -10.0f, 250.0f });
-    cube->setColor({ 1.0f, 0.2f, 0.5f });
   });
 
   stage.add<Skybox>([=](Skybox* skybox) {

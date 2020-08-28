@@ -132,7 +132,7 @@ void OpenGLVideoController::createScreenShaders() {
   postBloomShaderH->createFrameBuffer(screenSize);
   postBloomShaderV->createFrameBuffer(screenSize);
 
-  // screenShaders.push(dofShader);
+  screenShaders.push(dofShader);
   screenShaders.push(preBloomShader);
   screenShaders.push(postBloomShaderH);
   screenShaders.push(postBloomShaderV);

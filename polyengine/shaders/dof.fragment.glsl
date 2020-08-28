@@ -9,7 +9,7 @@ layout (location = 0) out vec3 color;
 vec2 getBlur(float depth) {
   vec2 MIN_BLUR = vec2(0.0);
   vec2 MAX_BLUR = 1.0 / textureSize(screen, 0);
-  float MAX_BLUR_DEPTH = 200.0;
+  float MAX_BLUR_DEPTH = 500.0;
 
   float r = depth / MAX_BLUR_DEPTH;
 

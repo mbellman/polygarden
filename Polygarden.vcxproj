@@ -108,6 +108,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="game\Easing.cpp" />
     <ClCompile Include="game\GardenScene.cpp" />
     <ClCompile Include="game\main.cpp" />
     <ClCompile Include="polyengine\opengl\AbstractBuffer.cpp" />
@@ -229,6 +230,7 @@
     <ClInclude Include="external\sdl2\include\SDL_video.h" />
     <ClInclude Include="external\sdl2\include\SDL_vulkan.h" />
     <ClInclude Include="external\sdl_image\include\SDL_image.h" />
+    <ClInclude Include="game\Easing.h" />
     <ClInclude Include="game\GardenScene.h" />
     <ClInclude Include="polyengine\opengl\AbstractBuffer.h" />
     <ClInclude Include="polyengine\opengl\FrameBuffer.h" />
