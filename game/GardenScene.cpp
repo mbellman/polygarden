@@ -52,7 +52,7 @@ void GardenScene::onInit() {
     stage.add<Model>([=](Model* lantern) {
       float x = RNG::random() * 2500.0f - 1250.0f;
       float z = RNG::random() * 2500.0f - 1250.0f;
-      float y = getMapHeight(1250.0f + x, -z + 1250.0f) - 10.0f;
+      float y = getMapHeight(1250.0f + x, -z + 1250.0f) - 5.0f;
 
       lantern->from(lanternObj);
       lantern->texture = assets.createTexture("./game/lantern-texture.png");
@@ -62,7 +62,7 @@ void GardenScene::onInit() {
 
       stage.add<Light>([=](Light* light) {
         light->color = Vec3f(1.0f, 1.0f, 0.2f);
-        light->position = Vec3f(x, y + 70.0f, z);
+        light->position = Vec3f(x, y + 75.0f, z);
         light->radius = 750.0f;
         light->power = 4.0f;
       });

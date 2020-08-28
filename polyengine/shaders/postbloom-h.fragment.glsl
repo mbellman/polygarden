@@ -12,5 +12,5 @@ layout (location = 1) out vec3 bloomOutColor;
 
 void main() {
   color = texture(baseColor, fragmentUv).xyz;
-  bloomOutColor = getBlur(bloomColor, fragmentUv, 30, vec2(1.0, 0.0));
+  bloomOutColor = getBlur(bloomColor, fragmentUv, 20, vec2(1.0, 0.0));
 }

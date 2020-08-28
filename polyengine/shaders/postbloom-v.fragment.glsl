@@ -10,5 +10,8 @@ in vec2 fragmentUv;
 layout (location = 0) out vec3 color;
 
 void main() {
-  color = texture(baseColor, fragmentUv).xyz + getBlur(bloomColor, fragmentUv, 30, vec2(0.0, 1.0));
+  vec3 base = texture(baseColor, fragmentUv).xyz;
+  vec3 bloom = getBlur(bloomColor, fragmentUv, 20, vec2(0.0, 1.0)) * 0.5;
+
+  color = base + bloom;
 }
