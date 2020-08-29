@@ -17,15 +17,35 @@ static float getGroundHeight(float x, float z) {
   );
 };
 
+GardenScene::~GardenScene() {
+  for (auto& [key, model] : modelMap) {
+    delete model;
+  }
+
+  for (auto& [key, objLoader] : objLoaderMap) {
+    delete objLoader;
+  }
+
+  modelMap.clear();
+  objLoaderMap.clear();
+}
+
 void GardenScene::onInit() {
   ObjLoader sproutObj("./game/sprout.obj");
   ObjLoader lanternObj("./game/lantern.obj");
+  ObjLoader flowerStalkObj("./game/flower-stalk.obj");
   Model* sprout = new Model();
+  Model* flowerStalk = new Model();
 
   sprout->from(sproutObj);
   sprout->setColor(Vec3f(0.25f, 1.0f, 0.5f));
 
+  flowerStalk->from(flowerStalkObj);
+  flowerStalk->setColor(Vec3f(0.3f, 1.0f, 0.4f));
+
   modelMap.emplace("sprout", sprout);
+  modelMap.emplace("flower-stalk", flowerStalk);
+  objLoaderMap.emplace("flower-petals", new ObjLoader("./game/flower-petals.obj"));
 
   stage.addMultiple<Model, 10>([=](Model* lantern, int index) {
     float x = RNG::random() * 2500.0f - 1250.0f;
@@ -123,8 +143,47 @@ void GardenScene::onUpdate(float dt) {
   camera.position.y = 60.0f + getGroundHeight(1250.0f + camera.position.x, -camera.position.z + 1250.0f);
 }
 
+void GardenScene::spawnFlower(float x, float z) {
+  Vec3f position = {
+    x,
+    getGroundHeight(1250.0f + x, -z + 1250.0f),
+    z
+  };
+
+  Vec3f orientation = Vec3f(0.0f, RNG::random() * M_PI * 2.0f, 0.0f);
+
+  stage.add<Model>([&](Model* flowerStalk) {
+    flowerStalk->from(modelMap.at("flower-stalk"));
+    flowerStalk->setPosition(position);
+    flowerStalk->setOrientation(orientation);
+
+    float spawnTime = getRunningTime();
+
+    flowerStalk->onUpdate = [=](float dt) {
+      float t = (getRunningTime() - spawnTime) / 1.0f;
+
+      flowerStalk->setScale(Easing::bounceOut(t) * 8.0f);
+    };
+  });
+
+  stage.add<Model>([&](Model* flowerPetals) {
+    flowerPetals->from(*objLoaderMap.at("flower-petals"));
+    flowerPetals->setPosition(position);
+    flowerPetals->setOrientation(orientation);
+    flowerPetals->setColor(Vec3f(RNG::random(), RNG::random(), RNG::random()));
+
+    float spawnTime = getRunningTime();
+
+    flowerPetals->onUpdate = [=](float dt) {
+      float t = (getRunningTime() - spawnTime) / 1.0f;
+
+      flowerPetals->setScale(Easing::bounceOut(t) * 8.0f);
+    };
+  });
+}
+
 void GardenScene::spawnSprout(float x, float z) {
-  stage.add<Model>([=](Model* sprout) {
+  stage.add<Model>([&](Model* sprout) {
     Vec3f position = {
       x,
       getGroundHeight(1250.0f + x, -z + 1250.0f),
@@ -169,7 +228,12 @@ void GardenScene::throwSeeds() {
       float groundHeight = getGroundHeight(1250.0f + seed->position.x, -seed->position.z + 1250.0f);
 
       if (seed->position.y < groundHeight) {
-        spawnSprout(seed->position.x, seed->position.z);
+        if (RNG::random() < 0.2f) {
+          spawnFlower(seed->position.x, seed->position.z);
+        } else {
+          spawnSprout(seed->position.x, seed->position.z);
+        }
+
         seed->expire();
       }
     };
