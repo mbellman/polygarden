@@ -20,6 +20,7 @@ struct Entity {
   float lifetime = -1.0f;
   std::function<void(float)> onUpdate = nullptr;
 
+  void expire();
   bool isExpired() const;
 
   template<typename T>

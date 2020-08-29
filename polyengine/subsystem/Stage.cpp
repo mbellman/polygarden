@@ -72,10 +72,10 @@ void Stage::removeExpiredEntities() {
     unsigned int i = 0;
 
     while (i < list.length()) {
-      auto* item = list[i];
+      Entity* entity = list[i];
 
-      if (item->lifetime == 0.0f) {
-        remove(item);
+      if (entity->isExpired()) {
+        remove(entity);
       } else {
         i++;
       }

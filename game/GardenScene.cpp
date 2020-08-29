@@ -6,7 +6,7 @@
 #include "GardenScene.h"
 #include "Easing.h"
 
-static float getMapHeight(float x, float z) {
+static float getGroundHeight(float x, float z) {
   float fx = M_PI / 150.0f * x;
   float fz = M_PI / 150.0f * z;
 
@@ -30,7 +30,7 @@ void GardenScene::onInit() {
   stage.addMultiple<Model, 10>([=](Model* lantern, int index) {
     float x = RNG::random() * 2500.0f - 1250.0f;
     float z = RNG::random() * 2500.0f - 1250.0f;
-    float y = getMapHeight(1250.0f + x, -z + 1250.0f) - 5.0f;
+    float y = getGroundHeight(1250.0f + x, -z + 1250.0f) - 5.0f;
 
     lantern->from(lanternObj);
     lantern->texture = assets.createTexture("./game/lantern-texture.png");
@@ -67,7 +67,7 @@ void GardenScene::onInit() {
     mesh->texture = assets.createTexture("./game/grass-texture.png");
 
     mesh->displace([=](Vec3f& vertex, int x, int z) {
-      vertex.y += getMapHeight(x * 10.0f, z * 10.0f);
+      vertex.y += getGroundHeight(x * 10.0f, z * 10.0f);
     });
   });
 
@@ -88,10 +88,6 @@ void GardenScene::onInit() {
     if (event.type == SDL_MOUSEBUTTONDOWN) {
       if (SDL_GetRelativeMouseMode() == SDL_TRUE) {
         throwSeeds();
-
-        delay([=]() {
-          spawnSprouts();
-        }, 0.6f);
       }
 
       SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -124,26 +120,25 @@ void GardenScene::onUpdate(float dt) {
     camera.position += camera.getRightDirection().xz() * speedFactor;
   }
 
-  camera.position.y = 60.0f + getMapHeight(1250.0f + camera.position.x, -camera.position.z + 1250.0f);
+  camera.position.y = 60.0f + getGroundHeight(1250.0f + camera.position.x, -camera.position.z + 1250.0f);
 }
 
-void GardenScene::spawnSprouts() {
-  stage.addMultiple<Model, 4>([=](Model* sprout, int index) {
-    Vec3f position = camera.position + camera.getDirection().xz() * 70.0f;
-
-    position.x += RNG::random(-10.0f, 10.0f);
-    position.z += RNG::random(-10.0f, 10.0f);
-    position.y = getMapHeight(1250.0f + position.x , -position.z + 1250.0f);
+void GardenScene::spawnSprout(float x, float z) {
+  stage.add<Model>([=](Model* sprout) {
+    Vec3f position = {
+      x,
+      getGroundHeight(1250.0f + x, -z + 1250.0f),
+      z
+    };
 
     sprout->from(modelMap.at("sprout"));
     sprout->setPosition(position);
     sprout->setOrientation(Vec3f(0.0f, RNG::random() * M_PI * 2.0f, 0.0f));
 
     float spawnTime = getRunningTime();
-    float growthTime = RNG::random(0.5f, 2.0f);
 
     sprout->onUpdate = [=](float dt) {
-      float t = (getRunningTime() - spawnTime) / growthTime;
+      float t = (getRunningTime() - spawnTime) / 1.0f;
 
       sprout->setScale(Easing::bounceOut(t) * 5.0f);
     };
@@ -167,9 +162,16 @@ void GardenScene::throwSeeds() {
     ).unit() * RNG::random(30.0f, 60.0f);
 
     seed->onUpdate = [=](float dt) mutable {
+      velocity.y -= 2.0f;
+
       seed->move(velocity * dt);
 
-      velocity.y -= 2.0f;
+      float groundHeight = getGroundHeight(1250.0f + seed->position.x, -seed->position.z + 1250.0f);
+
+      if (seed->position.y < groundHeight) {
+        spawnSprout(seed->position.x, seed->position.z);
+        seed->expire();
+      }
     };
   });
 }

@@ -14,6 +14,6 @@ private:
   std::map<std::string, Model*> modelMap;
   std::map<std::string, ObjLoader*> objLoaderMap;
 
-  void spawnSprouts();
+  void spawnSprout(float x, float z);
   void throwSeeds();
 };
