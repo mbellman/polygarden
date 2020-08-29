@@ -132,6 +132,10 @@ const Object* Object::getReference() const {
   return reference;
 }
 
+void Object::move(const Vec3f& movement) {
+  setPosition(position + movement);
+}
+
 void Object::recomputeMatrix() {
   matrix = (
     Matrix4::translate({ position.x, position.y, -1.0f * position.z }) *

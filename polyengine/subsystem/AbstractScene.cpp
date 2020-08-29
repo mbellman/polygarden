@@ -1,10 +1,21 @@
 #include <algorithm>
+#include <functional>
 
 #include "subsystem/AbstractScene.h"
 #include "subsystem/RNG.h"
 
 AbstractScene::AbstractScene() {
   RNG::seed();
+}
+
+void AbstractScene::delay(std::function<void()> callback, float timeout) {
+  auto* record = new DelayRecord();
+
+  record->callback = callback;
+  record->timeout = timeout;
+  record->creationTime = getRunningTime();
+
+  delayRecords.push(record);
 }
 
 const Camera& AbstractScene::getCamera() const {
@@ -23,6 +34,21 @@ const Stage& AbstractScene::getStage() const {
   return stage;
 }
 
+void AbstractScene::handleDelayRecords() {
+  int i = 0;
+
+  while (i < delayRecords.length()) {
+    auto* record = delayRecords[i];
+
+    if ((getRunningTime() - record->creationTime) >= record->timeout) {
+      record->callback();
+      delayRecords.remove(record);
+    } else {
+      i++;
+    }
+  }
+}
+
 void AbstractScene::onEntityAdded(EntityHandler handler) {
   stage.onEntityAdded(handler);
 }
@@ -37,6 +63,7 @@ void AbstractScene::onUpdate(float dt) {}
 
 void AbstractScene::update(float dt) {
   onUpdate(dt);
+  handleDelayRecords();
 
   auto updateEntity = [=](Entity* entity) {
     if (entity->onUpdate) {

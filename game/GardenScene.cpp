@@ -17,27 +17,6 @@ static float getMapHeight(float x, float z) {
   );
 };
 
-void GardenScene::addFlower() {
-  Vec3f position = camera.position + camera.getDirection().xz() * 100.0f;
-
-  position.y = getMapHeight(1250.0f + position.x , -position.z + 1250.0f);
-
-  stage.add<Model>([&](Model* sprout) {
-    sprout->from(modelMap.at("sprout"));
-    sprout->setPosition(position);
-    sprout->setScale(10.0f);
-    sprout->setOrientation(Vec3f(0.0f, RNG::random() * M_PI * 2.0f, 0.0f));
-
-    float spawnTime = getRunningTime();
-
-    sprout->onUpdate = [=](float dt) {
-      float t = (getRunningTime() - spawnTime) / 1.0f;
-
-      sprout->setScale(Easing::bounceOut(t) * 5.0f);
-    };
-  });
-}
-
 void GardenScene::onInit() {
   ObjLoader sproutObj("./game/sprout.obj");
   ObjLoader lanternObj("./game/lantern.obj");
@@ -48,26 +27,24 @@ void GardenScene::onInit() {
 
   modelMap.emplace("sprout", sprout);
 
-  for (int i = 0; i < 10; i++) {
-    stage.add<Model>([=](Model* lantern) {
-      float x = RNG::random() * 2500.0f - 1250.0f;
-      float z = RNG::random() * 2500.0f - 1250.0f;
-      float y = getMapHeight(1250.0f + x, -z + 1250.0f) - 5.0f;
+  stage.addMultiple<Model, 10>([=](Model* lantern, int index) {
+    float x = RNG::random() * 2500.0f - 1250.0f;
+    float z = RNG::random() * 2500.0f - 1250.0f;
+    float y = getMapHeight(1250.0f + x, -z + 1250.0f) - 5.0f;
 
-      lantern->from(lanternObj);
-      lantern->texture = assets.createTexture("./game/lantern-texture.png");
-      lantern->normalMap = assets.createTexture("./game/lantern-normal-map.png");
-      lantern->setScale(100.0f);
-      lantern->setPosition(Vec3f(x, y, z));
+    lantern->from(lanternObj);
+    lantern->texture = assets.createTexture("./game/lantern-texture.png");
+    lantern->normalMap = assets.createTexture("./game/lantern-normal-map.png");
+    lantern->setScale(100.0f);
+    lantern->setPosition(Vec3f(x, y, z));
 
-      stage.add<Light>([=](Light* light) {
-        light->color = Vec3f(1.0f, 1.0f, 0.2f);
-        light->position = Vec3f(x, y + 75.0f, z);
-        light->radius = 750.0f;
-        light->power = 4.0f;
-      });
+    stage.add<Light>([=](Light* light) {
+      light->color = Vec3f(1.0f, 1.0f, 0.2f);
+      light->position = Vec3f(x, y + 75.0f, z);
+      light->radius = 750.0f;
+      light->power = 4.0f;
     });
-  }
+  });
 
   stage.add<Light>([=](Light* light) {
     light->type = Light::LightType::DIRECTIONAL;
@@ -110,7 +87,11 @@ void GardenScene::onInit() {
   inputSystem.onMouseButton([=](const SDL_MouseButtonEvent& event) {
     if (event.type == SDL_MOUSEBUTTONDOWN) {
       if (SDL_GetRelativeMouseMode() == SDL_TRUE) {
-        addFlower();
+        throwSeeds();
+
+        delay([=]() {
+          spawnSprouts();
+        }, 0.6f);
       }
 
       SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -144,4 +125,51 @@ void GardenScene::onUpdate(float dt) {
   }
 
   camera.position.y = 60.0f + getMapHeight(1250.0f + camera.position.x, -camera.position.z + 1250.0f);
+}
+
+void GardenScene::spawnSprouts() {
+  stage.addMultiple<Model, 4>([=](Model* sprout, int index) {
+    Vec3f position = camera.position + camera.getDirection().xz() * 70.0f;
+
+    position.x += RNG::random(-10.0f, 10.0f);
+    position.z += RNG::random(-10.0f, 10.0f);
+    position.y = getMapHeight(1250.0f + position.x , -position.z + 1250.0f);
+
+    sprout->from(modelMap.at("sprout"));
+    sprout->setPosition(position);
+    sprout->setOrientation(Vec3f(0.0f, RNG::random() * M_PI * 2.0f, 0.0f));
+
+    float spawnTime = getRunningTime();
+    float growthTime = RNG::random(0.5f, 2.0f);
+
+    sprout->onUpdate = [=](float dt) {
+      float t = (getRunningTime() - spawnTime) / growthTime;
+
+      sprout->setScale(Easing::bounceOut(t) * 5.0f);
+    };
+  });
+}
+
+void GardenScene::throwSeeds() {
+  ObjLoader seedObj("./game/seed.obj");
+
+  stage.addMultiple<Model, 5>([&](Model* seed, int index) {
+    seed->from(seedObj);
+    seed->setColor(Vec3f(0.6f, 0.5f, 0.2f));
+    seed->setScale(0.5f);
+    seed->setPosition(camera.position + camera.getDirection() * 50.0f);
+    seed->lifetime = 2.0f;
+
+    Vec3f velocity = (
+      camera.getDirection().xz() +
+      camera.getLeftDirection().xz() * RNG::random() +
+      camera.getRightDirection().xz() * RNG::random()
+    ).unit() * RNG::random(30.0f, 60.0f);
+
+    seed->onUpdate = [=](float dt) mutable {
+      seed->move(velocity * dt);
+
+      velocity.y -= 2.0f;
+    };
+  });
 }

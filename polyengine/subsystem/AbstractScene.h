@@ -1,11 +1,19 @@
 #pragma once
 
 #include <vector>
+#include <functional>
 
 #include "subsystem/Stage.h"
 #include "subsystem/AssetCache.h"
 #include "subsystem/Entities.h"
 #include "subsystem/InputSystem.h"
+#include "subsystem/HeapList.h"
+
+struct DelayRecord {
+  float creationTime;
+  float timeout;
+  std::function<void()> callback;
+};
 
 class AbstractScene {
 public:
@@ -28,6 +36,11 @@ protected:
   InputSystem inputSystem;
   Camera camera;
 
+  void delay(std::function<void()> callback, float timeout);
+
 private:
   float runningTime = 0.0f;
+  HeapList<DelayRecord> delayRecords;
+
+  void handleDelayRecords();
 };

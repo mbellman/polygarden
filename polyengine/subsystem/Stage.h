@@ -29,6 +29,15 @@ public:
     add(entity);
   }
 
+  template<typename T, unsigned int total>
+  void addMultiple(std::function<void(T*, int)> handler) {
+    for (int i = 0; i < total; i++) {
+      add<T>([=](T* entity) {
+        handler(entity, i);
+      });
+    }
+  }
+
   const HeapList<Light>& getLights() const;
   const HeapList<Object>& getObjects() const;
   StageStats getStats() const;

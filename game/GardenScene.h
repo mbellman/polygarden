@@ -13,5 +13,7 @@ public:
 private:
   std::map<std::string, Model*> modelMap;
   std::map<std::string, ObjLoader*> objLoaderMap;
-  void addFlower();
+
+  void spawnSprouts();
+  void throwSeeds();
 };
