@@ -8,6 +8,7 @@
 #include "subsystem/Geometry.h"
 #include "subsystem/ObjLoader.h"
 #include "subsystem/Texture.h"
+#include "subsystem/HeapList.h"
 
 struct Entity {
   Entity();
@@ -49,7 +50,7 @@ struct Light : Entity {
 
 class Camera : public Entity {
 public:
-  // TODO Create 'Orientation' struct with below methods
+  // TODO: Create 'Orientation' struct with below methods
   Vec3f getDirection() const;
   Vec3f getLeftDirection() const;
   Vec3f getOrientationDirection(const Vec3f& orientation) const;
@@ -69,12 +70,13 @@ public:
   const Matrix4& getMatrix() const;
   const std::vector<Polygon*>& getPolygons() const;
   const Object* getReference() const;
+  bool hasInstances() const;
+  bool isInstance() const;
   void move(const Vec3f& movement);
   void rotate(const Vec3f& rotation);
   void setColor(const Vec3f& color);
   void setOrientation(const Vec3f& orientation);
   void setPosition(const Vec3f& position);
-  void setReference(const Object* reference);
   void setScale(const Vec3f& scale);
   void setScale(float scale);
 
@@ -89,10 +91,14 @@ protected:
   void addVertex(const Vec3f& position, const Vec2f& uv);
   void addVertex(const Vec3f& position, const Vec3f& color, const Vec2f& uv);
   void recomputeMatrix();
+  void setReference(Object* reference);
+  void trackInstance(Object* instance);
+  void untrackInstance(Object* instance);
   void updateNormals();
 
 private:
-  const Object* reference = this;
+  HeapList<Object> instances;
+  Object* reference = this;
 };
 
 class Mesh : public Object {
@@ -127,7 +133,7 @@ private:
 class Model : public Object {
 public:
   void from(const ObjLoader& loader);
-  void from(const Model* reference);
+  void from(Model* reference);
 
 private:
   void buildTexturedModel(const ObjLoader& loader);

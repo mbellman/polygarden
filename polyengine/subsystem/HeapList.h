@@ -10,7 +10,7 @@ using ItemPredicate = std::function<bool(T*)>;
 template<typename T>
 class HeapList {
 public:
-  T* operator[](int index) {
+  T* operator[](unsigned int index) const {
     return list[index];
   }
 
@@ -22,6 +22,10 @@ public:
     return list.begin();
   }
 
+  void clear() {
+    list.clear();
+  }
+
   typename std::vector<T*>::const_iterator end() const {
     return list.end();
   }
@@ -31,7 +35,7 @@ public:
       delete item;
     }
 
-    list.clear();
+    clear();
   }
 
   int length() const {
@@ -44,8 +48,6 @@ public:
 
   void remove(T* item) {
     list.erase(std::remove(list.begin(), list.end(), item), list.end());
-
-    delete item;
   }
 
   void removeWhere(ItemPredicate<T> predicate) {

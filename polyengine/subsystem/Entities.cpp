@@ -76,6 +76,16 @@ Vec3f Camera::getRightDirection() const {
  * ------
  */
 Object::~Object() {
+  if (isInstance()) {
+    reference->untrackInstance(this);
+  } else if (hasInstances()) {
+    for (auto* instance : instances) {
+      instance->expire();
+    }
+
+    instances.clear();
+  }
+
   for (auto* polygon : polygons) {
     delete polygon;
   }
@@ -136,6 +146,14 @@ const Object* Object::getReference() const {
   return reference;
 }
 
+bool Object::hasInstances() const {
+  return instances.length() > 0;
+}
+
+bool Object::isInstance() const {
+  return reference != this;
+}
+
 void Object::move(const Vec3f& movement) {
   setPosition(position + movement);
 }
@@ -172,8 +190,10 @@ void Object::setPosition(const Vec3f& position) {
   recomputeMatrix();
 }
 
-void Object::setReference(const Object* reference) {
+void Object::setReference(Object* reference) {
   this->reference = reference;
+
+  reference->trackInstance(this);
 }
 
 void Object::setScale(const Vec3f& scale) {
@@ -184,6 +204,14 @@ void Object::setScale(const Vec3f& scale) {
 
 void Object::setScale(float scale) {
   setScale(Vec3f(scale));
+}
+
+void Object::trackInstance(Object* instance) {
+  instances.push(instance);
+}
+
+void Object::untrackInstance(Object* instance) {
+  instances.remove(instance);
 }
 
 void Object::updateNormals() {
@@ -395,7 +423,7 @@ void Model::from(const ObjLoader& loader) {
   updateNormals();
 }
 
-void Model::from(const Model* reference) {
+void Model::from(Model* reference) {
   setReference(reference);
 }
 

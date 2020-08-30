@@ -65,6 +65,8 @@ void Stage::remove(Entity* entity) {
   } else if (entity->isOfType<Light>()) {
     lights.remove((Light*)entity);
   }
+
+  delete entity;
 }
 
 void Stage::removeExpiredEntities() {

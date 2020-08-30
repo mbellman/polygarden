@@ -177,6 +177,8 @@ void OpenGLVideoController::onEntityAdded(Entity* entity) {
 }
 
 void OpenGLVideoController::onEntityRemoved(Entity* entity) {
+  // TODO: Delete removed glObjects/glShadowCasters
+  // from memory, since HeapList no longer does
   if (entity->isOfType<Object>()) {
     glObjects.removeWhere([=](OpenGLObject* glObject) {
       return glObject->getSourceObject() == entity;
@@ -353,7 +355,11 @@ void OpenGLVideoController::renderGeometry() {
   Matrix4 projectionMatrix = Matrix4::projection(screenSize, 45.0f, 1.0f, 10000.0f).transpose();
   Matrix4 viewMatrix = createViewMatrix();
 
-  auto renderObject = [&](OpenGLObject* glObject) {
+  auto renderInstancedObject = [&](OpenGLObject* glObject) {
+    // TODO
+  };
+
+  auto renderNonInstancedObject = [&](OpenGLObject* glObject) {
     auto& program = glObject->hasCustomShader()
       ? *glObject->getCustomShader()
       : geometryProgram;
@@ -371,12 +377,22 @@ void OpenGLVideoController::renderGeometry() {
     glObject->render();
   };
 
+  auto renderObject = [&](OpenGLObject* glObject) {
+    auto* object = glObject->getSourceObject();
+
+    if (object->hasInstances()) {
+      renderInstancedObject(glObject);
+    } else if (!object->isInstance()) {
+      renderNonInstancedObject(glObject);
+    }
+  };
+
   glStencilFunc(GL_ALWAYS, 1, 0xFF);
   glStencilMask(0x00);
 
   for (auto* glObject : glObjects) {
     if (glObject->getSourceObject()->isEmissive) {
-      renderObject(glObject);
+      renderNonInstancedObject(glObject);
     }
   }
 
@@ -384,7 +400,7 @@ void OpenGLVideoController::renderGeometry() {
 
   for (auto* glObject : glObjects) {
     if (!glObject->getSourceObject()->isEmissive) {
-      renderObject(glObject);
+      renderNonInstancedObject(glObject);
     }
   }
 
@@ -412,6 +428,8 @@ void OpenGLVideoController::renderIlluminatedSurfaces() {
 
   int index = 0;
 
+  // TODO: Render lights in chunks to allow a unlimited number
+  // of lights + loop unrolling within the lighting shader
   for (auto* light : lights) {
     if (!light->canCastShadows) {
       std::string idx = std::to_string(index++);

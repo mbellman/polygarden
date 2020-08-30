@@ -8,16 +8,6 @@ AbstractScene::AbstractScene() {
   RNG::seed();
 }
 
-void AbstractScene::delay(std::function<void()> callback, float timeout) {
-  auto* record = new DelayRecord();
-
-  record->callback = callback;
-  record->timeout = timeout;
-  record->creationTime = getRunningTime();
-
-  delayRecords.push(record);
-}
-
 const Camera& AbstractScene::getCamera() const {
   return camera;
 }
@@ -34,21 +24,6 @@ const Stage& AbstractScene::getStage() const {
   return stage;
 }
 
-void AbstractScene::handleDelayRecords() {
-  int i = 0;
-
-  while (i < delayRecords.length()) {
-    auto* record = delayRecords[i];
-
-    if ((getRunningTime() - record->creationTime) >= record->timeout) {
-      record->callback();
-      delayRecords.remove(record);
-    } else {
-      i++;
-    }
-  }
-}
-
 void AbstractScene::onEntityAdded(EntityHandler handler) {
   stage.onEntityAdded(handler);
 }
@@ -63,7 +38,6 @@ void AbstractScene::onUpdate(float dt) {}
 
 void AbstractScene::update(float dt) {
   onUpdate(dt);
-  handleDelayRecords();
 
   auto updateEntity = [=](Entity* entity) {
     if (entity->onUpdate) {
@@ -75,12 +49,12 @@ void AbstractScene::update(float dt) {
     }
   };
 
-  for (auto* object : stage.getObjects()) {
-    updateEntity(object);
+  for (unsigned int i = 0; i < stage.getObjects().length(); i++) {
+    updateEntity(stage.getObjects()[i]);
   }
 
-  for (auto* light : stage.getLights()) {
-    updateEntity(light);
+  for (unsigned int i = 0; i < stage.getLights().length(); i++) {
+    updateEntity(stage.getLights()[i]);
   }
 
   stage.removeExpiredEntities();
