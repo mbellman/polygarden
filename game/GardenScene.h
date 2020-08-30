@@ -13,8 +13,8 @@ public:
   void onUpdate(float dt) override;
 
 private:
+  // TODO: Move into AssetCache
   std::map<std::string, Model*> modelMap;
-  std::map<std::string, ObjLoader*> objLoaderMap;
 
   void spawnFlower(float x, float z);
   void spawnSprout(float x, float z);

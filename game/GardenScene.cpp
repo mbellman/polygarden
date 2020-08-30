@@ -22,30 +22,26 @@ GardenScene::~GardenScene() {
     delete model;
   }
 
-  for (auto& [key, objLoader] : objLoaderMap) {
-    delete objLoader;
-  }
-
   modelMap.clear();
-  objLoaderMap.clear();
 }
 
 void GardenScene::onInit() {
   ObjLoader sproutObj("./game/sprout.obj");
   ObjLoader lanternObj("./game/lantern.obj");
   ObjLoader flowerStalkObj("./game/flower-stalk.obj");
+  ObjLoader flowerPetalsObj("./game/flower-petals.obj");
+
   Model* sprout = new Model();
   Model* flowerStalk = new Model();
+  Model* flowerPetals = new Model();
 
   sprout->from(sproutObj);
-  sprout->setColor(Vec3f(0.25f, 1.0f, 0.5f));
-
   flowerStalk->from(flowerStalkObj);
-  flowerStalk->setColor(Vec3f(0.3f, 1.0f, 0.4f));
+  flowerPetals->from(flowerPetalsObj);
 
   modelMap.emplace("sprout", sprout);
   modelMap.emplace("flower-stalk", flowerStalk);
-  objLoaderMap.emplace("flower-petals", new ObjLoader("./game/flower-petals.obj"));
+  modelMap.emplace("flower-petals", flowerPetals);
 
   stage.addMultiple<Model, 10>([=](Model* lantern, int index) {
     float x = RNG::random() * 2500.0f - 1250.0f;
@@ -81,7 +77,6 @@ void GardenScene::onInit() {
 
   stage.add<Mesh>([=](Mesh* mesh) {
     mesh->setSize(250, 250, 10.0f);
-    mesh->setColor(Vec3f(0.5f));
     mesh->setPosition(Vec3f(0.0f));
 
     mesh->texture = assets.createTexture("./game/grass-texture.png");
@@ -94,7 +89,6 @@ void GardenScene::onInit() {
   stage.add<Skybox>([=](Skybox* skybox) {
     skybox->from(assets.createTexture("./game/dummy-day-skybox.png"));
     skybox->setScale(5000.0f);
-    skybox->setColor(Vec3f(1.0f));
   });
 
   inputSystem.onMouseMotion([=](const SDL_MouseMotionEvent& event) {
@@ -156,6 +150,7 @@ void GardenScene::spawnFlower(float x, float z) {
     flowerStalk->from(modelMap.at("flower-stalk"));
     flowerStalk->setPosition(position);
     flowerStalk->setOrientation(orientation);
+    flowerStalk->color = Vec3f(0.3f, 1.0f, 0.4f);
 
     float spawnTime = getRunningTime();
 
@@ -167,10 +162,10 @@ void GardenScene::spawnFlower(float x, float z) {
   });
 
   stage.add<Model>([&](Model* flowerPetals) {
-    flowerPetals->from(*objLoaderMap.at("flower-petals"));
+    flowerPetals->from(modelMap.at("flower-petals"));
     flowerPetals->setPosition(position);
     flowerPetals->setOrientation(orientation);
-    flowerPetals->setColor(Vec3f(RNG::random(), RNG::random(), RNG::random()));
+    flowerPetals->color = Vec3f(RNG::random(), RNG::random(), RNG::random());
 
     float spawnTime = getRunningTime();
 
@@ -193,6 +188,7 @@ void GardenScene::spawnSprout(float x, float z) {
     sprout->from(modelMap.at("sprout"));
     sprout->setPosition(position);
     sprout->setOrientation(Vec3f(0.0f, RNG::random() * M_PI * 2.0f, 0.0f));
+    sprout->color = Vec3f(0.25f, 1.0f, 0.5f);
 
     float spawnTime = getRunningTime();
 
@@ -209,9 +205,9 @@ void GardenScene::throwSeeds() {
 
   stage.addMultiple<Model, 5>([&](Model* seed, int index) {
     seed->from(seedObj);
-    seed->setColor(Vec3f(0.6f, 0.5f, 0.2f));
     seed->setScale(0.5f);
     seed->setPosition(camera.position + camera.getDirection() * 50.0f);
+    seed->color = Vec3f(0.6f, 0.5f, 0.2f);
     seed->lifetime = 2.0f;
 
     Vec3f velocity = (

@@ -35,7 +35,6 @@ void GBuffer::createShaderPrograms() {
     { "vertexPosition", 3, GL_FLOAT },
     { "vertexNormal", 3, GL_FLOAT},
     { "vertexTangent", 3, GL_FLOAT },
-    { "vertexColor", 3, GL_FLOAT },
     { "vertexUv", 2, GL_FLOAT }
   };
 
@@ -49,7 +48,7 @@ void GBuffer::createShaderPrograms() {
   geometryProgram.attachShader(ShaderLoader::loadFragmentShader("./polyengine/shaders/geometry.fragment.glsl"));
   geometryProgram.link();
   geometryProgram.use();
-  geometryProgram.setVertexInputs<float>(5, geometryInputs);
+  geometryProgram.setVertexInputs<float>(4, geometryInputs);
 
   illuminationProgram.create();
   illuminationProgram.attachShader(ShaderLoader::loadVertexShader("./polyengine/shaders/quad.vertex.glsl"));

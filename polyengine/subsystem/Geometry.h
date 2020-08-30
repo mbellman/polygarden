@@ -7,14 +7,6 @@
 struct Polygon;
 
 /**
- * A 2D triangle vertex.
- */
-struct Vertex2d {
-  Vec2f position;
-  Vec3f color;
-};
-
-/**
  * A 3D polygon vertex.
  */
 struct Vertex3d {
@@ -23,7 +15,6 @@ struct Vertex3d {
   Vec3f position;
   Vec3f normal;
   Vec3f tangent;
-  Vec3f color;
   Vec2f uv;
   std::vector<Polygon*> polygons;
 

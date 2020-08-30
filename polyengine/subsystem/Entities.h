@@ -59,6 +59,7 @@ public:
 
 class Object : public Entity {
 public:
+  Vec3f color = Vec3f(1.0f);
   Vec3f scale = Vec3f(1.0f, 1.0f, 1.0f);
   const Texture* texture = nullptr;
   const Texture* normalMap = nullptr;
@@ -74,7 +75,6 @@ public:
   bool isInstance() const;
   void move(const Vec3f& movement);
   void rotate(const Vec3f& rotation);
-  void setColor(const Vec3f& color);
   void setOrientation(const Vec3f& orientation);
   void setPosition(const Vec3f& position);
   void setScale(const Vec3f& scale);
@@ -87,9 +87,7 @@ protected:
 
   void addPolygon(int v1index, int v2index, int v3index);
   void addVertex(const Vec3f& position);
-  void addVertex(const Vec3f& position, const Vec3f& color);
   void addVertex(const Vec3f& position, const Vec2f& uv);
-  void addVertex(const Vec3f& position, const Vec3f& color, const Vec2f& uv);
   void recomputeMatrix();
   void setReference(Object* reference);
   void trackInstance(Object* instance);

@@ -3,11 +3,11 @@
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 modelMatrix;
+uniform vec3 color;
 
 in vec3 vertexPosition;
 in vec3 vertexNormal;
 in vec3 vertexTangent;
-in vec3 vertexColor;
 in vec2 vertexUv;
 
 out vec3 fragmentColor;
@@ -40,10 +40,6 @@ vec3 getTangent() {
   return vec3(tangent.x, tangent.y, -tangent.z);
 }
 
-vec3 getColor() {
-  return vertexColor;
-}
-
 vec2 getUv() {
   return vertexUv;
 }
@@ -51,7 +47,7 @@ vec2 getUv() {
 void main() {
   gl_Position = getClipPosition();
 
-  fragmentColor = getColor();
+  fragmentColor = color;
   fragmentNormal = getNormal();
   fragmentTangent = getTangent();
   fragmentPosition = getWorldPosition();

@@ -113,22 +113,13 @@ void Object::addPolygon(int v1index, int v2index, int v3index) {
 }
 
 void Object::addVertex(const Vec3f& position) {
-  addVertex(position, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f });
-}
-
-void Object::addVertex(const Vec3f& position, const Vec3f& color) {
-  addVertex(position, color, { 0.0f, 0.0f });
+  addVertex(position, { 0.0f, 0.0f });
 }
 
 void Object::addVertex(const Vec3f& position, const Vec2f& uv) {
-  addVertex(position, { 0.0f, 0.0f, 0.0f }, uv);
-}
-
-void Object::addVertex(const Vec3f& position, const Vec3f& color, const Vec2f& uv) {
   Vertex3d* vertex = new Vertex3d();
 
   vertex->position = position;
-  vertex->color = color;
   vertex->uv = uv;
 
   vertices.push_back(vertex);
@@ -170,12 +161,6 @@ void Object::rotate(const Vec3f& rotation) {
   orientation += rotation;
 
   recomputeMatrix();
-}
-
-void Object::setColor(const Vec3f& color) {
-  for (auto* vertex : vertices) {
-    vertex->color = color;
-  }
 }
 
 void Object::setOrientation(const Vec3f& orientation) {
@@ -254,14 +239,13 @@ void Mesh::setSize(int w, int h, float tileSize) {
 
   for (int i = 0; i < h + 1; i++) {
     for (int j = 0; j < w + 1; j++) {
-      Vertex3d* vertex = new Vertex3d();
       float x = j * tileSize + offset.x;
       float z = i * tileSize + offset.y;
 
       float u = (float)j / (float)w;
       float v = (float)i / (float)h;
 
-      addVertex({ x, 0.0f, z}, Vec3f(1.0f), { u, v });
+      addVertex({ x, 0.0f, z}, { u, v });
     }
   }
 
@@ -296,10 +280,9 @@ Cube::Cube() {
     for (int c = 0; c < 4; c++) {
       int cornerIndex = face[c];
       Vec3f position = Cube::corners[cornerIndex];
-      Vec3f color = Vec3f(1.0f);
       Vec2f uv = Cube::uvs[c];
 
-      addVertex(position, color, uv);
+      addVertex(position, uv);
     }
   }
 

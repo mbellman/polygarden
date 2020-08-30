@@ -74,7 +74,6 @@ ShaderProgram* OpenGLObject::createShaderProgram(std::string path) {
       { "vertexPosition", 3, GL_FLOAT },
       { "vertexNormal", 3, GL_FLOAT},
       { "vertexTangent", 3, GL_FLOAT },
-      { "vertexColor", 3, GL_FLOAT },
       { "vertexUv", 2, GL_FLOAT }
     };
 
@@ -85,7 +84,7 @@ ShaderProgram* OpenGLObject::createShaderProgram(std::string path) {
     program->attachShader(ShaderLoader::loadFragmentShader(path.c_str()));
     program->link();
     program->use();
-    program->setVertexInputs<float>(5, geometryInputs);
+    program->setVertexInputs<float>(4, geometryInputs);
 
     OpenGLObject::shaderMap.emplace(path, program);
 

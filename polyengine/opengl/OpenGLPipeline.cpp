@@ -17,7 +17,7 @@ void OpenGLPipeline::bind() {
 void OpenGLPipeline::createFromObject(const Object* object) {
   totalVertices = object->getPolygons().size() * 3;
 
-  int bufferSize = totalVertices * 14;
+  int bufferSize = totalVertices * 11;
   float* buffer = new float[bufferSize];
   int idx = 0;
 
@@ -36,10 +36,6 @@ void OpenGLPipeline::createFromObject(const Object* object) {
       buffer[idx++] = vertex.tangent.x;
       buffer[idx++] = vertex.tangent.y;
       buffer[idx++] = vertex.tangent.z;
-
-      buffer[idx++] = vertex.color.x;
-      buffer[idx++] = vertex.color.y;
-      buffer[idx++] = vertex.color.z;
 
       buffer[idx++] = vertex.uv.x;
       buffer[idx++] = vertex.uv.y;

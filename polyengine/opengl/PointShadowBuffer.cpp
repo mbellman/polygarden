@@ -25,7 +25,6 @@ void PointShadowBuffer::createShaderPrograms() {
     { "vertexPosition", 3, GL_FLOAT },
     { "vertexNormal", 3, GL_FLOAT},
     { "vertexTangent", 3, GL_FLOAT },
-    { "vertexColor", 3, GL_FLOAT },
     { "vertexUv", 2, GL_FLOAT }
   };
 
@@ -40,7 +39,7 @@ void PointShadowBuffer::createShaderPrograms() {
   pointLightViewProgram.attachShader(ShaderLoader::loadFragmentShader("./polyengine/shaders/point-lightview.fragment.glsl"));
   pointLightViewProgram.link();
   pointLightViewProgram.use();
-  pointLightViewProgram.setVertexInputs<float>(5, geometryInputs);
+  pointLightViewProgram.setVertexInputs<float>(4, geometryInputs);
 
   pointShadowProgram.create();
   pointShadowProgram.attachShader(ShaderLoader::loadVertexShader("./polyengine/shaders/quad.vertex.glsl"));

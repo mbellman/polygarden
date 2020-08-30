@@ -31,7 +31,6 @@ void SBuffer::createShaderPrograms() {
     { "vertexPosition", 3, GL_FLOAT },
     { "vertexNormal", 3, GL_FLOAT},
     { "vertexTangent", 3, GL_FLOAT },
-    { "vertexColor", 3, GL_FLOAT },
     { "vertexUv", 2, GL_FLOAT }
   };
 
@@ -45,7 +44,7 @@ void SBuffer::createShaderPrograms() {
   lightViewProgram.attachShader(ShaderLoader::loadFragmentShader("./polyengine/shaders/lightview.fragment.glsl"));
   lightViewProgram.link();
   lightViewProgram.use();
-  lightViewProgram.setVertexInputs<float>(5, geometryInputs);
+  lightViewProgram.setVertexInputs<float>(4, geometryInputs);
 
   directionalShadowProgram.create();
   directionalShadowProgram.attachShader(ShaderLoader::loadVertexShader("./polyengine/shaders/quad.vertex.glsl"));
