@@ -65,12 +65,15 @@ public:
   const Texture* normalMap = nullptr;
   const char* shader = nullptr;
   bool isEmissive = false;
+  bool isReference = false;
 
   virtual ~Object();
 
   const Matrix4& getMatrix() const;
+  float* getMatrixBuffer() const;
   const std::vector<Polygon*>& getPolygons() const;
   const Object* getReference() const;
+  unsigned int getTotalInstances() const;
   bool hasInstances() const;
   bool isInstance() const;
   void move(const Vec3f& movement);
@@ -79,6 +82,7 @@ public:
   void setPosition(const Vec3f& position);
   void setScale(const Vec3f& scale);
   void setScale(float scale);
+  void refreshMatrixBuffer();
 
 protected:
   std::vector<Vertex3d*> vertices;
@@ -88,7 +92,6 @@ protected:
   void addPolygon(int v1index, int v2index, int v3index);
   void addVertex(const Vec3f& position);
   void addVertex(const Vec3f& position, const Vec2f& uv);
-  void recomputeMatrix();
   void setReference(Object* reference);
   void trackInstance(Object* instance);
   void untrackInstance(Object* instance);
@@ -97,6 +100,10 @@ protected:
 private:
   HeapList<Object> instances;
   Object* reference = this;
+  float* matrixBuffer = nullptr;
+
+  void reallocateMatrixBuffer();
+  void recomputeMatrix();
 };
 
 class Mesh : public Object {

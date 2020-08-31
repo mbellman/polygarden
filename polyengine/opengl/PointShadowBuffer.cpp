@@ -6,7 +6,7 @@ PointShadowBuffer::PointShadowBuffer() {
 
   glScreenQuad = new OpenGLPipeline();
 
-  pointShadowProgram.bindVertexInputs();
+  pointShadowProgram.bindInputs(glScreenQuad);
   glScreenQuad->createScreenQuad();
 }
 
@@ -40,6 +40,7 @@ void PointShadowBuffer::createShaderPrograms() {
   pointLightViewProgram.link();
   pointLightViewProgram.use();
   pointLightViewProgram.setVertexInputs<float>(4, geometryInputs);
+  pointLightViewProgram.setMatrixInput("modelMatrix");
 
   pointShadowProgram.create();
   pointShadowProgram.attachShader(ShaderLoader::loadVertexShader("./polyengine/shaders/quad.vertex.glsl"));

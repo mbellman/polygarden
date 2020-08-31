@@ -114,6 +114,7 @@
     <ClCompile Include="polyengine\opengl\AbstractBuffer.cpp" />
     <ClCompile Include="polyengine\opengl\FrameBuffer.cpp" />
     <ClCompile Include="polyengine\opengl\GBuffer.cpp" />
+    <ClCompile Include="polyengine\opengl\OpenGLDebugger.cpp" />
     <ClCompile Include="polyengine\opengl\OpenGLObject.cpp" />
     <ClCompile Include="polyengine\opengl\OpenGLPipeline.cpp" />
     <ClCompile Include="polyengine\opengl\OpenGLShadowCaster.cpp" />
@@ -235,6 +236,7 @@
     <ClInclude Include="polyengine\opengl\AbstractBuffer.h" />
     <ClInclude Include="polyengine\opengl\FrameBuffer.h" />
     <ClInclude Include="polyengine\opengl\GBuffer.h" />
+    <ClInclude Include="polyengine\opengl\OpenGLDebugger.h" />
     <ClInclude Include="polyengine\opengl\OpenGLObject.h" />
     <ClInclude Include="polyengine\opengl\OpenGLPipeline.h" />
     <ClInclude Include="polyengine\opengl\OpenGLShadowCaster.h" />

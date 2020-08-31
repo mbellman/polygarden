@@ -5,12 +5,20 @@
 OpenGLPipeline::OpenGLPipeline() {
   glGenVertexArrays(1, &vao);
   glGenBuffers(1, &vbo);
+  glGenBuffers(1, &mbo);
 
   bind();
 }
 
 void OpenGLPipeline::bind() {
   glBindVertexArray(vao);
+}
+
+void OpenGLPipeline::bindMBO() {
+  glBindBuffer(GL_ARRAY_BUFFER, mbo);
+}
+
+void OpenGLPipeline::bindVBO() {
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
 }
 
@@ -42,7 +50,8 @@ void OpenGLPipeline::createFromObject(const Object* object) {
     }
   }
 
-  pipe(bufferSize, buffer);
+  bindVBO();
+  glBufferData(GL_ARRAY_BUFFER, bufferSize * sizeof(float), buffer, GL_STATIC_DRAW);
 
   delete[] buffer;
 }
@@ -57,17 +66,19 @@ void OpenGLPipeline::createScreenQuad() {
     1.0f, -1.0f, 1.0f, 0.0f
   };
 
-  pipe(24, quad);
+  bindVBO();
+  glBufferData(GL_ARRAY_BUFFER, 24 * sizeof(float), quad, GL_STATIC_DRAW);
 
   totalVertices = 6;
 }
 
-void OpenGLPipeline::pipe(int size, float* buffer) {
-  glBufferData(GL_ARRAY_BUFFER, size * sizeof(float), buffer, GL_STATIC_DRAW);
-}
-
-void OpenGLPipeline::render() {
+void OpenGLPipeline::render(unsigned int instanceCount) {
   bind();
 
-  glDrawArrays(GL_TRIANGLES, 0, totalVertices);
+  glDrawArraysInstanced(GL_TRIANGLES, 0, totalVertices, instanceCount);
+}
+
+void OpenGLPipeline::sendMatrixBuffer(unsigned int size, float* matrixBuffer) {
+  bindMBO();
+  glBufferData(GL_ARRAY_BUFFER, size, matrixBuffer, GL_DYNAMIC_DRAW);
 }

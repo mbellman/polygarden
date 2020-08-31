@@ -36,8 +36,15 @@ void GardenScene::onInit() {
   Model* flowerPetals = new Model();
 
   sprout->from(sproutObj);
+  sprout->isReference = true;
   flowerStalk->from(flowerStalkObj);
+  flowerStalk->isReference = true;
   flowerPetals->from(flowerPetalsObj);
+  flowerPetals->isReference = true;
+
+  stage.add(sprout);
+  stage.add(flowerStalk);
+  stage.add(flowerPetals);
 
   modelMap.emplace("sprout", sprout);
   modelMap.emplace("flower-stalk", flowerStalk);

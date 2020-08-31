@@ -16,6 +16,7 @@ public:
 
   void bind();
   ShaderProgram* getCustomShader() const;
+  OpenGLPipeline* getPipeline() const;
   const Object* getSourceObject() const;
   bool hasNormalMap() const;
   bool hasCustomShader() const;

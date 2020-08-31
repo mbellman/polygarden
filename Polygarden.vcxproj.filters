@@ -108,6 +108,9 @@
     <ClCompile Include="game\Easing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="polyengine\opengl\OpenGLDebugger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="external\glew\include\eglew.h">
@@ -468,6 +471,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="game\Easing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="polyengine\opengl\OpenGLDebugger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

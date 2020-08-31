@@ -9,6 +9,7 @@
 #include "opengl/OpenGLVideoController.h"
 #include "opengl/OpenGLObject.h"
 #include "opengl/OpenGLPipeline.h"
+#include "opengl/OpenGLDebugger.h"
 #include "opengl/ShaderProgram.h"
 #include "opengl/ShaderLoader.h"
 #include "opengl/ScreenShader.h"
@@ -26,6 +27,8 @@ OpenGLVideoController::OpenGLVideoController() {
 }
 
 OpenGLVideoController::~OpenGLVideoController() {
+  // debug();
+
   screenShaders.free();
   glObjects.free();
   glShadowCasters.free();
@@ -35,14 +38,6 @@ OpenGLVideoController::~OpenGLVideoController() {
   delete gBuffer;
   delete sBuffer;
   delete pointShadowBuffer;
-}
-
-void OpenGLVideoController::checkErrors() {
-  GLenum error;
-
-  while ((error = glGetError()) != GL_NO_ERROR) {
-    printf("OpenGL Error: %d\n", error);
-  }
 }
 
 void OpenGLVideoController::createScreenShaders() {
@@ -153,6 +148,39 @@ SDL_Window* OpenGLVideoController::createWindow(const char* title, Region2d<int>
   return SDL_CreateWindow(title, region.x, region.y, region.width, region.height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 }
 
+void OpenGLVideoController::debug() {
+  for (auto* glObject : glObjects) {
+    auto* source = glObject->getSourceObject();
+
+    if (source->isInstance()) {
+      continue;
+    }
+
+    printf("-------------\n");
+    printf("Total instances: %d\n", source->getTotalInstances());
+    printf("Total polygons: %d\n", source->getPolygons().size());
+    printf("Matrix:\n");
+
+    source->getMatrix().debug();
+
+    auto* buffer = source->getMatrixBuffer();
+
+    for (int i = 0; i < source->getTotalInstances() * 16; i++) {
+      if (i % 4 == 0) {
+        printf("\n");
+      }
+
+      if (i % 16 == 0) {
+        printf("\n");
+      }
+
+      printf("%f, ", buffer[i]);
+    }
+
+    printf("\n-------------\n");
+  }
+}
+
 void OpenGLVideoController::onDestroy() {
   SDL_GL_DeleteContext(glContext);
 }
@@ -160,14 +188,16 @@ void OpenGLVideoController::onDestroy() {
 void OpenGLVideoController::onEntityAdded(Entity* entity) {
   if (entity->isOfType<Object>()) {
     auto* glObject = new OpenGLObject((Object*)entity);
+    auto* glPipeline = glObject->getPipeline();
 
     glObject->bind();
 
-    gBuffer->getShaderProgram(GBuffer::Shader::GEOMETRY).bindVertexInputs();
-    sBuffer->getLightViewProgram().bindVertexInputs();
+    gBuffer->getShaderProgram(GBuffer::Shader::GEOMETRY).bindInputs(glPipeline);
+    sBuffer->getLightViewProgram().bindInputs(glPipeline);
+    pointShadowBuffer->getPointLightViewProgram().bindInputs(glPipeline);
 
     if (glObject->hasCustomShader()) {
-      glObject->getCustomShader()->bindVertexInputs();
+      glObject->getCustomShader()->bindInputs(glPipeline);
     }
 
     glObjects.push(glObject);
@@ -226,7 +256,7 @@ void OpenGLVideoController::onInit() {
 
   scene->onInit();
 
-  checkErrors();
+  OpenGLDebugger::checkErrors("Scene Initialization");
 }
 
 void OpenGLVideoController::onRender() {
@@ -294,7 +324,6 @@ void OpenGLVideoController::renderDirectionalShadowCaster(OpenGLShadowCaster* gl
     lightViewProgram.setMatrix4("lightMatrix", lightMatrixCascades[i]);
 
     for (auto* glObject : glObjects) {
-      lightViewProgram.setMatrix4("modelMatrix", glObject->getSourceObject()->getMatrix());
       glObject->render();
     }
   }
@@ -355,11 +384,7 @@ void OpenGLVideoController::renderGeometry() {
   Matrix4 projectionMatrix = Matrix4::projection(screenSize, 45.0f, 1.0f, 10000.0f).transpose();
   Matrix4 viewMatrix = createViewMatrix();
 
-  auto renderInstancedObject = [&](OpenGLObject* glObject) {
-    // TODO
-  };
-
-  auto renderNonInstancedObject = [&](OpenGLObject* glObject) {
+  auto renderObject = [&](OpenGLObject* glObject) {
     auto& program = glObject->hasCustomShader()
       ? *glObject->getCustomShader()
       : geometryProgram;
@@ -367,7 +392,6 @@ void OpenGLVideoController::renderGeometry() {
     program.use();
     program.setMatrix4("projectionMatrix", projectionMatrix);
     program.setMatrix4("viewMatrix", viewMatrix);
-    program.setMatrix4("modelMatrix", glObject->getSourceObject()->getMatrix());
     program.setVec3f("color", glObject->getSourceObject()->color);
     program.setBool("hasTexture", glObject->hasTexture());
     program.setBool("hasNormalMap", glObject->hasNormalMap());
@@ -378,22 +402,12 @@ void OpenGLVideoController::renderGeometry() {
     glObject->render();
   };
 
-  auto renderObject = [&](OpenGLObject* glObject) {
-    auto* object = glObject->getSourceObject();
-
-    if (object->hasInstances()) {
-      renderInstancedObject(glObject);
-    } else if (!object->isInstance()) {
-      renderNonInstancedObject(glObject);
-    }
-  };
-
   glStencilFunc(GL_ALWAYS, 1, 0xFF);
   glStencilMask(0x00);
 
   for (auto* glObject : glObjects) {
     if (glObject->getSourceObject()->isEmissive) {
-      renderNonInstancedObject(glObject);
+      renderObject(glObject);
     }
   }
 
@@ -401,7 +415,7 @@ void OpenGLVideoController::renderGeometry() {
 
   for (auto* glObject : glObjects) {
     if (!glObject->getSourceObject()->isEmissive) {
-      renderNonInstancedObject(glObject);
+      renderObject(glObject);
     }
   }
 
@@ -480,7 +494,6 @@ void OpenGLVideoController::renderPointShadowCaster(OpenGLShadowCaster* glShadow
   }
 
   for (auto* glObject : glObjects) {
-    pointLightViewProgram.setMatrix4("modelMatrix", glObject->getSourceObject()->getMatrix());
     glObject->render();
   }
 
@@ -569,7 +582,6 @@ void OpenGLVideoController::renderSpotShadowCaster(OpenGLShadowCaster* glShadowC
   lightViewProgram.setMatrix4("lightMatrix", lightMatrix);
 
   for (auto* glObject : glObjects) {
-    lightViewProgram.setMatrix4("modelMatrix", glObject->getSourceObject()->getMatrix());
     glObject->render();
   }
 

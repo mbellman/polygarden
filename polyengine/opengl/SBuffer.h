@@ -11,8 +11,6 @@ public:
   void createFrameBuffer(unsigned int width, unsigned int height) override;
   ShaderProgram& getDirectionalShadowProgram();
   ShaderProgram& getLightViewProgram();
-  ShaderProgram& getPointLightViewProgram();
-  ShaderProgram& getPointShadowProgram();
   ShaderProgram& getSpotShadowProgram();
   void writeToShadowCascade(unsigned int cascadeIndex);
 
@@ -21,8 +19,6 @@ protected:
 
 private:
   ShaderProgram lightViewProgram;
-  ShaderProgram pointLightViewProgram;
   ShaderProgram directionalShadowProgram;
-  ShaderProgram pointShadowProgram;
   ShaderProgram spotShadowProgram;
 };

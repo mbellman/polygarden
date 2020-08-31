@@ -6,14 +6,14 @@ GBuffer::GBuffer() {
 
   glScreenQuad = new OpenGLPipeline();
 
-  getShaderProgram(Shader::ILLUMINATION).bindVertexInputs();
-  getShaderProgram(Shader::ALBEDO).bindVertexInputs();
+  getShaderProgram(Shader::ILLUMINATION).bindInputs(glScreenQuad);
+  getShaderProgram(Shader::ALBEDO).bindInputs(glScreenQuad);
 
   glScreenQuad->createScreenQuad();
 }
 
 GBuffer::~GBuffer() {
-
+  // TODO
 }
 
 void GBuffer::createFrameBuffer(unsigned int width, unsigned int height) {
@@ -49,6 +49,7 @@ void GBuffer::createShaderPrograms() {
   geometryProgram.link();
   geometryProgram.use();
   geometryProgram.setVertexInputs<float>(4, geometryInputs);
+  geometryProgram.setMatrixInput("modelMatrix");
 
   illuminationProgram.create();
   illuminationProgram.attachShader(ShaderLoader::loadVertexShader("./polyengine/shaders/quad.vertex.glsl"));

@@ -6,8 +6,8 @@ SBuffer::SBuffer() {
 
   glScreenQuad = new OpenGLPipeline();
 
-  directionalShadowProgram.bindVertexInputs();
-  spotShadowProgram.bindVertexInputs();
+  directionalShadowProgram.bindInputs(glScreenQuad);
+  spotShadowProgram.bindInputs(glScreenQuad);
 
   glScreenQuad->createScreenQuad();
 }
@@ -45,6 +45,7 @@ void SBuffer::createShaderPrograms() {
   lightViewProgram.link();
   lightViewProgram.use();
   lightViewProgram.setVertexInputs<float>(4, geometryInputs);
+  lightViewProgram.setMatrixInput("modelMatrix");
 
   directionalShadowProgram.create();
   directionalShadowProgram.attachShader(ShaderLoader::loadVertexShader("./polyengine/shaders/quad.vertex.glsl"));
@@ -67,14 +68,6 @@ ShaderProgram& SBuffer::getDirectionalShadowProgram() {
 
 ShaderProgram& SBuffer::getLightViewProgram() {
   return lightViewProgram;
-}
-
-ShaderProgram& SBuffer::getPointLightViewProgram() {
-  return pointLightViewProgram;
-}
-
-ShaderProgram& SBuffer::getPointShadowProgram() {
-  return pointShadowProgram;
 }
 
 ShaderProgram& SBuffer::getSpotShadowProgram() {

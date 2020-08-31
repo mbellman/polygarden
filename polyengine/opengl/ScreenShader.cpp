@@ -1,22 +1,21 @@
 #include "opengl/ScreenShader.h"
 
 ScreenShader::ScreenShader(const char* shaderPath) {
-  program.create();
-  program.attachShader(ShaderLoader::loadVertexShader("./polyengine/shaders/quad.vertex.glsl"));
-  program.attachShader(ShaderLoader::loadFragmentShader(shaderPath));
-  program.link();
-  program.use();
-
   VertexShaderInput inputs[] = {
     { "vertexPosition", 2, GL_FLOAT },
     { "vertexUv", 2, GL_FLOAT }
   };
 
+  program.create();
+  program.attachShader(ShaderLoader::loadVertexShader("./polyengine/shaders/quad.vertex.glsl"));
+  program.attachShader(ShaderLoader::loadFragmentShader(shaderPath));
+  program.link();
+  program.use();
   program.setVertexInputs<float>(2, inputs);
 
   glScreenQuad = new OpenGLPipeline();
 
-  program.bindVertexInputs();
+  program.bindInputs(glScreenQuad);
 
   glScreenQuad->createScreenQuad();
 }

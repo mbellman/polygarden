@@ -85,6 +85,7 @@ ShaderProgram* OpenGLObject::createShaderProgram(std::string path) {
     program->link();
     program->use();
     program->setVertexInputs<float>(4, geometryInputs);
+    program->setMatrixInput("modelMatrix");
 
     OpenGLObject::shaderMap.emplace(path, program);
 
@@ -110,6 +111,10 @@ void OpenGLObject::freeCachedResources() {
   shaderMap.clear();
 }
 
+OpenGLPipeline* OpenGLObject::getPipeline() const {
+  return glPipeline;
+}
+
 const Object* OpenGLObject::getSourceObject() const {
   return sourceObject;
 }
@@ -131,9 +136,20 @@ bool OpenGLObject::hasTexture() const {
 }
 
 void OpenGLObject::render() {
+  if (sourceObject->isInstance()) {
+    return;
+  }
+
+  unsigned int totalInstances = sourceObject->getTotalInstances();
+
+  if (totalInstances == 0) {
+    return;
+  }
+
   bind();
 
-  glPipeline->render();
+  glPipeline->sendMatrixBuffer(totalInstances * 16 * sizeof(float), sourceObject->getMatrixBuffer());
+  glPipeline->render(totalInstances);
 }
 
 std::map<int, OpenGLPipeline*> OpenGLObject::pipelineMap;

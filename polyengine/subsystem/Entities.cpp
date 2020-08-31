@@ -129,12 +129,26 @@ const Matrix4& Object::getMatrix() const {
   return matrix;
 }
 
+float* Object::getMatrixBuffer() const {
+  return matrixBuffer;
+}
+
 const std::vector<Polygon*>& Object::getPolygons() const {
   return polygons;
 }
 
 const Object* Object::getReference() const {
   return reference;
+}
+
+unsigned int Object::getTotalInstances() const {
+  return (
+    hasInstances()
+      ? instances.length() :
+    isReference
+      ? 0 :
+    1
+  );
 }
 
 bool Object::hasInstances() const {
@@ -149,12 +163,41 @@ void Object::move(const Vec3f& movement) {
   setPosition(position + movement);
 }
 
+void Object::reallocateMatrixBuffer() {
+  if (matrixBuffer != nullptr) {
+    delete[] matrixBuffer;
+  }
+
+  matrixBuffer = new float[getTotalInstances() * 16];
+
+  refreshMatrixBuffer();
+}
+
 void Object::recomputeMatrix() {
   matrix = (
     Matrix4::translate({ position.x, position.y, -1.0f * position.z }) *
     Matrix4::rotate(orientation) *
     Matrix4::scale(scale)
   ).transpose();
+
+  reference->refreshMatrixBuffer();
+}
+
+void Object::refreshMatrixBuffer() {
+  if (matrixBuffer == nullptr) {
+    reallocateMatrixBuffer();
+  }
+
+  if (hasInstances()) {  
+    for (unsigned int i = 0; i < instances.length(); i++) {
+      auto* instance = instances[i];
+      const Matrix4& matrix = instance->getMatrix();
+
+      memcpy(&matrixBuffer[i * 16], matrix.m, 16 * sizeof(float));
+    }
+  } else {
+    memcpy(matrixBuffer, matrix.m, 16 * sizeof(float));
+  }
 }
 
 void Object::rotate(const Vec3f& rotation) {
@@ -193,10 +236,14 @@ void Object::setScale(float scale) {
 
 void Object::trackInstance(Object* instance) {
   instances.push(instance);
+
+  reallocateMatrixBuffer();
 }
 
 void Object::untrackInstance(Object* instance) {
   instances.remove(instance);
+
+  reallocateMatrixBuffer();
 }
 
 void Object::updateNormals() {

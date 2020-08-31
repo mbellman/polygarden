@@ -2,13 +2,13 @@
 
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
-uniform mat4 modelMatrix;
 uniform vec3 color;
 
 in vec3 vertexPosition;
 in vec3 vertexNormal;
 in vec3 vertexTangent;
 in vec2 vertexUv;
+in mat4 modelMatrix;
 
 out vec3 fragmentColor;
 out vec3 fragmentNormal;
