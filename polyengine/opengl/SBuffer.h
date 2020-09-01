@@ -2,7 +2,6 @@
 
 #include "opengl/AbstractBuffer.h"
 #include "opengl/ShaderProgram.h"
-#include "opengl/OpenGLPipeline.h"
 
 class SBuffer : public AbstractBuffer {
 public:

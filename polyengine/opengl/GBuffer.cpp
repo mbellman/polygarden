@@ -1,15 +1,11 @@
 #include "opengl/GBuffer.h"
 #include "opengl/ShaderLoader.h"
+#include "opengl/OpenGLScreenQuad.h"
 
 GBuffer::GBuffer() {
   createShaderPrograms();
 
-  glScreenQuad = new OpenGLPipeline();
-
-  getShaderProgram(Shader::ILLUMINATION).bindInputs(glScreenQuad);
-  getShaderProgram(Shader::ALBEDO).bindInputs(glScreenQuad);
-
-  glScreenQuad->createScreenQuad();
+  glScreenQuad = new OpenGLScreenQuad();
 }
 
 GBuffer::~GBuffer() {
@@ -31,39 +27,23 @@ void GBuffer::createFrameBuffer(unsigned int width, unsigned int height) {
 }
 
 void GBuffer::createShaderPrograms() {
-  VertexShaderInput geometryInputs[] = {
-    { "vertexPosition", 3, GL_FLOAT },
-    { "vertexNormal", 3, GL_FLOAT},
-    { "vertexTangent", 3, GL_FLOAT },
-    { "vertexUv", 2, GL_FLOAT }
-  };
-
-  VertexShaderInput quadInputs[] = {
-    { "vertexPosition", 2, GL_FLOAT },
-    { "vertexUv", 2, GL_FLOAT }
-  };
-
   geometryProgram.create();
   geometryProgram.attachShader(ShaderLoader::loadVertexShader("./polyengine/shaders/geometry.vertex.glsl"));
   geometryProgram.attachShader(ShaderLoader::loadFragmentShader("./polyengine/shaders/geometry.fragment.glsl"));
   geometryProgram.link();
   geometryProgram.use();
-  geometryProgram.setVertexInputs<float>(4, geometryInputs);
-  geometryProgram.setMatrixInput("modelMatrix");
 
   illuminationProgram.create();
   illuminationProgram.attachShader(ShaderLoader::loadVertexShader("./polyengine/shaders/quad.vertex.glsl"));
   illuminationProgram.attachShader(ShaderLoader::loadFragmentShader("./polyengine/shaders/illumination.fragment.glsl"));
   illuminationProgram.link();
   illuminationProgram.use();
-  illuminationProgram.setVertexInputs<float>(2, quadInputs);
 
   albedoProgram.create();
   albedoProgram.attachShader(ShaderLoader::loadVertexShader("./polyengine/shaders/quad.vertex.glsl"));
   albedoProgram.attachShader(ShaderLoader::loadFragmentShader("./polyengine/shaders/albedo.fragment.glsl"));
   albedoProgram.link();
   albedoProgram.use();
-  albedoProgram.setVertexInputs<float>(2, quadInputs);
 }
 
 ShaderProgram& GBuffer::getShaderProgram(GBuffer::Shader shader) {
@@ -77,10 +57,6 @@ ShaderProgram& GBuffer::getShaderProgram(GBuffer::Shader shader) {
     default:
       return geometryProgram;
   }
-}
-
-void GBuffer::renderScreenQuad() {
-  glScreenQuad->render();
 }
 
 void GBuffer::writeToAllBuffers() {

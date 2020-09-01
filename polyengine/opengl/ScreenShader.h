@@ -4,12 +4,12 @@
 
 #include "opengl/ShaderProgram.h"
 #include "opengl/ShaderLoader.h"
-#include "opengl/OpenGLPipeline.h"
+#include "opengl/OpenGLScreenQuad.h"
 #include "opengl/FrameBuffer.h"
 #include "subsystem/Math.h"
 
 typedef std::function<FrameBuffer*(const ShaderProgram&, const Region2d<int>&)> FrameBufferFactory;
-typedef std::function<void(const ShaderProgram&, OpenGLPipeline* glScreenQuad)> RenderHandler;
+typedef std::function<void(const ShaderProgram&, OpenGLScreenQuad* glScreenQuad)> RenderHandler;
 
 class ScreenShader {
 public:
@@ -25,7 +25,7 @@ public:
 
 private:
   ShaderProgram program;
-  OpenGLPipeline* glScreenQuad = nullptr;
+  OpenGLScreenQuad* glScreenQuad = nullptr;
   FrameBuffer* frameBuffer = nullptr;
   FrameBufferFactory frameBufferFactory = nullptr;
   RenderHandler renderHandler = nullptr;

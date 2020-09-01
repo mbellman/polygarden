@@ -1,15 +1,11 @@
 #include "opengl/SBuffer.h"
 #include "opengl/ShaderLoader.h"
+#include "opengl/OpenGLScreenQuad.h"
 
 SBuffer::SBuffer() {
   createShaderPrograms();
 
-  glScreenQuad = new OpenGLPipeline();
-
-  directionalShadowProgram.bindInputs(glScreenQuad);
-  spotShadowProgram.bindInputs(glScreenQuad);
-
-  glScreenQuad->createScreenQuad();
+  glScreenQuad = new OpenGLScreenQuad();
 }
 
 void SBuffer::createFrameBuffer(unsigned int width, unsigned int height) {
@@ -27,39 +23,23 @@ void SBuffer::createFrameBuffer(unsigned int width, unsigned int height) {
 }
 
 void SBuffer::createShaderPrograms() {
-  VertexShaderInput geometryInputs[] = {
-    { "vertexPosition", 3, GL_FLOAT },
-    { "vertexNormal", 3, GL_FLOAT},
-    { "vertexTangent", 3, GL_FLOAT },
-    { "vertexUv", 2, GL_FLOAT }
-  };
-
-  VertexShaderInput quadInputs[] = {
-    { "vertexPosition", 2, GL_FLOAT },
-    { "vertexUv", 2, GL_FLOAT }
-  };
-
   lightViewProgram.create();
   lightViewProgram.attachShader(ShaderLoader::loadVertexShader("./polyengine/shaders/lightview.vertex.glsl"));
   lightViewProgram.attachShader(ShaderLoader::loadFragmentShader("./polyengine/shaders/lightview.fragment.glsl"));
   lightViewProgram.link();
   lightViewProgram.use();
-  lightViewProgram.setVertexInputs<float>(4, geometryInputs);
-  lightViewProgram.setMatrixInput("modelMatrix");
 
   directionalShadowProgram.create();
   directionalShadowProgram.attachShader(ShaderLoader::loadVertexShader("./polyengine/shaders/quad.vertex.glsl"));
   directionalShadowProgram.attachShader(ShaderLoader::loadFragmentShader("./polyengine/shaders/directional-shadowcaster.fragment.glsl"));
   directionalShadowProgram.link();
   directionalShadowProgram.use();
-  directionalShadowProgram.setVertexInputs<float>(2, quadInputs);
 
   spotShadowProgram.create();
   spotShadowProgram.attachShader(ShaderLoader::loadVertexShader("./polyengine/shaders/quad.vertex.glsl"));
   spotShadowProgram.attachShader(ShaderLoader::loadFragmentShader("./polyengine/shaders/spot-shadowcaster.fragment.glsl"));
   spotShadowProgram.link();
   spotShadowProgram.use();
-  spotShadowProgram.setVertexInputs<float>(2, quadInputs);
 }
 
 ShaderProgram& SBuffer::getDirectionalShadowProgram() {

@@ -8,7 +8,7 @@
 #include "glut.h"
 #include "opengl/OpenGLVideoController.h"
 #include "opengl/OpenGLObject.h"
-#include "opengl/OpenGLPipeline.h"
+#include "opengl/OpenGLScreenQuad.h"
 #include "opengl/OpenGLDebugger.h"
 #include "opengl/ShaderProgram.h"
 #include "opengl/ShaderLoader.h"
@@ -56,7 +56,7 @@ void OpenGLVideoController::createScreenShaders() {
     return buffer;
   });
 
-  dofShader->onRender([=](const ShaderProgram& program, OpenGLPipeline* glScreenQuad) {
+  dofShader->onRender([=](const ShaderProgram& program, OpenGLScreenQuad* glScreenQuad) {
     glClear(GL_COLOR_BUFFER_BIT);
 
     program.setInt("screen", 0);
@@ -74,7 +74,7 @@ void OpenGLVideoController::createScreenShaders() {
     return buffer;
   });
 
-  preBloomShader->onRender([=](const ShaderProgram& program, OpenGLPipeline* glScreenQuad) {
+  preBloomShader->onRender([=](const ShaderProgram& program, OpenGLScreenQuad* glScreenQuad) {
     glClear(GL_COLOR_BUFFER_BIT);
 
     program.setInt("screen", 0);
@@ -93,7 +93,7 @@ void OpenGLVideoController::createScreenShaders() {
     return buffer;
   });
 
-  postBloomShaderH->onRender([=](const ShaderProgram& program, OpenGLPipeline* glScreenQuad) {
+  postBloomShaderH->onRender([=](const ShaderProgram& program, OpenGLScreenQuad* glScreenQuad) {
     glClear(GL_COLOR_BUFFER_BIT);
 
     program.setInt("baseColor", 0);
@@ -113,7 +113,7 @@ void OpenGLVideoController::createScreenShaders() {
     return buffer;
   });
 
-  postBloomShaderV->onRender([=](const ShaderProgram& program, OpenGLPipeline* glScreenQuad) {
+  postBloomShaderV->onRender([=](const ShaderProgram& program, OpenGLScreenQuad* glScreenQuad) {
     glClear(GL_COLOR_BUFFER_BIT);
 
     program.setInt("baseColor", 0);
@@ -187,20 +187,7 @@ void OpenGLVideoController::onDestroy() {
 
 void OpenGLVideoController::onEntityAdded(Entity* entity) {
   if (entity->isOfType<Object>()) {
-    auto* glObject = new OpenGLObject((Object*)entity);
-    auto* glPipeline = glObject->getPipeline();
-
-    glObject->bind();
-
-    gBuffer->getShaderProgram(GBuffer::Shader::GEOMETRY).bindInputs(glPipeline);
-    sBuffer->getLightViewProgram().bindInputs(glPipeline);
-    pointShadowBuffer->getPointLightViewProgram().bindInputs(glPipeline);
-
-    if (glObject->hasCustomShader()) {
-      glObject->getCustomShader()->bindInputs(glPipeline);
-    }
-
-    glObjects.push(glObject);
+    glObjects.push(new OpenGLObject((Object*)entity));
   } else if (entity->isOfType<Light>() && ((Light*)entity)->canCastShadows) {
     glShadowCasters.push(new OpenGLShadowCaster((Light*)entity));
   }

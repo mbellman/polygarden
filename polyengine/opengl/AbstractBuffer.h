@@ -1,7 +1,7 @@
 #pragma once
 
 #include "opengl/FrameBuffer.h"
-#include "opengl/OpenGLPipeline.h"
+#include "opengl/OpenGLScreenQuad.h"
 
 class AbstractBuffer {
 public:
@@ -15,7 +15,7 @@ public:
 
 protected:
   FrameBuffer* frameBuffer = nullptr;
-  OpenGLPipeline* glScreenQuad = nullptr;
+  OpenGLScreenQuad* glScreenQuad = nullptr;
 
   virtual void createShaderPrograms() = 0;
 };

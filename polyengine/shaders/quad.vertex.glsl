@@ -1,7 +1,7 @@
 #version 330 core
 
-in vec2 vertexPosition;
-in vec2 vertexUv;
+layout (location = 0) in vec2 vertexPosition;
+layout (location = 1) in vec2 vertexUv;
 
 out vec2 fragmentUv;
 
