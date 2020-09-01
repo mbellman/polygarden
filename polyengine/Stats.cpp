@@ -1,7 +1,17 @@
 #include "Stats.h"
 #include "SDL.h"
 
-int Stats::getFPS() {
+unsigned int Stats::getAverageFPS() {
+  unsigned int sum = 0;
+
+  for (unsigned int i = 0; i < 60; i++) {
+    sum += fpsSamples[i];
+  }
+
+  return (unsigned int)(sum / 60.0f);
+}
+
+unsigned int Stats::getFPS() {
   int delta = frame.end - frame.start;
 
   return delta == 0
@@ -15,4 +25,7 @@ void Stats::trackFrameStart() {
 
 void Stats::trackFrameEnd() {
   frame.end = SDL_GetTicks();
+  fpsSamples[frameCounter % 60] = getFPS();
+
+  frameCounter++;
 }

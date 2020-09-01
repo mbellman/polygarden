@@ -66,11 +66,14 @@ public:
   const char* shader = nullptr;
   bool isEmissive = false;
   bool isReference = false;
+  bool isDirty = false;
 
   virtual ~Object();
 
+  void clean();
+  const float* getColorBuffer() const;
   const Matrix4& getMatrix() const;
-  float* getMatrixBuffer() const;
+  const float* getMatrixBuffer() const;
   const std::vector<Polygon*>& getPolygons() const;
   const Object* getReference() const;
   unsigned int getTotalInstances() const;
@@ -78,11 +81,11 @@ public:
   bool isInstance() const;
   void move(const Vec3f& movement);
   void rotate(const Vec3f& rotation);
+  void setColor(const Vec3f& color);
   void setOrientation(const Vec3f& orientation);
   void setPosition(const Vec3f& position);
   void setScale(const Vec3f& scale);
   void setScale(float scale);
-  void refreshMatrixBuffer();
 
 protected:
   std::vector<Vertex3d*> vertices;
@@ -101,9 +104,11 @@ private:
   HeapList<Object> instances;
   Object* reference = this;
   float* matrixBuffer = nullptr;
+  float* colorBuffer = nullptr;
 
-  void reallocateMatrixBuffer();
   void recomputeMatrix();
+  void refreshColorBuffer();
+  void refreshMatrixBuffer();
 };
 
 class Mesh : public Object {

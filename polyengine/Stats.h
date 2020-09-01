@@ -7,10 +7,13 @@ typedef int SDL_Tick;
 
 class Stats {
 public:
-  int getFPS();
+  unsigned int getAverageFPS();
+  unsigned int getFPS();
   void trackFrameStart();
   void trackFrameEnd();
 
 private:
+  unsigned frameCounter = 0;
   Range<SDL_Tick> frame = { 0, 0 };
+  unsigned int fpsSamples[60];
 };

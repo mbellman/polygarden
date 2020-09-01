@@ -377,7 +377,6 @@ void OpenGLVideoController::renderGeometry() {
     program.use();
     program.setMatrix4("projectionMatrix", projectionMatrix);
     program.setMatrix4("viewMatrix", viewMatrix);
-    program.setVec3f("color", glObject->getSourceObject()->color);
     program.setBool("hasTexture", glObject->hasTexture());
     program.setBool("hasNormalMap", glObject->hasNormalMap());
     program.setInt("modelTexture", 7);

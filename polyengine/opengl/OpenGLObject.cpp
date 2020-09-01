@@ -4,18 +4,33 @@
 #include "opengl/ShaderLoader.h"
 #include "subsystem/Entities.h"
 
+const static enum Buffer {
+  VERTEX = 0,
+  MATRIX = 1,
+  COLOR = 2
+};
+
+const static enum Attribute {
+  VERTEX_POSITION = 0,
+  VERTEX_NORMAL = 1,
+  VERTEX_TANGENT = 2,
+  VERTEX_UV = 3,
+  MODEL_COLOR = 4,
+  MODEL_MATRIX = 5
+};
+
 OpenGLObject::OpenGLObject(const Object* object) {
   sourceObject = object;
 
   glGenVertexArrays(1, &vao);
-  glGenBuffers(1, &vbo);
-  glGenBuffers(1, &mbo);
+  glGenBuffers(3, &buffers[0]);
   glBindVertexArray(vao);
 
   bufferVertexData();
 
   defineVertexAttributes();
   defineMatrixAttributes();
+  defineColorAttributes();
 
   if (object->texture != nullptr) {
     glTexture = OpenGLObject::createOpenGLTexture(object->texture, GL_TEXTURE7);
@@ -42,12 +57,30 @@ void OpenGLObject::bindTextures() {
   }
 }
 
+void OpenGLObject::bufferColorData() {
+  auto totalInstances = sourceObject->getTotalInstances();
+  auto* colorBuffer = sourceObject->getColorBuffer();
+
+  glBindBuffer(GL_ARRAY_BUFFER, buffers[Buffer::COLOR]);
+
+  if (totalInstances != lastInstanceCount) {
+    glBufferData(GL_ARRAY_BUFFER, totalInstances * 3 * sizeof(float), colorBuffer, GL_DYNAMIC_DRAW);
+  } else {
+    glBufferSubData(GL_ARRAY_BUFFER, 0, totalInstances * 3 * sizeof(float), colorBuffer);
+  }
+}
+
 void OpenGLObject::bufferMatrixData() {
   auto totalInstances = sourceObject->getTotalInstances();
   auto* matrixBuffer = sourceObject->getMatrixBuffer();
 
-  glBindBuffer(GL_ARRAY_BUFFER, mbo);
-  glBufferData(GL_ARRAY_BUFFER, totalInstances * 16 * sizeof(float), matrixBuffer, GL_DYNAMIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, buffers[Buffer::MATRIX]);
+
+  if (totalInstances != lastInstanceCount) {
+    glBufferData(GL_ARRAY_BUFFER, totalInstances * 16 * sizeof(float), matrixBuffer, GL_DYNAMIC_DRAW);
+  } else {
+    glBufferSubData(GL_ARRAY_BUFFER, 0, totalInstances * 16 * sizeof(float), matrixBuffer);
+  }
 }
 
 void OpenGLObject::bufferVertexData() {
@@ -82,7 +115,7 @@ void OpenGLObject::bufferVertexData() {
     }
   }
 
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, buffers[Buffer::VERTEX]);
   glBufferData(GL_ARRAY_BUFFER, bufferSize * sizeof(float), buffer, GL_STATIC_DRAW);
 
   delete[] buffer;
@@ -120,35 +153,38 @@ ShaderProgram* OpenGLObject::createShaderProgram(std::string path) {
   }
 }
 
-void OpenGLObject::defineMatrixAttributes() {
-  glBindBuffer(GL_ARRAY_BUFFER, mbo);
+void OpenGLObject::defineColorAttributes() {
+  glBindBuffer(GL_ARRAY_BUFFER, buffers[Buffer::COLOR]);
 
-  // mat4 modelMatrix
+  glEnableVertexAttribArray(Attribute::MODEL_COLOR);
+  glVertexAttribPointer(Attribute::MODEL_COLOR, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+  glVertexAttribDivisor(Attribute::MODEL_COLOR, 1);
+}
+
+void OpenGLObject::defineMatrixAttributes() {
+  glBindBuffer(GL_ARRAY_BUFFER, buffers[Buffer::MATRIX]);
+
   for (unsigned int i = 0; i < 4; i++) {
-    glEnableVertexAttribArray(4 + i);
-    glVertexAttribPointer(4 + i, 4, GL_FLOAT, GL_FALSE, 16 * sizeof(float), (void*)(i * 4 * sizeof(float)));
-    glVertexAttribDivisor(4 + i, 1);
+    glEnableVertexAttribArray(Attribute::MODEL_MATRIX + i);
+    glVertexAttribPointer(Attribute::MODEL_MATRIX + i, 4, GL_FLOAT, GL_FALSE, 16 * sizeof(float), (void*)(i * 4 * sizeof(float)));
+    glVertexAttribDivisor(Attribute::MODEL_MATRIX + i, 1);
   }
 }
 
 void OpenGLObject::defineVertexAttributes() {
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, buffers[Buffer::VERTEX]);
 
-  // vec3 vertexPosition
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)0);
+  glEnableVertexAttribArray(Attribute::VERTEX_POSITION);
+  glVertexAttribPointer(Attribute::VERTEX_POSITION, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)0);
 
-  // vec3 vertexNormal
-  glEnableVertexAttribArray(1);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(3 * sizeof(float)));
+  glEnableVertexAttribArray(Attribute::VERTEX_NORMAL);
+  glVertexAttribPointer(Attribute::VERTEX_NORMAL, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(3 * sizeof(float)));
 
-  // vec3 vertexTangent
-  glEnableVertexAttribArray(2);
-  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(6 * sizeof(float)));
+  glEnableVertexAttribArray(Attribute::VERTEX_TANGENT);
+  glVertexAttribPointer(Attribute::VERTEX_TANGENT, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(6 * sizeof(float)));
 
-  // vec2 vertexUv
-  glEnableVertexAttribArray(3);
-  glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(9 * sizeof(float)));
+  glEnableVertexAttribArray(Attribute::VERTEX_UV);
+  glVertexAttribPointer(Attribute::VERTEX_UV, 2, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(9 * sizeof(float)));
 }
 
 void OpenGLObject::freeCachedResources() {
@@ -187,15 +223,16 @@ bool OpenGLObject::hasTexture() const {
 void OpenGLObject::render() {
   unsigned int totalInstances = sourceObject->getTotalInstances();
 
-  if (totalInstances == 0) {
-    return;
+  if (totalInstances > 0) {
+    bindTextures();
+    bufferMatrixData();
+    bufferColorData();
+
+    glBindVertexArray(vao);
+    glDrawArraysInstanced(GL_TRIANGLES, 0, sourceObject->getPolygons().size() * 3, totalInstances);
   }
 
-  bindTextures();
-  bufferMatrixData();
-
-  glBindVertexArray(vao);
-  glDrawArraysInstanced(GL_TRIANGLES, 0, sourceObject->getPolygons().size() * 3, totalInstances);
+  lastInstanceCount = totalInstances;
 }
 
 std::map<int, OpenGLTexture*> OpenGLObject::textureMap;

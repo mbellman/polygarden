@@ -25,8 +25,9 @@ void Window::handleStats() {
   sprintf_s(
     title,
     sizeof(title),
-    "FPS: %d, Objects: %d (%d instances), Vertices: %d, Lights: %d, Shadowcasters: %d",
+    "FPS: %d (%d), Objects: %d (%d instances), Vertices: %d, Lights: %d, Shadowcasters: %d",
     stats.getFPS(),
+    stats.getAverageFPS(),
     stageStats.totalObjects,
     stageStats.totalInstances,
     stageStats.totalVertices,

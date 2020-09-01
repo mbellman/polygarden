@@ -53,6 +53,12 @@ void AbstractScene::update(float dt) {
     updateEntity(stage.getObjects()[i]);
   }
 
+  for (auto* object : stage.getObjects()) {
+    if (object->isDirty) {
+      object->clean();
+    }
+  }
+
   for (unsigned int i = 0; i < stage.getLights().length(); i++) {
     updateEntity(stage.getLights()[i]);
   }

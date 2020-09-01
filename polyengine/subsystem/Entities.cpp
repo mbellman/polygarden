@@ -125,11 +125,22 @@ void Object::addVertex(const Vec3f& position, const Vec2f& uv) {
   vertices.push_back(vertex);
 }
 
+void Object::clean() {
+  refreshMatrixBuffer();
+  refreshColorBuffer();
+
+  isDirty = false;
+}
+
+const float* Object::getColorBuffer() const {
+  return colorBuffer;
+}
+
 const Matrix4& Object::getMatrix() const {
   return matrix;
 }
 
-float* Object::getMatrixBuffer() const {
+const float* Object::getMatrixBuffer() const {
   return matrixBuffer;
 }
 
@@ -163,16 +174,6 @@ void Object::move(const Vec3f& movement) {
   setPosition(position + movement);
 }
 
-void Object::reallocateMatrixBuffer() {
-  if (matrixBuffer != nullptr) {
-    delete[] matrixBuffer;
-  }
-
-  matrixBuffer = new float[getTotalInstances() * 16];
-
-  refreshMatrixBuffer();
-}
-
 void Object::recomputeMatrix() {
   matrix = (
     Matrix4::translate({ position.x, position.y, -1.0f * position.z }) *
@@ -180,13 +181,35 @@ void Object::recomputeMatrix() {
     Matrix4::scale(scale)
   ).transpose();
 
-  reference->refreshMatrixBuffer();
+  reference->isDirty = true;
+}
+
+void Object::refreshColorBuffer() {
+  if (colorBuffer != nullptr) {
+    delete[] colorBuffer;
+  }
+
+  colorBuffer = new float[getTotalInstances() * 3];
+
+  if (hasInstances()) {
+    for (unsigned int i = 0; i < instances.length(); i++) {
+      colorBuffer[i * 3] = instances[i]->color.x;
+      colorBuffer[i * 3 + 1] = instances[i]->color.y;
+      colorBuffer[i * 3 + 2] = instances[i]->color.z;
+    }
+  } else {
+    colorBuffer[0] = color.x;
+    colorBuffer[1] = color.y;
+    colorBuffer[2] = color.z;
+  }
 }
 
 void Object::refreshMatrixBuffer() {
-  if (matrixBuffer == nullptr) {
-    reallocateMatrixBuffer();
+  if (matrixBuffer != nullptr) {
+    delete[] matrixBuffer;
   }
+
+  matrixBuffer = new float[getTotalInstances() * 16];
 
   if (hasInstances()) {  
     for (unsigned int i = 0; i < instances.length(); i++) {
@@ -204,6 +227,11 @@ void Object::rotate(const Vec3f& rotation) {
   orientation += rotation;
 
   recomputeMatrix();
+}
+
+void Object::setColor(const Vec3f& color) {
+  this->color = color;
+  reference->isDirty = true;
 }
 
 void Object::setOrientation(const Vec3f& orientation) {
@@ -237,13 +265,13 @@ void Object::setScale(float scale) {
 void Object::trackInstance(Object* instance) {
   instances.push(instance);
 
-  reallocateMatrixBuffer();
+  isDirty = true;
 }
 
 void Object::untrackInstance(Object* instance) {
   instances.remove(instance);
 
-  reallocateMatrixBuffer();
+  isDirty = true;
 }
 
 void Object::updateNormals() {
