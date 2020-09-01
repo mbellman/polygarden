@@ -152,10 +152,6 @@ void OpenGLVideoController::debug() {
   for (auto* glObject : glObjects) {
     auto* source = glObject->getSourceObject();
 
-    if (source->isInstance()) {
-      continue;
-    }
-
     printf("-------------\n");
     printf("Total instances: %d\n", source->getTotalInstances());
     printf("Total polygons: %d\n", source->getPolygons().size());
@@ -187,7 +183,9 @@ void OpenGLVideoController::onDestroy() {
 
 void OpenGLVideoController::onEntityAdded(Entity* entity) {
   if (entity->isOfType<Object>()) {
-    glObjects.push(new OpenGLObject((Object*)entity));
+    if (!((Object*)entity)->isInstance()) {
+      glObjects.push(new OpenGLObject((Object*)entity));
+    }
   } else if (entity->isOfType<Light>() && ((Light*)entity)->canCastShadows) {
     glShadowCasters.push(new OpenGLShadowCaster((Light*)entity));
   }

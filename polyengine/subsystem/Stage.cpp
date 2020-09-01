@@ -34,6 +34,10 @@ StageStats Stage::getStats() const {
   for (auto* object : objects) {
     stats.totalObjects++;
     stats.totalVertices += object->getReference()->getPolygons().size() * 3;
+
+    if (object->isInstance()) {
+      stats.totalInstances++;
+    }
   }
 
   stats.totalLights = lights.length();

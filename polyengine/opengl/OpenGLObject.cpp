@@ -4,9 +4,6 @@
 #include "opengl/ShaderLoader.h"
 #include "subsystem/Entities.h"
 
-constexpr static unsigned int VERTEX_BUFFER = 0;
-constexpr static unsigned int MATRIX_BUFFER = 0;
-
 OpenGLObject::OpenGLObject(const Object* object) {
   sourceObject = object;
 
@@ -84,19 +81,6 @@ void OpenGLObject::bufferVertexData() {
       buffer[i++] = vertex.uv.y;
     }
   }
-
-  // if (bufferSize < 10000) {
-  //   printf("--------\n");
-
-  //   for (int i = 0; i < bufferSize; i += 11) {
-  //     printf("Position: %f, %f, %f | ", buffer[i], buffer[i + 1], buffer[i + 2]);
-  //     printf("Normal: %f, %f, %f | ", buffer[i + 3], buffer[i + 4], buffer[i + 5]);
-  //     printf("Tangent: %f, %f, %f | ", buffer[i + 6], buffer[i + 7], buffer[i + 8]);
-  //     printf("UV: %f, %f\n", buffer[i + 9], buffer[i + 10]);
-  //   }
-
-  //   printf("--------\n");
-  // }
 
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, bufferSize * sizeof(float), buffer, GL_STATIC_DRAW);
@@ -201,10 +185,6 @@ bool OpenGLObject::hasTexture() const {
 }
 
 void OpenGLObject::render() {
-  if (sourceObject->isInstance()) {
-    return;
-  }
-
   unsigned int totalInstances = sourceObject->getTotalInstances();
 
   if (totalInstances == 0) {

@@ -34,30 +34,38 @@ void GardenScene::onInit() {
   Model* sprout = new Model();
   Model* flowerStalk = new Model();
   Model* flowerPetals = new Model();
+  Model* lantern = new Model();
 
   sprout->from(sproutObj);
   sprout->isReference = true;
+
   flowerStalk->from(flowerStalkObj);
   flowerStalk->isReference = true;
+
   flowerPetals->from(flowerPetalsObj);
   flowerPetals->isReference = true;
+
+  lantern->from(lanternObj);
+  lantern->texture = assets.createTexture("./game/lantern-texture.png");
+  lantern->normalMap = assets.createTexture("./game/lantern-normal-map.png");
+  lantern->isReference = true;
 
   stage.add(sprout);
   stage.add(flowerStalk);
   stage.add(flowerPetals);
+  stage.add(lantern);
 
   modelMap.emplace("sprout", sprout);
   modelMap.emplace("flower-stalk", flowerStalk);
   modelMap.emplace("flower-petals", flowerPetals);
+  modelMap.emplace("lantern", lantern);
 
   stage.addMultiple<Model, 10>([=](Model* lantern, int index) {
     float x = RNG::random() * 2500.0f - 1250.0f;
     float z = RNG::random() * 2500.0f - 1250.0f;
     float y = getGroundHeight(1250.0f + x, -z + 1250.0f) - 5.0f;
 
-    lantern->from(lanternObj);
-    lantern->texture = assets.createTexture("./game/lantern-texture.png");
-    lantern->normalMap = assets.createTexture("./game/lantern-normal-map.png");
+    lantern->from(modelMap.at("lantern"));
     lantern->setScale(100.0f);
     lantern->setPosition(Vec3f(x, y, z));
 
@@ -164,7 +172,9 @@ void GardenScene::spawnFlower(float x, float z) {
     flowerStalk->onUpdate = [=](float dt) {
       float t = (getRunningTime() - spawnTime) / 1.0f;
 
-      flowerStalk->setScale(Easing::bounceOut(t) * 8.0f);
+      if (t <= 1.0f) {
+        flowerStalk->setScale(Easing::bounceOut(t) * 8.0f);
+      }
     };
   });
 
@@ -179,7 +189,9 @@ void GardenScene::spawnFlower(float x, float z) {
     flowerPetals->onUpdate = [=](float dt) {
       float t = (getRunningTime() - spawnTime) / 1.0f;
 
-      flowerPetals->setScale(Easing::bounceOut(t) * 8.0f);
+      if (t <= 1.0f) {
+        flowerPetals->setScale(Easing::bounceOut(t) * 8.0f);
+      }
     };
   });
 }
@@ -202,7 +214,9 @@ void GardenScene::spawnSprout(float x, float z) {
     sprout->onUpdate = [=](float dt) {
       float t = (getRunningTime() - spawnTime) / 1.0f;
 
-      sprout->setScale(Easing::bounceOut(t) * 5.0f);
+      if (t <= 1.0f) {
+        sprout->setScale(Easing::bounceOut(t) * 5.0f);
+      }
     };
   });
 }

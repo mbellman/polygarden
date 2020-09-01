@@ -22,7 +22,17 @@ void Window::handleStats() {
 
   auto stageStats = videoController->getScene()->getStage().getStats();
 
-  sprintf_s(title, sizeof(title), "FPS: %d, Objects: %d, Vertices: %d, Lights: %d, Shadowcasters: %d", stats.getFPS(), stageStats.totalObjects, stageStats.totalVertices, stageStats.totalLights, stageStats.totalShadowCasters);
+  sprintf_s(
+    title,
+    sizeof(title),
+    "FPS: %d, Objects: %d (%d instances), Vertices: %d, Lights: %d, Shadowcasters: %d",
+    stats.getFPS(),
+    stageStats.totalObjects,
+    stageStats.totalInstances,
+    stageStats.totalVertices,
+    stageStats.totalLights,
+    stageStats.totalShadowCasters
+  );
 
   SDL_SetWindowTitle(videoController->getWindow(), title);
 }

@@ -10,6 +10,7 @@ typedef std::function<void(Entity*)> EntityHandler;
 
 struct StageStats {
   unsigned int totalObjects = 0;
+  unsigned int totalInstances = 0;
   unsigned int totalVertices = 0;
   unsigned int totalLights = 0;
   unsigned int totalShadowCasters = 0;
