@@ -76,6 +76,11 @@ void GardenScene::addRocks() {
 }
 
 void GardenScene::onInit() {
+  stage.add<Model>("seed", [](Model* seed) {
+    seed->from(ObjLoader("./game/seed.obj"));
+    seed->isReference = true;
+  });
+
   stage.add<Model>("sprout", [](Model* sprout) {
     sprout->from(ObjLoader("./game/sprout.obj"));
     sprout->isReference = true;
@@ -219,6 +224,8 @@ void GardenScene::spawnFlower(float x, float z) {
 
       if (t <= 1.0f) {
         flowerStalk->setScale(Easing::bounceOut(t) * scale);
+      } else {
+        flowerStalk->setScale(scale + sinf(timer() * 2.0f) * 0.1f);
       }
     };
   });
@@ -236,6 +243,8 @@ void GardenScene::spawnFlower(float x, float z) {
 
       if (t <= 1.0f) {
         flowerPetals->setScale(Easing::bounceOut(t) * scale);
+      } else {
+        flowerPetals->setScale(scale + sinf(timer() * 2.0f) * 0.1f);
       }
     };
   });
@@ -260,17 +269,17 @@ void GardenScene::spawnSprout(float x, float z) {
       float t = timer() / 1.0f;
 
       if (t <= 1.0f) {
-        sprout->setScale(Easing::bounceOut(t) * 5.0f);
+        sprout->setScale(Easing::bounceOut(t) * 5.0f + sinf(timer() * 4.0f) * 0.15f);
+      } else {
+        sprout->setScale(5.0f + sinf(timer() * 4.0f) * 0.15f);
       }
     };
   });
 }
 
 void GardenScene::throwSeeds() {
-  ObjLoader seedObj("./game/seed.obj");
-
   stage.addMultiple<Model, 5>([&](Model* seed, int index) {
-    seed->from(seedObj);
+    seed->from(stage.get<Model>("seed"));
     seed->setScale(0.5f);
     seed->setPosition(camera.position + camera.getDirection() * 50.0f);
     seed->color = Vec3f(0.6f, 0.5f, 0.2f);

@@ -33,6 +33,8 @@ ObjLoader::ObjLoader(const char* path) {
 
 ObjLoader::~ObjLoader() {
   vertices.clear();
+  textureCoordinates.clear();
+  normals.clear();
   faces.clear();
 }
 

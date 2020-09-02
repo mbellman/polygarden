@@ -96,6 +96,14 @@ Object::~Object() {
 
   polygons.clear();
   vertices.clear();
+
+  if (matrixBuffer != nullptr) {
+    delete[] matrixBuffer;
+  }
+
+  if (colorBuffer != nullptr) {
+    delete[] colorBuffer;
+  }
 }
 
 void Object::addPolygon(int v1index, int v2index, int v3index) {
@@ -126,8 +134,10 @@ void Object::addVertex(const Vec3f& position, const Vec2f& uv) {
 }
 
 void Object::clean() {
-  refreshMatrixBuffer();
-  refreshColorBuffer();
+  if (getTotalInstances() > 0) {
+    refreshMatrixBuffer();
+    refreshColorBuffer();
+  }
 
   isDirty = false;
 }
