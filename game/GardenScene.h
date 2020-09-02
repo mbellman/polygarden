@@ -16,6 +16,8 @@ private:
   // TODO: Move into AssetCache
   std::map<std::string, Model*> modelMap;
 
+  void addGrass();
+  void addRocks();
   void spawnFlower(float x, float z);
   void spawnSprout(float x, float z);
   void throwSeeds();

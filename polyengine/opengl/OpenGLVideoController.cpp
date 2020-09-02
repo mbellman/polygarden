@@ -309,7 +309,9 @@ void OpenGLVideoController::renderDirectionalShadowCaster(OpenGLShadowCaster* gl
     lightViewProgram.setMatrix4("lightMatrix", lightMatrixCascades[i]);
 
     for (auto* glObject : glObjects) {
-      glObject->render();
+      if (glObject->getSourceObject()->canCastShadows) {
+        glObject->render();
+      }
     }
   }
 
@@ -478,7 +480,9 @@ void OpenGLVideoController::renderPointShadowCaster(OpenGLShadowCaster* glShadow
   }
 
   for (auto* glObject : glObjects) {
-    glObject->render();
+    if (glObject->getSourceObject()->canCastShadows) {
+      glObject->render();
+    }
   }
 
   // Camera view shadowcaster lighting pass
@@ -566,7 +570,9 @@ void OpenGLVideoController::renderSpotShadowCaster(OpenGLShadowCaster* glShadowC
   lightViewProgram.setMatrix4("lightMatrix", lightMatrix);
 
   for (auto* glObject : glObjects) {
-    glObject->render();
+    if (glObject->getSourceObject()->canCastShadows) {
+      glObject->render();
+    }
   }
 
   // Camera view shadowcaster lighting pass

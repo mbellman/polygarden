@@ -13,7 +13,7 @@ public:
   void trackFrameEnd();
 
 private:
-  unsigned frameCounter = 0;
+  unsigned int frameCounter = 0;
   Range<SDL_Tick> frame = { 0, 0 };
   unsigned int fpsSamples[60];
 };

@@ -58,29 +58,29 @@ void OpenGLObject::bindTextures() {
 }
 
 void OpenGLObject::bufferColorData() {
-  auto totalInstances = sourceObject->getTotalInstances();
-  auto* colorBuffer = sourceObject->getColorBuffer();
+  auto* data = sourceObject->getColorBuffer();
+  unsigned int size = sourceObject->getTotalInstances() * 3 * sizeof(float);
 
-  glBindBuffer(GL_ARRAY_BUFFER, buffers[Buffer::COLOR]);
+  bufferInstanceData(data, size, buffers[Buffer::COLOR]);
+}
 
-  if (totalInstances != lastInstanceCount) {
-    glBufferData(GL_ARRAY_BUFFER, totalInstances * 3 * sizeof(float), colorBuffer, GL_DYNAMIC_DRAW);
+void OpenGLObject::bufferInstanceData(const float* data, unsigned int size, GLuint vbo) {
+  unsigned int totalInstances = sourceObject->getTotalInstances();
+
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+  if (previousTotalInstances != totalInstances) {
+    glBufferData(GL_ARRAY_BUFFER, size, data, GL_DYNAMIC_DRAW);
   } else {
-    glBufferSubData(GL_ARRAY_BUFFER, 0, totalInstances * 3 * sizeof(float), colorBuffer);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
   }
 }
 
 void OpenGLObject::bufferMatrixData() {
-  auto totalInstances = sourceObject->getTotalInstances();
-  auto* matrixBuffer = sourceObject->getMatrixBuffer();
+  auto* data = sourceObject->getMatrixBuffer();
+  unsigned int size = sourceObject->getTotalInstances() * 16 * sizeof(float);
 
-  glBindBuffer(GL_ARRAY_BUFFER, buffers[Buffer::MATRIX]);
-
-  if (totalInstances != lastInstanceCount) {
-    glBufferData(GL_ARRAY_BUFFER, totalInstances * 16 * sizeof(float), matrixBuffer, GL_DYNAMIC_DRAW);
-  } else {
-    glBufferSubData(GL_ARRAY_BUFFER, 0, totalInstances * 16 * sizeof(float), matrixBuffer);
-  }
+  bufferInstanceData(data, size, buffers[Buffer::MATRIX]);
 }
 
 void OpenGLObject::bufferVertexData() {
@@ -232,7 +232,7 @@ void OpenGLObject::render() {
     glDrawArraysInstanced(GL_TRIANGLES, 0, sourceObject->getPolygons().size() * 3, totalInstances);
   }
 
-  lastInstanceCount = totalInstances;
+  previousTotalInstances = totalInstances;
 }
 
 std::map<int, OpenGLTexture*> OpenGLObject::textureMap;

@@ -66,6 +66,7 @@ public:
   const char* shader = nullptr;
   bool isEmissive = false;
   bool isReference = false;
+  bool canCastShadows = true;
   bool isDirty = false;
 
   virtual ~Object();

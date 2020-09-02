@@ -25,6 +25,64 @@ GardenScene::~GardenScene() {
   modelMap.clear();
 }
 
+void GardenScene::addGrass() {
+  ObjLoader grassObj("./game/grass.obj");
+
+  Model* grass = new Model();
+
+  grass->from(grassObj);
+  grass->canCastShadows = false;
+  grass->isReference = true;
+
+  stage.add(grass);
+
+  stage.addMultiple<Model, 10000>([=](Model* blade, int index) {
+    float x = RNG::random(-1250.0f, 1250.0f);
+    float z = RNG::random(-1250.0f, 1250.0f);
+
+    Vec3f position = {
+      x,
+      getGroundHeight(1250.0f + x, -z + 1250.0f),
+      z
+    };
+
+    blade->from(grass);
+    blade->setScale(RNG::random(2.0f, 10.0f));
+    blade->setPosition(position);
+    blade->setColor(Vec3f(0.2f, 0.5f, 0.2f));
+    blade->rotate(Vec3f(0.0f, RNG::random(0.0f, M_PI * 2.0f), 0.0f));
+  });
+}
+
+void GardenScene::addRocks() {
+  ObjLoader rockObj("./game/rock.obj");
+
+  Model* baseRock = new Model();
+
+  baseRock->from(rockObj);
+  baseRock->normalMap = assets.createTexture("./game/rock-normal-map.png");
+  baseRock->isReference = true;
+
+  stage.add(baseRock);
+
+  stage.addMultiple<Model, 20>([=](Model* rock, int index) {
+    float x = RNG::random(-1250.0f, 1250.0f);
+    float z = RNG::random(-1250.0f, 1250.0f);
+
+    Vec3f position = {
+      x,
+      getGroundHeight(1250.0f + x, -z + 1250.0f),
+      z
+    };
+
+    rock->from(baseRock);
+    rock->setPosition(position);
+    rock->setScale(RNG::random(5.0f, 15.0f));
+    rock->setOrientation(Vec3f(0.0f, RNG::random(0.0f, M_PI * 2.0f), 0.0f));
+    rock->setColor(Vec3f(0.2f));
+  });
+}
+
 void GardenScene::onInit() {
   ObjLoader sproutObj("./game/sprout.obj");
   ObjLoader lanternObj("./game/lantern.obj");
@@ -79,8 +137,8 @@ void GardenScene::onInit() {
 
   stage.add<Light>([=](Light* light) {
     light->type = Light::LightType::DIRECTIONAL;
-    light->color = Vec3f(1.0f, 1.0f, 0.5f);
-    light->direction = Vec3f(1.0f, -0.5f, 1.0f);
+    light->color = Vec3f(0.6f, 0.8f, 1.0f);
+    light->direction = Vec3f(-1.0f, -0.5f, 0.35f);
     light->canCastShadows = true;
   });
 
@@ -102,9 +160,12 @@ void GardenScene::onInit() {
   });
 
   stage.add<Skybox>([=](Skybox* skybox) {
-    skybox->from(assets.createTexture("./game/dummy-day-skybox.png"));
+    skybox->from(assets.createTexture("./game/dummy-night-skybox.png"));
     skybox->setScale(5000.0f);
   });
+
+  addGrass();
+  addRocks();
 
   inputSystem.onMouseMotion([=](const SDL_MouseMotionEvent& event) {
     if (SDL_GetRelativeMouseMode()) {

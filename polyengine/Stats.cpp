@@ -2,6 +2,10 @@
 #include "SDL.h"
 
 unsigned int Stats::getAverageFPS() {
+  if (frameCounter < 60) {
+    return 0;
+  }
+
   unsigned int sum = 0;
 
   for (unsigned int i = 0; i < 60; i++) {
