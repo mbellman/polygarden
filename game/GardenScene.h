@@ -7,15 +7,10 @@
 
 class GardenScene : public AbstractScene {
 public:
-  ~GardenScene();
-
   void onInit() override;
   void onUpdate(float dt) override;
 
 private:
-  // TODO: Move into AssetCache
-  std::map<std::string, Model*> modelMap;
-
   void addGrass();
   void addRocks();
   void spawnFlower(float x, float z);

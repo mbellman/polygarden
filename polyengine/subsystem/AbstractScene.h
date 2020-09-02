@@ -29,6 +29,8 @@ protected:
   InputSystem inputSystem;
   Camera camera;
 
+  std::function<float()> getTimer();
+
 private:
   float runningTime = 0.0f;
 };

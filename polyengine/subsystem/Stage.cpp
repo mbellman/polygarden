@@ -6,6 +6,7 @@
 Stage::~Stage() {
   objects.free();
   lights.free();
+  entityMap.clear();
 }
 
 void Stage::add(Entity* entity) {

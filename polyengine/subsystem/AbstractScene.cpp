@@ -24,6 +24,14 @@ const Stage& AbstractScene::getStage() const {
   return stage;
 }
 
+std::function<float()> AbstractScene::getTimer() {
+  float time = getRunningTime();
+
+  return [=]() {
+    return getRunningTime() - time;
+  };
+}
+
 void AbstractScene::onEntityAdded(EntityHandler handler) {
   stage.onEntityAdded(handler);
 }

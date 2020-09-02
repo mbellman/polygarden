@@ -10,9 +10,10 @@ class AssetCache {
 public:
   ~AssetCache();
 
-  void addTexture(const Texture* texture);
   const Texture* createTexture(std::string path);
 
 private:
   std::map<std::string, const Texture*> textureMap;
+
+  void addTexture(std::string path);
 };

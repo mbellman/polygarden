@@ -1,4 +1,5 @@
 #include "subsystem/AssetCache.h"
+#include "subsystem/Texture.h"
 
 AssetCache::~AssetCache() {
   for (auto& [key, texture] : textureMap) {
@@ -8,18 +9,16 @@ AssetCache::~AssetCache() {
   textureMap.clear();
 }
 
-void AssetCache::addTexture(const Texture* texture) {
-  textureMap.emplace(texture->getPath(), texture);
+void AssetCache::addTexture(std::string path) {
+  auto* texture = new Texture(path);
+
+  textureMap.emplace(path, texture);
 }
 
 const Texture* AssetCache::createTexture(std::string path) {
-  if (textureMap.find(path) != textureMap.end()) {
-    return textureMap.at(path);
+  if (textureMap.find(path) == textureMap.end()) {
+    addTexture(path);
   }
 
-  auto* texture = new Texture(path);
-
-  addTexture(texture);
-
-  return texture;
+  return textureMap.at(path);
 }
