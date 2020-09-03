@@ -18,14 +18,14 @@ static float getGroundHeight(float x, float z) {
 };
 
 void GardenScene::addGrass() {
-  stage.add<Model>("grass", [=](Model* grass) {
+  stage.add<Model>("grass", [](Model* grass) {
     grass->from(ObjLoader("./game/grass.obj"));
     grass->vertexTransform = VertexTransform::GRASS;
     grass->canCastShadows = false;
     grass->isReference = true;
   });
 
-  stage.addMultiple<Model, 10000>([=](Model* blade, int index) {
+  stage.addMultiple<Model, 10000>([&](Model* blade, int index) {
     float x = RNG::random(-1250.0f, 1250.0f);
     float z = RNG::random(-1250.0f, 1250.0f);
 
@@ -44,17 +44,13 @@ void GardenScene::addGrass() {
 }
 
 void GardenScene::addRocks() {
-  ObjLoader rockObj("./game/rock.obj");
+  stage.add<Model>("rock", [&](Model* rock) {
+    rock->from(ObjLoader("./game/rock.obj"));
+    rock->normalMap = assets.createTexture("./game/rock-normal-map.png");
+    rock->isReference = true;
+  });
 
-  Model* baseRock = new Model();
-
-  baseRock->from(rockObj);
-  baseRock->normalMap = assets.createTexture("./game/rock-normal-map.png");
-  baseRock->isReference = true;
-
-  stage.add(baseRock);
-
-  stage.addMultiple<Model, 20>([=](Model* rock, int index) {
+  stage.addMultiple<Model, 20>([&](Model* rock, int index) {
     float x = RNG::random(-1250.0f, 1250.0f);
     float z = RNG::random(-1250.0f, 1250.0f);
 
@@ -64,7 +60,7 @@ void GardenScene::addRocks() {
       z
     };
 
-    rock->from(baseRock);
+    rock->from(stage.get<Model>("rock"));
     rock->setPosition(position);
     rock->setScale(RNG::random(15.0f, 30.0f));
     rock->setOrientation(Vec3f(0.0f, RNG::random(0.0f, M_PI * 2.0f), 0.0f));
