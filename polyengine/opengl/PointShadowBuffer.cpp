@@ -24,13 +24,11 @@ void PointShadowBuffer::createShaderPrograms() {
   pointLightViewProgram.attachShader(ShaderLoader::loadGeometryShader("./polyengine/shaders/point-lightview.geometry.glsl"));
   pointLightViewProgram.attachShader(ShaderLoader::loadFragmentShader("./polyengine/shaders/point-lightview.fragment.glsl"));
   pointLightViewProgram.link();
-  pointLightViewProgram.use();
 
   pointShadowProgram.create();
   pointShadowProgram.attachShader(ShaderLoader::loadVertexShader("./polyengine/shaders/quad.vertex.glsl"));
   pointShadowProgram.attachShader(ShaderLoader::loadFragmentShader("./polyengine/shaders/point-shadowcaster.fragment.glsl"));
   pointShadowProgram.link();
-  pointShadowProgram.use();
 }
 
 ShaderProgram& PointShadowBuffer::getPointLightViewProgram() {

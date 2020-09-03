@@ -27,19 +27,16 @@ void SBuffer::createShaderPrograms() {
   lightViewProgram.attachShader(ShaderLoader::loadVertexShader("./polyengine/shaders/lightview.vertex.glsl"));
   lightViewProgram.attachShader(ShaderLoader::loadFragmentShader("./polyengine/shaders/lightview.fragment.glsl"));
   lightViewProgram.link();
-  lightViewProgram.use();
 
   directionalShadowProgram.create();
   directionalShadowProgram.attachShader(ShaderLoader::loadVertexShader("./polyengine/shaders/quad.vertex.glsl"));
   directionalShadowProgram.attachShader(ShaderLoader::loadFragmentShader("./polyengine/shaders/directional-shadowcaster.fragment.glsl"));
   directionalShadowProgram.link();
-  directionalShadowProgram.use();
 
   spotShadowProgram.create();
   spotShadowProgram.attachShader(ShaderLoader::loadVertexShader("./polyengine/shaders/quad.vertex.glsl"));
   spotShadowProgram.attachShader(ShaderLoader::loadFragmentShader("./polyengine/shaders/spot-shadowcaster.fragment.glsl"));
   spotShadowProgram.link();
-  spotShadowProgram.use();
 }
 
 ShaderProgram& SBuffer::getDirectionalShadowProgram() {

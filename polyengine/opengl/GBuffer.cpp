@@ -31,19 +31,16 @@ void GBuffer::createShaderPrograms() {
   geometryProgram.attachShader(ShaderLoader::loadVertexShader("./polyengine/shaders/geometry.vertex.glsl"));
   geometryProgram.attachShader(ShaderLoader::loadFragmentShader("./polyengine/shaders/geometry.fragment.glsl"));
   geometryProgram.link();
-  geometryProgram.use();
 
   illuminationProgram.create();
   illuminationProgram.attachShader(ShaderLoader::loadVertexShader("./polyengine/shaders/quad.vertex.glsl"));
   illuminationProgram.attachShader(ShaderLoader::loadFragmentShader("./polyengine/shaders/illumination.fragment.glsl"));
   illuminationProgram.link();
-  illuminationProgram.use();
 
   albedoProgram.create();
   albedoProgram.attachShader(ShaderLoader::loadVertexShader("./polyengine/shaders/quad.vertex.glsl"));
   albedoProgram.attachShader(ShaderLoader::loadFragmentShader("./polyengine/shaders/albedo.fragment.glsl"));
   albedoProgram.link();
-  albedoProgram.use();
 }
 
 ShaderProgram& GBuffer::getShaderProgram(GBuffer::Shader shader) {

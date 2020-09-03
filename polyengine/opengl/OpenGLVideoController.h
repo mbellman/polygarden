@@ -50,4 +50,5 @@ private:
   void renderScreenShaders();
   void renderShadowCasters();
   void renderSpotShadowCaster(OpenGLShadowCaster* glShadowCaster);
+  void setVertexTransforms(ShaderProgram& program, OpenGLObject* glObject);
 };

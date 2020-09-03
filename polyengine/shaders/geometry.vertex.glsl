@@ -1,5 +1,7 @@
 #version 330 core
 
+#include <polyengine/shaders/helpers/vertex-transformers.glsl>
+
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 
@@ -17,11 +19,11 @@ out vec3 fragmentPosition;
 out vec2 fragmentUv;
 
 vec4 getClipPosition() {
-  return projectionMatrix * viewMatrix * modelMatrix * vec4(vertexPosition, 1.0);
+  return projectionMatrix * viewMatrix * modelMatrix * vec4(getTransformedVertex(vertexPosition), 1.0);
 }
 
 vec3 getWorldPosition() {
-  vec3 position = vec4(modelMatrix * vec4(vertexPosition, 1.0)).xyz;
+  vec3 position = vec4(modelMatrix * vec4(getTransformedVertex(vertexPosition), 1.0)).xyz;
 
   return vec3(position.x, position.y, -position.z);
 }

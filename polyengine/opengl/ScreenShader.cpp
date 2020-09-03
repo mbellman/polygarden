@@ -5,7 +5,6 @@ ScreenShader::ScreenShader(const char* shaderPath) {
   program.attachShader(ShaderLoader::loadVertexShader("./polyengine/shaders/quad.vertex.glsl"));
   program.attachShader(ShaderLoader::loadFragmentShader(shaderPath));
   program.link();
-  program.use();
 
   glScreenQuad = new OpenGLScreenQuad();
 }

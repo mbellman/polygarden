@@ -310,6 +310,8 @@ void OpenGLVideoController::renderDirectionalShadowCaster(OpenGLShadowCaster* gl
 
     for (auto* glObject : glObjects) {
       if (glObject->getSourceObject()->canCastShadows) {
+        setVertexTransforms(lightViewProgram, glObject);
+
         glObject->render();
       }
     }
@@ -383,7 +385,8 @@ void OpenGLVideoController::renderGeometry() {
     program.setBool("hasNormalMap", glObject->hasNormalMap());
     program.setInt("modelTexture", 7);
     program.setInt("normalMap", 8);
-    program.setFloat("time", scene->getRunningTime());
+
+    setVertexTransforms(program, glObject);
 
     glObject->render();
   };
@@ -481,6 +484,8 @@ void OpenGLVideoController::renderPointShadowCaster(OpenGLShadowCaster* glShadow
 
   for (auto* glObject : glObjects) {
     if (glObject->getSourceObject()->canCastShadows) {
+      setVertexTransforms(pointLightViewProgram, glObject);
+
       glObject->render();
     }
   }
@@ -571,6 +576,8 @@ void OpenGLVideoController::renderSpotShadowCaster(OpenGLShadowCaster* glShadowC
 
   for (auto* glObject : glObjects) {
     if (glObject->getSourceObject()->canCastShadows) {
+      setVertexTransforms(lightViewProgram, glObject);
+
       glObject->render();
     }
   }
@@ -602,4 +609,12 @@ void OpenGLVideoController::renderSpotShadowCaster(OpenGLShadowCaster* glShadowC
   spotShadowProgram.setInt("light.type", light->type);
 
   sBuffer->renderScreenQuad();
+}
+
+void OpenGLVideoController::setVertexTransforms(ShaderProgram& program, OpenGLObject* glObject) {
+  unsigned int vertexTransform = glObject->getSourceObject()->vertexTransform;
+
+  program.setFloat("time", scene->getRunningTime());
+  program.setInt("treeTransformFactor", (vertexTransform & VertexTransform::TREE) ? 1.0f : 0.0f);
+  program.setInt("grassTransformFactor", (vertexTransform & VertexTransform::GRASS) ? 1.0f : 0.0f);
 }

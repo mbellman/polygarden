@@ -10,6 +10,11 @@
 #include "subsystem/Texture.h"
 #include "subsystem/HeapList.h"
 
+enum VertexTransform {
+  TREE = 1 << 0,
+  GRASS = 1 << 1
+};
+
 struct Entity {
   Entity();
   virtual ~Entity() {};
@@ -64,6 +69,7 @@ public:
   const Texture* texture = nullptr;
   const Texture* normalMap = nullptr;
   const char* shader = nullptr;
+  unsigned int vertexTransform = 0;
   bool isEmissive = false;
   bool isReference = false;
   bool canCastShadows = true;

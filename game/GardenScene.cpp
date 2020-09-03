@@ -18,15 +18,12 @@ static float getGroundHeight(float x, float z) {
 };
 
 void GardenScene::addGrass() {
-  ObjLoader grassObj("./game/grass.obj");
-
-  Model* grass = new Model();
-
-  grass->from(grassObj);
-  grass->canCastShadows = false;
-  grass->isReference = true;
-
-  stage.add(grass);
+  stage.add<Model>("grass", [=](Model* grass) {
+    grass->from(ObjLoader("./game/grass.obj"));
+    grass->vertexTransform = VertexTransform::GRASS;
+    grass->canCastShadows = false;
+    grass->isReference = true;
+  });
 
   stage.addMultiple<Model, 10000>([=](Model* blade, int index) {
     float x = RNG::random(-1250.0f, 1250.0f);
@@ -38,8 +35,8 @@ void GardenScene::addGrass() {
       z
     };
 
-    blade->from(grass);
-    blade->setScale(RNG::random(2.0f, 10.0f));
+    blade->from(stage.get<Model>("grass"));
+    blade->setScale(RNG::random(5.0f, 15.0f));
     blade->setPosition(position);
     blade->setColor(Vec3f(0.2f, 0.5f, 0.2f));
     blade->rotate(Vec3f(0.0f, RNG::random(0.0f, M_PI * 2.0f), 0.0f));
@@ -69,7 +66,7 @@ void GardenScene::addRocks() {
 
     rock->from(baseRock);
     rock->setPosition(position);
-    rock->setScale(RNG::random(5.0f, 15.0f));
+    rock->setScale(RNG::random(15.0f, 30.0f));
     rock->setOrientation(Vec3f(0.0f, RNG::random(0.0f, M_PI * 2.0f), 0.0f));
     rock->setColor(Vec3f(0.2f));
   });
@@ -83,16 +80,19 @@ void GardenScene::onInit() {
 
   stage.add<Model>("sprout", [](Model* sprout) {
     sprout->from(ObjLoader("./game/sprout.obj"));
+    sprout->vertexTransform = VertexTransform::GRASS;
     sprout->isReference = true;
   });
 
   stage.add<Model>("flower-stalk", [](Model* flowerStalk) {
     flowerStalk->from(ObjLoader("./game/flower-stalk.obj"));
+    flowerStalk->vertexTransform = VertexTransform::GRASS;
     flowerStalk->isReference = true;
   });
   
   stage.add<Model>("flower-petals", [](Model* flowerPetals) {
     flowerPetals->from(ObjLoader("./game/flower-petals.obj"));
+    flowerPetals->vertexTransform = VertexTransform::TREE | VertexTransform::GRASS;
     flowerPetals->isReference = true;
   });
 
@@ -224,8 +224,6 @@ void GardenScene::spawnFlower(float x, float z) {
 
       if (t <= 1.0f) {
         flowerStalk->setScale(Easing::bounceOut(t) * scale);
-      } else {
-        flowerStalk->setScale(scale + sinf(timer() * 2.0f) * 0.1f);
       }
     };
   });
@@ -235,6 +233,7 @@ void GardenScene::spawnFlower(float x, float z) {
     flowerPetals->setPosition(position);
     flowerPetals->setOrientation(orientation);
     flowerPetals->color = Vec3f(RNG::random(), RNG::random(), RNG::random());
+    flowerPetals->vertexTransform = VertexTransform::TREE;
 
     auto timer = getTimer();
 
@@ -243,8 +242,6 @@ void GardenScene::spawnFlower(float x, float z) {
 
       if (t <= 1.0f) {
         flowerPetals->setScale(Easing::bounceOut(t) * scale);
-      } else {
-        flowerPetals->setScale(scale + sinf(timer() * 2.0f) * 0.1f);
       }
     };
   });
@@ -269,9 +266,7 @@ void GardenScene::spawnSprout(float x, float z) {
       float t = timer() / 1.0f;
 
       if (t <= 1.0f) {
-        sprout->setScale(Easing::bounceOut(t) * 5.0f + sinf(timer() * 4.0f) * 0.15f);
-      } else {
-        sprout->setScale(5.0f + sinf(timer() * 4.0f) * 0.15f);
+        sprout->setScale(Easing::bounceOut(t) * 5.0f);
       }
     };
   });
