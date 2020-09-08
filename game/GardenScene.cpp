@@ -46,6 +46,7 @@ void GardenScene::addGrass() {
 void GardenScene::addRocks() {
   stage.add<Model>("rock", [&](Model* rock) {
     rock->from(ObjLoader("./game/rock.obj"));
+    rock->texture = assets.createTexture("./game/rock-texture.png");
     rock->normalMap = assets.createTexture("./game/rock-normal-map.png");
     rock->isReference = true;
   });
@@ -71,7 +72,8 @@ void GardenScene::addRocks() {
 void GardenScene::addTrees() {
   stage.add<Model>("tree", [&](Model* tree) {
     tree->from(ObjLoader("./game/tree.obj"));
-    tree->normalMap = assets.createTexture("./game/rock-normal-map.png");
+    tree->texture = assets.createTexture("./game/bark-texture.png");
+    tree->normalMap = assets.createTexture("./game/bark-normal-map.png");
     tree->isReference = true;
   });
 
@@ -179,7 +181,7 @@ void GardenScene::onInit() {
   });
 
   stage.add<Mesh>([&](Mesh* mesh) {
-    mesh->setSize(250, 250, 10.0f, Vec2f(10.0f, 10.0f));
+    mesh->setSize(250, 250, 10.0f, Vec2f(5.0f, 5.0f));
     mesh->setPosition(Vec3f(0.0f));
     mesh->texture = assets.createTexture("./game/grass-texture.png");
     mesh->canCastShadows = false;
