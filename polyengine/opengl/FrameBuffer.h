@@ -30,7 +30,6 @@ public:
   void shareDepthStencilBuffer(FrameBuffer* target);
   void startReading();
   void startWriting();
-  void transferColorTexture(GLenum source, const GLenum* targets, int size);
 
 private:
   GLuint fbo;

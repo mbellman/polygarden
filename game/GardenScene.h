@@ -13,6 +13,7 @@ public:
 private:
   void addGrass();
   void addRocks();
+  void addTrees();
   void spawnFlower(float x, float z);
   void spawnSprout(float x, float z);
   void throwSeeds();

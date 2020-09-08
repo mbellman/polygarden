@@ -18,7 +18,7 @@ vec3 grass(vec3 position) {
 
 vec3 tree(vec3 position) {
   float magnitude = sqrt(position.x * position.x + position.z * position.z);
-  float offset = sin(time * SPEED + gl_InstanceID) * DEVIATION * magnitude * treeTransformFactor;
+  float offset = sin(time * SPEED + gl_InstanceID) * DEVIATION * magnitude * min(position.y, 1.0) * treeTransformFactor;
 
   return vec3(
     position.x,

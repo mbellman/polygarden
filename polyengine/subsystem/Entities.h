@@ -10,9 +10,9 @@
 #include "subsystem/Texture.h"
 #include "subsystem/HeapList.h"
 
-enum VertexTransform {
-  TREE = 1 << 0,
-  GRASS = 1 << 1
+enum ObjectEffects {
+  TREE_ANIMATION = 1 << 0,
+  GRASS_ANIMATION = 1 << 1
 };
 
 struct Entity {
@@ -69,7 +69,7 @@ public:
   const Texture* texture = nullptr;
   const Texture* normalMap = nullptr;
   const char* shader = nullptr;
-  unsigned int vertexTransform = 0;
+  unsigned int effects = 0;
   bool isEmissive = false;
   bool isReference = false;
   bool canCastShadows = true;
@@ -121,7 +121,7 @@ private:
 class Mesh : public Object {
 public:
   void displace(std::function<void(Vec3f&, int, int)> offsetHandler);
-  void setSize(int w, int h, float tileSize);
+  void setSize(int w, int h, float tileSize, Vec2f textureCycle = Vec2f(1.0f, 1.0f));
 
 private:
   int width;

@@ -9,9 +9,9 @@ public:
 
   virtual void createFrameBuffer(unsigned int width, unsigned int height) = 0;
   FrameBuffer* getFrameBuffer();
-  void renderScreenQuad();
-  void startReading();
-  void startWriting();
+  virtual void renderScreenQuad() final;
+  virtual void startReading() final;
+  virtual void startWriting() final;
 
 protected:
   FrameBuffer* frameBuffer = nullptr;

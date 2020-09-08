@@ -312,7 +312,7 @@ void Mesh::displace(std::function<void(Vec3f&, int, int)> offsetHandler) {
   updateNormals();
 }
 
-void Mesh::setSize(int w, int h, float tileSize) {
+void Mesh::setSize(int w, int h, float tileSize, Vec2f textureCycle) {
   width = w;
   height = h;
 
@@ -327,8 +327,8 @@ void Mesh::setSize(int w, int h, float tileSize) {
       float x = j * tileSize + offset.x;
       float z = i * tileSize + offset.y;
 
-      float u = (float)j / (float)w;
-      float v = (float)i / (float)h;
+      float u = (float)j / (float)w * textureCycle.x;
+      float v = (float)i / (float)h * textureCycle.y;
 
       addVertex({ x, 0.0f, z}, { u, v });
     }

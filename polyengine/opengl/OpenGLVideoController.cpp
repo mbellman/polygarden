@@ -43,8 +43,7 @@ OpenGLVideoController::~OpenGLVideoController() {
 void OpenGLVideoController::createScreenShaders() {
   auto* dofShader = new ScreenShader("./polyengine/shaders/dof.fragment.glsl");
   auto* preBloomShader = new ScreenShader("./polyengine/shaders/prebloom.fragment.glsl");
-  auto* postBloomShaderH = new ScreenShader("./polyengine/shaders/postbloom-h.fragment.glsl");
-  auto* postBloomShaderV = new ScreenShader("./polyengine/shaders/postbloom-v.fragment.glsl");
+  auto* postBloomShader = new ScreenShader("./polyengine/shaders/postbloom.fragment.glsl");
 
   // Depth-of-field
   dofShader->onCreateFrameBuffer([=](const ShaderProgram& program, auto screen) {
@@ -82,8 +81,8 @@ void OpenGLVideoController::createScreenShaders() {
     glScreenQuad->render();
   });
 
-  // Post-bloom H
-  postBloomShaderH->onCreateFrameBuffer([=](const ShaderProgram& program, auto screen) {
+  // Post-bloom
+  postBloomShader->onCreateFrameBuffer([=](const ShaderProgram& program, auto screen) {
     auto* buffer = new FrameBuffer(screen.width, screen.height);
 
     buffer->addColorTexture(GL_RGB32F, GL_RGB, GL_CLAMP_TO_EDGE);   // (0) Base color
@@ -93,27 +92,7 @@ void OpenGLVideoController::createScreenShaders() {
     return buffer;
   });
 
-  postBloomShaderH->onRender([=](const ShaderProgram& program, OpenGLScreenQuad* glScreenQuad) {
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    program.setInt("baseColor", 0);
-    program.setInt("bloomColor", 1);
-
-    glScreenQuad->render();
-  });
-
-  // Post-bloom V
-  postBloomShaderV->onCreateFrameBuffer([=](const ShaderProgram& program, auto screen) {
-    auto* buffer = new FrameBuffer(screen.width, screen.height);
-
-    buffer->addColorTexture(GL_RGB32F, GL_RGB, GL_CLAMP_TO_EDGE);   // (0) Base color
-    buffer->addColorTexture(GL_RGB32F, GL_RGB, GL_CLAMP_TO_EDGE);   // (0) Bright color
-    buffer->bindColorTextures();
-
-    return buffer;
-  });
-
-  postBloomShaderV->onRender([=](const ShaderProgram& program, OpenGLScreenQuad* glScreenQuad) {
+  postBloomShader->onRender([=](const ShaderProgram& program, OpenGLScreenQuad* glScreenQuad) {
     glClear(GL_COLOR_BUFFER_BIT);
 
     program.setInt("baseColor", 0);
@@ -124,13 +103,11 @@ void OpenGLVideoController::createScreenShaders() {
 
   dofShader->createFrameBuffer(screenSize);
   preBloomShader->createFrameBuffer(screenSize);
-  postBloomShaderH->createFrameBuffer(screenSize);
-  postBloomShaderV->createFrameBuffer(screenSize);
+  postBloomShader->createFrameBuffer(screenSize);
 
   screenShaders.push(dofShader);
   screenShaders.push(preBloomShader);
-  screenShaders.push(postBloomShaderH);
-  screenShaders.push(postBloomShaderV);
+  screenShaders.push(postBloomShader);
 }
 
 Matrix4 OpenGLVideoController::createViewMatrix() {
@@ -286,11 +263,13 @@ void OpenGLVideoController::renderDirectionalShadowCaster(OpenGLShadowCaster* gl
   auto& directionalShadowProgram = sBuffer->getDirectionalShadowProgram();
 
   lightViewProgram.use();
+  lightViewProgram.setInt("modelTexture", 7);
 
   sBuffer->startWriting();
 
   const Camera& camera = scene->getCamera();
 
+  glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
   glDisable(GL_BLEND);
   glDisable(GL_STENCIL_TEST);
   glEnable(GL_DEPTH_TEST);
@@ -303,14 +282,16 @@ void OpenGLVideoController::renderDirectionalShadowCaster(OpenGLShadowCaster* gl
   };
 
   for (int i = 0; i < 3; i++) {
-    glClear(GL_DEPTH_BUFFER_BIT);
-
     sBuffer->writeToShadowCascade(i);
     lightViewProgram.setMatrix4("lightMatrix", lightMatrixCascades[i]);
 
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     for (auto* glObject : glObjects) {
       if (glObject->getSourceObject()->canCastShadows) {
-        setVertexTransforms(lightViewProgram, glObject);
+        lightViewProgram.setBool("hasTexture", glObject->hasTexture());
+
+        setObjectEffects(lightViewProgram, glObject);
 
         glObject->render();
       }
@@ -370,23 +351,20 @@ void OpenGLVideoController::renderGeometry() {
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_STENCIL_TEST);
 
+  geometryProgram.use();
+  geometryProgram.setInt("modelTexture", 7);
+  geometryProgram.setInt("normalMap", 8);
+
   Matrix4 projectionMatrix = Matrix4::projection(screenSize, 45.0f, 1.0f, 10000.0f).transpose();
   Matrix4 viewMatrix = createViewMatrix();
 
   auto renderObject = [&](OpenGLObject* glObject) {
-    auto& program = glObject->hasCustomShader()
-      ? *glObject->getCustomShader()
-      : geometryProgram;
+    geometryProgram.setMatrix4("projectionMatrix", projectionMatrix);
+    geometryProgram.setMatrix4("viewMatrix", viewMatrix);
+    geometryProgram.setBool("hasTexture", glObject->hasTexture());
+    geometryProgram.setBool("hasNormalMap", glObject->hasNormalMap());
 
-    program.use();
-    program.setMatrix4("projectionMatrix", projectionMatrix);
-    program.setMatrix4("viewMatrix", viewMatrix);
-    program.setBool("hasTexture", glObject->hasTexture());
-    program.setBool("hasNormalMap", glObject->hasNormalMap());
-    program.setInt("modelTexture", 7);
-    program.setInt("normalMap", 8);
-
-    setVertexTransforms(program, glObject);
+    setObjectEffects(geometryProgram, glObject);
 
     glObject->render();
   };
@@ -484,7 +462,7 @@ void OpenGLVideoController::renderPointShadowCaster(OpenGLShadowCaster* glShadow
 
   for (auto* glObject : glObjects) {
     if (glObject->getSourceObject()->canCastShadows) {
-      setVertexTransforms(pointLightViewProgram, glObject);
+      setObjectEffects(pointLightViewProgram, glObject);
 
       glObject->render();
     }
@@ -576,7 +554,7 @@ void OpenGLVideoController::renderSpotShadowCaster(OpenGLShadowCaster* glShadowC
 
   for (auto* glObject : glObjects) {
     if (glObject->getSourceObject()->canCastShadows) {
-      setVertexTransforms(lightViewProgram, glObject);
+      setObjectEffects(lightViewProgram, glObject);
 
       glObject->render();
     }
@@ -611,10 +589,10 @@ void OpenGLVideoController::renderSpotShadowCaster(OpenGLShadowCaster* glShadowC
   sBuffer->renderScreenQuad();
 }
 
-void OpenGLVideoController::setVertexTransforms(ShaderProgram& program, OpenGLObject* glObject) {
-  unsigned int vertexTransform = glObject->getSourceObject()->vertexTransform;
+void OpenGLVideoController::setObjectEffects(ShaderProgram& program, OpenGLObject* glObject) {
+  unsigned int effects = glObject->getSourceObject()->effects;
 
   program.setFloat("time", scene->getRunningTime());
-  program.setInt("treeTransformFactor", (vertexTransform & VertexTransform::TREE) ? 1.0f : 0.0f);
-  program.setInt("grassTransformFactor", (vertexTransform & VertexTransform::GRASS) ? 1.0f : 0.0f);
+  program.setInt("treeTransformFactor", (effects & ObjectEffects::TREE_ANIMATION) ? 1.0f : 0.0f);
+  program.setInt("grassTransformFactor", (effects & ObjectEffects::GRASS_ANIMATION) ? 1.0f : 0.0f);
 }

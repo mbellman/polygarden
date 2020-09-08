@@ -42,10 +42,6 @@ vec3 getTangent() {
   return vec3(tangent.x, tangent.y, -tangent.z);
 }
 
-vec2 getUv() {
-  return vertexUv;
-}
-
 void main() {
   gl_Position = getClipPosition();
 
@@ -53,5 +49,5 @@ void main() {
   fragmentNormal = getNormal();
   fragmentTangent = getTangent();
   fragmentPosition = getWorldPosition();
-  fragmentUv = getUv();
+  fragmentUv = vertexUv;
 }

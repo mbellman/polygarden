@@ -15,10 +15,10 @@ layout (location = 0) out vec3 color;
 layout (location = 1) out vec4 normalDepth;
 layout (location = 2) out vec3 position;
 
-vec3 getColor() {
+vec4 getColor() {
   return hasTexture
-    ? texture(modelTexture, fragmentUv).xyz
-    : fragmentColor;
+    ? texture(modelTexture, fragmentUv)
+    : vec4(fragmentColor, 1.0);
 }
 
 mat3 getTBNMatrix() {
@@ -48,7 +48,13 @@ float getDepth() {
 }
 
 void main() {
-  color = getColor();
+  vec4 fragColor = getColor();
+
+  if (fragColor.a < 0.5) {
+    discard;
+  }
+
+  color = fragColor.xyz;
   normalDepth = vec4(getNormal(), getDepth());
   position = fragmentPosition;
 }

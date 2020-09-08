@@ -122,13 +122,3 @@ void FrameBuffer::startWriting() {
   glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
   glViewport(0, 0, size.width, size.height);
 }
-
-void FrameBuffer::transferColorTexture(GLenum source, const GLenum* targets, int size) {
-  int width = this->size.width;
-  int height = this->size.height;
-
-  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-  glReadBuffer(source);
-  glDrawBuffers(size, targets);
-  glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
-}

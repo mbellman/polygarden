@@ -20,7 +20,7 @@ static float getGroundHeight(float x, float z) {
 void GardenScene::addGrass() {
   stage.add<Model>("grass", [](Model* grass) {
     grass->from(ObjLoader("./game/grass.obj"));
-    grass->vertexTransform = VertexTransform::GRASS;
+    grass->effects = ObjectEffects::GRASS_ANIMATION;
     grass->canCastShadows = false;
     grass->isReference = true;
   });
@@ -68,6 +68,55 @@ void GardenScene::addRocks() {
   });
 }
 
+void GardenScene::addTrees() {
+  stage.add<Model>("tree", [&](Model* tree) {
+    tree->from(ObjLoader("./game/tree.obj"));
+    tree->normalMap = assets.createTexture("./game/rock-normal-map.png");
+    tree->isReference = true;
+  });
+
+  stage.add<Model>("leaves", [&](Model* leaves) {
+    leaves->from(ObjLoader("./game/tree-leaves.obj"));
+    leaves->texture = assets.createTexture("./game/pine-texture.png");
+    leaves->isReference = true;
+  });
+
+  stage.add<Model>("leaves-2", [&](Model* leaves) {
+    leaves->from(ObjLoader("./game/tree-leaves-2.obj"));
+    leaves->texture = assets.createTexture("./game/pine-texture-2.png");
+    leaves->isReference = true;
+  });
+
+  stage.addMultiple<Model, 10>([&](Model* tree, int index) {
+    float x = RNG::random(-1250.0f, 1250.0f);
+    float z = RNG::random(-1250.0f, 1250.0f);
+
+    Vec3f position(x, getGroundHeight(1250.0f + x, -z + 1250.0f), z);
+    Vec3f orientation(0.0f, RNG::random(0.0f, M_PI * 2.0f), 0.0f);
+    float scale = 40.0f;
+
+    tree->from(stage.get<Model>("tree"));
+    tree->setScale(scale);
+    tree->setColor(Vec3f(0.2f, 0.175f, 0.05f));
+    tree->setOrientation(orientation);
+    tree->setPosition(position);
+
+    stage.add<Model>([&](Model* leaves) {
+      leaves->from(stage.get<Model>("leaves"));
+      leaves->setScale(scale);
+      leaves->setPosition(position);
+      leaves->setOrientation(orientation);
+    });
+
+    stage.add<Model>([&](Model* leaves2) {
+      leaves2->from(stage.get<Model>("leaves-2"));
+      leaves2->setScale(scale);
+      leaves2->setPosition(position);
+      leaves2->setOrientation(orientation);
+    });
+  });
+}
+
 void GardenScene::onInit() {
   stage.add<Model>("seed", [](Model* seed) {
     seed->from(ObjLoader("./game/seed.obj"));
@@ -76,19 +125,19 @@ void GardenScene::onInit() {
 
   stage.add<Model>("sprout", [](Model* sprout) {
     sprout->from(ObjLoader("./game/sprout.obj"));
-    sprout->vertexTransform = VertexTransform::GRASS;
+    sprout->effects = ObjectEffects::GRASS_ANIMATION;
     sprout->isReference = true;
   });
 
   stage.add<Model>("flower-stalk", [](Model* flowerStalk) {
     flowerStalk->from(ObjLoader("./game/flower-stalk.obj"));
-    flowerStalk->vertexTransform = VertexTransform::GRASS;
+    flowerStalk->effects = ObjectEffects::GRASS_ANIMATION;
     flowerStalk->isReference = true;
   });
   
   stage.add<Model>("flower-petals", [](Model* flowerPetals) {
     flowerPetals->from(ObjLoader("./game/flower-petals.obj"));
-    flowerPetals->vertexTransform = VertexTransform::TREE | VertexTransform::GRASS;
+    flowerPetals->effects = ObjectEffects::TREE_ANIMATION | ObjectEffects::GRASS_ANIMATION;
     flowerPetals->isReference = true;
   });
 
@@ -118,7 +167,7 @@ void GardenScene::onInit() {
 
   stage.add<Light>([](Light* light) {
     light->type = Light::LightType::DIRECTIONAL;
-    light->color = Vec3f(0.6f, 0.8f, 1.0f);
+    light->color = Vec3f(0.2f, 0.5f, 1.0f);
     light->direction = Vec3f(-1.0f, -0.5f, 0.25f);
     light->canCastShadows = true;
   });
@@ -130,9 +179,10 @@ void GardenScene::onInit() {
   });
 
   stage.add<Mesh>([&](Mesh* mesh) {
-    mesh->setSize(250, 250, 10.0f);
+    mesh->setSize(250, 250, 10.0f, Vec2f(10.0f, 10.0f));
     mesh->setPosition(Vec3f(0.0f));
     mesh->texture = assets.createTexture("./game/grass-texture.png");
+    mesh->canCastShadows = false;
 
     mesh->displace([=](Vec3f& vertex, int x, int z) {
       vertex.y += getGroundHeight(x * 10.0f, z * 10.0f);
@@ -150,6 +200,7 @@ void GardenScene::onInit() {
 
   addGrass();
   addRocks();
+  addTrees();
 
   inputSystem.onMouseMotion([=](const SDL_MouseMotionEvent& event) {
     if (SDL_GetRelativeMouseMode()) {
@@ -229,7 +280,7 @@ void GardenScene::spawnFlower(float x, float z) {
     flowerPetals->setPosition(position);
     flowerPetals->setOrientation(orientation);
     flowerPetals->color = Vec3f(RNG::random(), RNG::random(), RNG::random());
-    flowerPetals->vertexTransform = VertexTransform::TREE;
+    flowerPetals->effects = ObjectEffects::TREE_ANIMATION;
 
     auto timer = getTimer();
 
