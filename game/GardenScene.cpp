@@ -15,7 +15,15 @@ static float getGroundHeight(float x, float z) {
     20.0f * sinf(fx * 0.3f) +
     10.0f * cosf(fz * 0.2f)
   );
-};
+}
+
+static Vec3f getGroundPosition(float x, float z) {
+  return Vec3f(x, getGroundHeight(x, z), z);
+}
+
+static Vec3f getRandomGroundPosition() {
+  return getGroundPosition(RNG::random(-1250.0f, 1250.0f), RNG::random(-1250.0f, 1250.0f));
+}
 
 void GardenScene::addGrass() {
   stage.add<Model>("grass", [](Model* grass) {
@@ -26,18 +34,9 @@ void GardenScene::addGrass() {
   });
 
   stage.addMultiple<Model, 10000>([&](Model* blade, int index) {
-    float x = RNG::random(-1250.0f, 1250.0f);
-    float z = RNG::random(-1250.0f, 1250.0f);
-
-    Vec3f position = {
-      x,
-      getGroundHeight(1250.0f + x, -z + 1250.0f),
-      z
-    };
-
     blade->from(stage.get<Model>("grass"));
     blade->setScale(RNG::random(5.0f, 15.0f));
-    blade->setPosition(position);
+    blade->setPosition(getRandomGroundPosition());
     blade->setColor(Vec3f(0.2f, 0.5f, 0.2f));
     blade->rotate(Vec3f(0.0f, RNG::random(0.0f, M_PI * 2.0f), 0.0f));
   });
@@ -52,20 +51,10 @@ void GardenScene::addRocks() {
   });
 
   stage.addMultiple<Model, 20>([&](Model* rock, int index) {
-    float x = RNG::random(-1250.0f, 1250.0f);
-    float z = RNG::random(-1250.0f, 1250.0f);
-
-    Vec3f position = {
-      x,
-      getGroundHeight(1250.0f + x, -z + 1250.0f),
-      z
-    };
-
     rock->from(stage.get<Model>("rock"));
-    rock->setPosition(position);
+    rock->setPosition(getRandomGroundPosition());
     rock->setScale(RNG::random(15.0f, 30.0f));
     rock->setOrientation(Vec3f(0.0f, RNG::random(0.0f, M_PI * 2.0f), 0.0f));
-    rock->setColor(Vec3f(0.2f));
   });
 }
 
@@ -90,10 +79,7 @@ void GardenScene::addTrees() {
   });
 
   stage.addMultiple<Model, 10>([&](Model* tree, int index) {
-    float x = RNG::random(-1250.0f, 1250.0f);
-    float z = RNG::random(-1250.0f, 1250.0f);
-
-    Vec3f position(x, getGroundHeight(1250.0f + x, -z + 1250.0f), z);
+    Vec3f position = getRandomGroundPosition();
     Vec3f orientation(0.0f, RNG::random(0.0f, M_PI * 2.0f), 0.0f);
     float scale = 40.0f;
 
@@ -151,17 +137,16 @@ void GardenScene::onInit() {
   });
 
   stage.addMultiple<Model, 10>([&](Model* lantern, int index) {
-    float x = RNG::random() * 2500.0f - 1250.0f;
-    float z = RNG::random() * 2500.0f - 1250.0f;
-    float y = getGroundHeight(1250.0f + x, -z + 1250.0f) - 5.0f;
+    Vec3f lanternPosition = getRandomGroundPosition() - Vec3f(0.0f, 5.0f, 0.0f);
+    Vec3f lightPosition = lanternPosition + Vec3f(0.0f, 75.0f, 0.0f);
 
     lantern->from(stage.get<Model>("lantern"));
     lantern->setScale(100.0f);
-    lantern->setPosition(Vec3f(x, y, z));
+    lantern->setPosition(lanternPosition);
 
     stage.add<Light>([=](Light* light) {
-      light->color = Vec3f(1.0f, 1.0f, 0.2f);
-      light->position = Vec3f(x, y + 75.0f, z);
+      light->color = Vec3f(1.0f, 0.75f, 0.2f);
+      light->position = lightPosition;
       light->radius = 750.0f;
       light->power = 4.0f;
     });
@@ -187,7 +172,10 @@ void GardenScene::onInit() {
     mesh->canCastShadows = false;
 
     mesh->displace([=](Vec3f& vertex, int x, int z) {
-      vertex.y += getGroundHeight(x * 10.0f, z * 10.0f);
+      float properX = x * 10.0f - 1250.0f;
+      float properZ = 1250.0f - z * 10.0f;
+
+      vertex.y += getGroundHeight(properX, properZ);
     });
   });
 
@@ -247,16 +235,11 @@ void GardenScene::onUpdate(float dt) {
     camera.position += camera.getRightDirection().xz() * speedFactor;
   }
 
-  camera.position.y = 60.0f + getGroundHeight(1250.0f + camera.position.x, -camera.position.z + 1250.0f);
+  camera.position.y = 60.0f + getGroundHeight(camera.position.x, camera.position.z);
 }
 
 void GardenScene::spawnFlower(float x, float z) {
-  Vec3f position = {
-    x,
-    getGroundHeight(1250.0f + x, -z + 1250.0f),
-    z
-  };
-
+  Vec3f position = getGroundPosition(x, z);
   Vec3f orientation = Vec3f(0.0f, RNG::random() * M_PI * 2.0f, 0.0f);
   float scale = RNG::random(6.0f, 10.0f);
 
@@ -298,14 +281,8 @@ void GardenScene::spawnFlower(float x, float z) {
 
 void GardenScene::spawnSprout(float x, float z) {
   stage.add<Model>([&](Model* sprout) {
-    Vec3f position = {
-      x,
-      getGroundHeight(1250.0f + x, -z + 1250.0f),
-      z
-    };
-
     sprout->from(stage.get<Model>("sprout"));
-    sprout->setPosition(position);
+    sprout->setPosition(getGroundPosition(x, z));
     sprout->setOrientation(Vec3f(0.0f, RNG::random() * M_PI * 2.0f, 0.0f));
     sprout->color = Vec3f(0.25f, 1.0f, 0.5f);
 
@@ -340,7 +317,7 @@ void GardenScene::throwSeeds() {
 
       seed->move(velocity * dt);
 
-      float groundHeight = getGroundHeight(1250.0f + seed->position.x, -seed->position.z + 1250.0f);
+      float groundHeight = getGroundHeight(seed->position.x, seed->position.z);
 
       if (seed->position.y < groundHeight) {
         if (RNG::random() < 0.2f) {
