@@ -9,6 +9,6 @@ void OpenGLDebugger::checkErrors(const char* message) {
   GLenum error;
 
   while ((error = glGetError()) != GL_NO_ERROR) {
-    printf("OpenGL Error [%s]: %d\n", message, error);
+    printf("[OpenGLDebugger] (%s): Error %d\n", message, error);
   }
 }

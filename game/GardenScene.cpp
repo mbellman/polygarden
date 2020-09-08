@@ -19,7 +19,7 @@ static float getGroundHeight(float x, float z) {
 
 void GardenScene::addGrass() {
   stage.add<Model>("grass", [](Model* grass) {
-    grass->from(ObjLoader("./game/grass.obj"));
+    grass->from(ObjLoader("./game/objects/grass/model.obj"));
     grass->effects = ObjectEffects::GRASS_ANIMATION;
     grass->canCastShadows = false;
     grass->isReference = true;
@@ -45,9 +45,9 @@ void GardenScene::addGrass() {
 
 void GardenScene::addRocks() {
   stage.add<Model>("rock", [&](Model* rock) {
-    rock->from(ObjLoader("./game/rock.obj"));
-    rock->texture = assets.createTexture("./game/rock-texture.png");
-    rock->normalMap = assets.createTexture("./game/rock-normal-map.png");
+    rock->from(ObjLoader("./game/objects/rock-1/model.obj"));
+    rock->texture = assets.createTexture("./game/objects/rock-1/texture.png");
+    rock->normalMap = assets.createTexture("./game/objects/rock-1/normals.png");
     rock->isReference = true;
   });
 
@@ -71,21 +71,21 @@ void GardenScene::addRocks() {
 
 void GardenScene::addTrees() {
   stage.add<Model>("tree", [&](Model* tree) {
-    tree->from(ObjLoader("./game/tree.obj"));
-    tree->texture = assets.createTexture("./game/bark-texture.png");
-    tree->normalMap = assets.createTexture("./game/bark-normal-map.png");
+    tree->from(ObjLoader("./game/objects/pine-tree/trunk-model.obj"));
+    tree->texture = assets.createTexture("./game/objects/pine-tree/bark-texture.png");
+    tree->normalMap = assets.createTexture("./game/objects/pine-tree/bark-normals.png");
     tree->isReference = true;
   });
 
   stage.add<Model>("leaves", [&](Model* leaves) {
-    leaves->from(ObjLoader("./game/tree-leaves.obj"));
-    leaves->texture = assets.createTexture("./game/pine-texture.png");
+    leaves->from(ObjLoader("./game/objects/pine-tree/leaves1-model.obj"));
+    leaves->texture = assets.createTexture("./game/objects/pine-tree/leaves1-texture.png");
     leaves->isReference = true;
   });
 
   stage.add<Model>("leaves-2", [&](Model* leaves) {
-    leaves->from(ObjLoader("./game/tree-leaves-2.obj"));
-    leaves->texture = assets.createTexture("./game/pine-texture-2.png");
+    leaves->from(ObjLoader("./game/objects/pine-tree/leaves2-model.obj"));
+    leaves->texture = assets.createTexture("./game/objects/pine-tree/leaves2-texture.png");
     leaves->isReference = true;
   });
 
@@ -121,32 +121,32 @@ void GardenScene::addTrees() {
 
 void GardenScene::onInit() {
   stage.add<Model>("seed", [](Model* seed) {
-    seed->from(ObjLoader("./game/seed.obj"));
+    seed->from(ObjLoader("./game/objects/seed/model.obj"));
     seed->isReference = true;
   });
 
   stage.add<Model>("sprout", [](Model* sprout) {
-    sprout->from(ObjLoader("./game/sprout.obj"));
+    sprout->from(ObjLoader("./game/objects/sprout/model.obj"));
     sprout->effects = ObjectEffects::GRASS_ANIMATION;
     sprout->isReference = true;
   });
 
   stage.add<Model>("flower-stalk", [](Model* flowerStalk) {
-    flowerStalk->from(ObjLoader("./game/flower-stalk.obj"));
+    flowerStalk->from(ObjLoader("./game/objects/small-flower/stalk-model.obj"));
     flowerStalk->effects = ObjectEffects::GRASS_ANIMATION;
     flowerStalk->isReference = true;
   });
   
   stage.add<Model>("flower-petals", [](Model* flowerPetals) {
-    flowerPetals->from(ObjLoader("./game/flower-petals.obj"));
+    flowerPetals->from(ObjLoader("./game/objects/small-flower/petals-model.obj"));
     flowerPetals->effects = ObjectEffects::TREE_ANIMATION | ObjectEffects::GRASS_ANIMATION;
     flowerPetals->isReference = true;
   });
 
   stage.add<Model>("lantern", [&](Model* lantern) {
-    lantern->from(ObjLoader("./game/lantern.obj"));
-    lantern->texture = assets.createTexture("./game/lantern-texture.png");
-    lantern->normalMap = assets.createTexture("./game/lantern-normal-map.png");
+    lantern->from(ObjLoader("./game/objects/lantern/model.obj"));
+    lantern->texture = assets.createTexture("./game/objects/lantern/texture.png");
+    lantern->normalMap = assets.createTexture("./game/objects/lantern/normals.png");
     lantern->isReference = true;
   });
 
@@ -183,7 +183,7 @@ void GardenScene::onInit() {
   stage.add<Mesh>([&](Mesh* mesh) {
     mesh->setSize(250, 250, 10.0f, Vec2f(5.0f, 5.0f));
     mesh->setPosition(Vec3f(0.0f));
-    mesh->texture = assets.createTexture("./game/grass-texture.png");
+    mesh->texture = assets.createTexture("./game/objects/ground/grass-texture.png");
     mesh->canCastShadows = false;
 
     mesh->displace([=](Vec3f& vertex, int x, int z) {
@@ -192,7 +192,7 @@ void GardenScene::onInit() {
   });
 
   stage.add<Skybox>([&](Skybox* skybox) {
-    skybox->from(assets.createTexture("./game/dummy-night-skybox.png"));
+    skybox->from(assets.createTexture("./game/objects/skybox/night.png"));
     skybox->setScale(5000.0f);
 
     skybox->onUpdate = [=](float dt) {
