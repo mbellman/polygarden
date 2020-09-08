@@ -106,6 +106,9 @@
       <AdditionalLibraryDirectories>$(SolutionDir)\external\GLUT\lib;$(SolutionDir)\external\GLEW\lib;$(SolutionDir)\external\SDL_image\lib;$(SolutionDir)\external\SDL2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;opengl32.lib;glu32.lib;glut32.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <Manifest>
+      <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="game\Easing.cpp" />

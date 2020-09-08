@@ -145,10 +145,16 @@ void GardenScene::onInit() {
     lantern->setPosition(lanternPosition);
 
     stage.add<Light>([=](Light* light) {
-      light->color = Vec3f(1.0f, 0.75f, 0.2f);
+      light->color = Vec3f(1.0f, 0.5f, 0.2f);
       light->position = lightPosition;
       light->radius = 750.0f;
       light->power = 4.0f;
+
+      float offset = RNG::random(0.0f, M_PI);
+
+      light->onUpdate = [=](float dt) {
+        light->power = 4.0f + (sinf(getRunningTime() * 10.0f + offset));
+      };
     });
   });
 
@@ -217,25 +223,32 @@ void GardenScene::onInit() {
 }
 
 void GardenScene::onUpdate(float dt) {
-  float speedFactor = dt * (inputSystem.isKeyHeld(Key::SHIFT) ? 200.0f : 100.0f);
+  float speedFactor = (inputSystem.isKeyHeld(Key::SHIFT) ? 100.0f : 20.0f);
 
   if (inputSystem.isKeyHeld(Key::W)) {
-    camera.position += camera.getDirection().xz() * speedFactor;
+    velocity += camera.getDirection().xz() * speedFactor;
   }
 
   if (inputSystem.isKeyHeld(Key::A)) {
-    camera.position += camera.getLeftDirection().xz() * speedFactor;
+    velocity += camera.getLeftDirection().xz() * speedFactor;
   }
 
   if (inputSystem.isKeyHeld(Key::S)) {
-    camera.position -= camera.getDirection().xz() * speedFactor;
+    velocity -= camera.getDirection().xz() * speedFactor;
   }
 
   if (inputSystem.isKeyHeld(Key::D)) {
-    camera.position += camera.getRightDirection().xz() * speedFactor;
+    velocity += camera.getRightDirection().xz() * speedFactor;
   }
 
+  if (velocity.magnitude() > 500.0f) {
+    velocity *= (500.0f / velocity.magnitude());
+  }
+
+  camera.position += velocity * dt;
   camera.position.y = 60.0f + getGroundHeight(camera.position.x, camera.position.z);
+
+  velocity *= 0.8f;
 }
 
 void GardenScene::spawnFlower(float x, float z) {

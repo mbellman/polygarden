@@ -27,8 +27,6 @@ OpenGLVideoController::OpenGLVideoController() {
 }
 
 OpenGLVideoController::~OpenGLVideoController() {
-  // debug();
-
   screenShaders.free();
   glObjects.free();
   glShadowCasters.free();
@@ -122,36 +120,7 @@ Matrix4 OpenGLVideoController::createViewMatrix() {
 }
 
 SDL_Window* OpenGLVideoController::createWindow(const char* title, Region2d<int> region) {
-  return SDL_CreateWindow(title, region.x, region.y, region.width, region.height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-}
-
-void OpenGLVideoController::debug() {
-  for (auto* glObject : glObjects) {
-    auto* source = glObject->getSourceObject();
-
-    printf("-------------\n");
-    printf("Total instances: %d\n", source->getTotalInstances());
-    printf("Total polygons: %d\n", source->getPolygons().size());
-    printf("Matrix:\n");
-
-    source->getMatrix().debug();
-
-    auto* buffer = source->getMatrixBuffer();
-
-    for (int i = 0; i < source->getTotalInstances() * 16; i++) {
-      if (i % 4 == 0) {
-        printf("\n");
-      }
-
-      if (i % 16 == 0) {
-        printf("\n");
-      }
-
-      printf("%f, ", buffer[i]);
-    }
-
-    printf("\n-------------\n");
-  }
+  return SDL_CreateWindow(title, region.x, region.y, region.width, region.height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 }
 
 void OpenGLVideoController::onDestroy() {
@@ -194,7 +163,7 @@ void OpenGLVideoController::onInit() {
   glCullFace(GL_BACK);
   glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
-  SDL_GL_SetSwapInterval(0);
+  SDL_GL_SetSwapInterval(1);
 
   gBuffer = new GBuffer();
   sBuffer = new SBuffer();

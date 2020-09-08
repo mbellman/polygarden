@@ -11,6 +11,8 @@ public:
   void onUpdate(float dt) override;
 
 private:
+  Vec3f velocity = Vec3f(0.0f);
+
   void addGrass();
   void addRocks();
   void addTrees();

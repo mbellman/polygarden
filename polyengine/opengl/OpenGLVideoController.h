@@ -39,7 +39,6 @@ private:
 
   void createScreenShaders();
   Matrix4 createViewMatrix();
-  void debug();
   void onEntityAdded(Entity* entity);
   void onEntityRemoved(Entity* entity);
   void renderDirectionalShadowCaster(OpenGLShadowCaster* glShadowCaster);
