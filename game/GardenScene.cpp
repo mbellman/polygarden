@@ -1,4 +1,5 @@
 #include <cmath>
+#include <algorithm>
 #include <subsystem/Entities.h>
 #include <subsystem/ObjLoader.h>
 #include <subsystem/RNG.h>
@@ -29,7 +30,7 @@ void GardenScene::addGrass() {
   stage.add<Model>("grass", [](Model* grass) {
     grass->from(ObjLoader("./game/objects/grass/model.obj"));
     grass->effects = ObjectEffects::GRASS_ANIMATION;
-    grass->canCastShadows = false;
+    grass->shadowCascadeLimit = 0;
     grass->isReference = true;
   });
 
@@ -78,10 +79,24 @@ void GardenScene::addTrees() {
     leaves->isReference = true;
   });
 
+  stage.add<Model>("mushroom-base", [&](Model* mushroomBase) {
+    mushroomBase->from(ObjLoader("./game/objects/mushroom/base-model.obj"));
+    mushroomBase->isReference = true;
+  });
+
+  stage.add<Model>("mushroom-head", [&](Model* mushroomHead) {
+    mushroomHead->from(ObjLoader("./game/objects/mushroom/head-model.obj"));
+    mushroomHead->isEmissive = true;
+    mushroomHead->isReference = true;
+  });
+
   stage.addMultiple<Model, 10>([&](Model* tree, int index) {
     Vec3f position = getRandomGroundPosition();
+    Vec3f mushroomPosition = position + Vec3f(RNG::random(-30.0f, 30.0f), 0.0f, RNG::random(-30.0f, 30.0f));
     Vec3f orientation(0.0f, RNG::random(0.0f, M_PI * 2.0f), 0.0f);
     float scale = 40.0f;
+
+    mushroomPosition.y = getGroundHeight(mushroomPosition.x, mushroomPosition.z);
 
     tree->from(stage.get<Model>("tree"));
     tree->setScale(scale);
@@ -102,6 +117,49 @@ void GardenScene::addTrees() {
       leaves2->setPosition(position);
       leaves2->setOrientation(orientation);
     });
+
+    stage.add<Model>([&](Model* mushroomBase) {
+      mushroomBase->from(stage.get<Model>("mushroom-base"));
+      mushroomBase->setScale(4.0f);
+      mushroomBase->setColor(Vec3f(0.8f, 0.65f, 0.5f));
+      mushroomBase->setOrientation(orientation);
+      mushroomBase->setPosition(mushroomPosition);
+    });
+
+    stage.add<Model>([&](Model* mushroomHead) {
+      mushroomHead->from(stage.get<Model>("mushroom-head"));
+      mushroomHead->setScale(4.0f);
+      mushroomHead->setOrientation(orientation);
+      mushroomHead->setPosition(mushroomPosition);
+      mushroomHead->setColor(Vec3f(0.2f, 1.0f, 0.2f));
+
+      Vec3f lightColor = Vec3f(0.2f, 1.0f, 0.4f);
+
+      stage.add<Light>([&](Light* light) {
+        light->position = mushroomPosition + Vec3f(0.0f, 10.0f, 0.0f);
+        light->color = lightColor;
+        light->radius = 150.0f;
+      });
+
+      stage.add<Light>([&](Light* light) {
+        light->position = mushroomPosition + Vec3f(0.0f, 10.0f, 0.0f);
+        light->color = lightColor;
+        light->radius = 150.0f;
+        light->canCastShadows = true;
+
+        light->onUpdate = [=](float dt) {
+          float lightDistance = (light->position - camera.position).magnitude();
+
+          if (lightDistance > 150.0f) {
+            float attenuation = (lightDistance - 150.0f) / 100.0f;
+
+            light->power = std::max(1.0f - attenuation, 0.0f);
+          } else {
+            light->power = 1.0f;
+          }
+        };
+      });
+    });
   });
 }
 
@@ -114,19 +172,36 @@ void GardenScene::onInit() {
   stage.add<Model>("sprout", [](Model* sprout) {
     sprout->from(ObjLoader("./game/objects/sprout/model.obj"));
     sprout->effects = ObjectEffects::GRASS_ANIMATION;
+    sprout->shadowCascadeLimit = 2;
     sprout->isReference = true;
   });
 
   stage.add<Model>("flower-stalk", [](Model* flowerStalk) {
     flowerStalk->from(ObjLoader("./game/objects/small-flower/stalk-model.obj"));
     flowerStalk->effects = ObjectEffects::GRASS_ANIMATION;
+    flowerStalk->shadowCascadeLimit = 2;
     flowerStalk->isReference = true;
   });
   
   stage.add<Model>("flower-petals", [](Model* flowerPetals) {
     flowerPetals->from(ObjLoader("./game/objects/small-flower/petals-model.obj"));
     flowerPetals->effects = ObjectEffects::TREE_ANIMATION | ObjectEffects::GRASS_ANIMATION;
+    flowerPetals->shadowCascadeLimit = 2;
     flowerPetals->isReference = true;
+  });
+
+  stage.add<Model>("lavender-stalk", [&](Model* lavenderStalk) {
+    lavenderStalk->from(ObjLoader("./game/objects/lavender/stalk-model.obj"));
+    lavenderStalk->effects = ObjectEffects::GRASS_ANIMATION;
+    lavenderStalk->shadowCascadeLimit = 2;
+    lavenderStalk->isReference = true;
+  });
+
+  stage.add<Model>("lavender-flowers", [&](Model* lavenderFlowers) {
+    lavenderFlowers->from(ObjLoader("./game/objects/lavender/flowers-model.obj"));
+    lavenderFlowers->effects = ObjectEffects::GRASS_ANIMATION;
+    lavenderFlowers->shadowCascadeLimit = 2;
+    lavenderFlowers->isReference = true;
   });
 
   stage.add<Model>("lantern", [&](Model* lantern) {
@@ -153,7 +228,7 @@ void GardenScene::onInit() {
       float offset = RNG::random(0.0f, M_PI);
 
       light->onUpdate = [=](float dt) {
-        light->power = 4.0f + (sinf(getRunningTime() * 10.0f + offset));
+        light->power = 4.0f + (sinf(getRunningTime() * 10.0f + offset) + sinf(getRunningTime() * 21.3f + offset)) * 0.75f;
       };
     });
   });
@@ -162,6 +237,7 @@ void GardenScene::onInit() {
     light->type = Light::LightType::DIRECTIONAL;
     light->color = Vec3f(0.2f, 0.5f, 1.0f);
     light->direction = Vec3f(-1.0f, -0.5f, 0.25f);
+    light->power = 0.5f;
     light->canCastShadows = true;
   });
 
@@ -175,7 +251,7 @@ void GardenScene::onInit() {
     mesh->setSize(250, 250, 10.0f, Vec2f(5.0f, 5.0f));
     mesh->setPosition(Vec3f(0.0f));
     mesh->texture = assets.createTexture("./game/objects/ground/grass-texture.png");
-    mesh->canCastShadows = false;
+    mesh->shadowCascadeLimit = 0;
 
     mesh->displace([=](Vec3f& vertex, int x, int z) {
       float properX = x * 10.0f - 1250.0f;
@@ -223,7 +299,7 @@ void GardenScene::onInit() {
 }
 
 void GardenScene::onUpdate(float dt) {
-  float speedFactor = (inputSystem.isKeyHeld(Key::SHIFT) ? 100.0f : 20.0f);
+  float speedFactor = (inputSystem.isKeyHeld(Key::SHIFT) ? 70.0f : 20.0f);
 
   if (inputSystem.isKeyHeld(Key::W)) {
     velocity += camera.getDirection().xz() * speedFactor;
@@ -292,6 +368,46 @@ void GardenScene::spawnFlower(float x, float z) {
   });
 }
 
+void GardenScene::spawnLavender(float x, float z) {
+  Vec3f position = getGroundPosition(x, z);
+  Vec3f orientation = Vec3f(0.0f, RNG::random() * M_PI * 2.0f, 0.0f);
+  float scale = RNG::random(15.0f, 20.0f);
+
+  stage.add<Model>([&](Model* stalk) {
+    stalk->from(stage.get<Model>("lavender-stalk"));
+    stalk->setPosition(position);
+    stalk->setOrientation(orientation);
+    stalk->setColor(Vec3f(0.2f, 0.75f, 0.4f));
+
+    auto timer = getTimer();
+
+    stalk->onUpdate = [=](float dt) {
+      float t = timer() / 2.0f;
+
+      if (t <= 1.0f) {
+        stalk->setScale(Easing::bounceOut(t) * scale);
+      }
+    };
+  });
+
+  stage.add<Model>([&](Model* flowers) {
+    flowers->from(stage.get<Model>("lavender-flowers"));
+    flowers->setPosition(position);
+    flowers->setOrientation(orientation);
+    flowers->setColor(Vec3f(0.5f, 0.2f, 0.8f));
+
+    auto timer = getTimer();
+
+    flowers->onUpdate = [=](float dt) {
+      float t = timer() / 2.0f;
+
+      if (t <= 1.0f) {
+        flowers->setScale(Easing::bounceOut(t) * scale);
+      }
+    };
+  });
+}
+
 void GardenScene::spawnSprout(float x, float z) {
   stage.add<Model>([&](Model* sprout) {
     sprout->from(stage.get<Model>("sprout"));
@@ -312,6 +428,8 @@ void GardenScene::spawnSprout(float x, float z) {
 }
 
 void GardenScene::throwSeeds() {
+  bool shouldSpawnLavender = RNG::random() < 0.2f;
+
   stage.addMultiple<Model, 5>([&](Model* seed, int index) {
     seed->from(stage.get<Model>("seed"));
     seed->setScale(0.5f);
@@ -333,10 +451,14 @@ void GardenScene::throwSeeds() {
       float groundHeight = getGroundHeight(seed->position.x, seed->position.z);
 
       if (seed->position.y < groundHeight) {
-        if (RNG::random() < 0.2f) {
-          spawnFlower(seed->position.x, seed->position.z);
+        if (!shouldSpawnLavender) {
+          if (RNG::random() < 0.2f) {
+            spawnFlower(seed->position.x, seed->position.z);
+          } else {
+            spawnSprout(seed->position.x, seed->position.z);
+          }
         } else {
-          spawnSprout(seed->position.x, seed->position.z);
+          spawnLavender(seed->position.x, seed->position.z);
         }
 
         seed->expire();

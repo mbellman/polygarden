@@ -70,9 +70,9 @@ public:
   const Texture* normalMap = nullptr;
   const char* shader = nullptr;
   unsigned int effects = 0;
+  unsigned int shadowCascadeLimit = 3;
   bool isEmissive = false;
   bool isReference = false;
-  bool canCastShadows = true;
   bool isDirty = false;
 
   virtual ~Object();

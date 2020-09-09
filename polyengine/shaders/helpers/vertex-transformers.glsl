@@ -7,7 +7,7 @@ const float SPEED = 2.0;
 const float DEVIATION = 0.1;
 
 vec3 grass(vec3 position) {
-  float offset = sin(time * SPEED + gl_InstanceID) * DEVIATION * position.y * grassTransformFactor;
+  float offset = sin(time * SPEED + gl_InstanceID + position.y * 0.25) * DEVIATION * position.y * grassTransformFactor;
 
   return vec3(
     position.x + offset,

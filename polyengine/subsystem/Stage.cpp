@@ -44,7 +44,7 @@ StageStats Stage::getStats() const {
   stats.totalLights = lights.length();
 
   for (auto* light : lights) {
-    if (light->canCastShadows) {
+    if (light->canCastShadows && light->power > 0.0f) {
       stats.totalShadowCasters++;
     }
   }

@@ -163,7 +163,7 @@ void OpenGLVideoController::onInit() {
   glCullFace(GL_BACK);
   glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
-  SDL_GL_SetSwapInterval(1);
+  SDL_GL_SetSwapInterval(0);
 
   gBuffer = new GBuffer();
   sBuffer = new SBuffer();
@@ -257,7 +257,7 @@ void OpenGLVideoController::renderDirectionalShadowCaster(OpenGLShadowCaster* gl
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     for (auto* glObject : glObjects) {
-      if (glObject->getSourceObject()->canCastShadows) {
+      if (glObject->getSourceObject()->shadowCascadeLimit > i) {
         lightViewProgram.setBool("hasTexture", glObject->hasTexture());
 
         setObjectEffects(lightViewProgram, glObject);
@@ -430,7 +430,7 @@ void OpenGLVideoController::renderPointShadowCaster(OpenGLShadowCaster* glShadow
   }
 
   for (auto* glObject : glObjects) {
-    if (glObject->getSourceObject()->canCastShadows) {
+    if (glObject->getSourceObject()->shadowCascadeLimit > 0) {
       setObjectEffects(pointLightViewProgram, glObject);
 
       glObject->render();
@@ -482,6 +482,10 @@ void OpenGLVideoController::renderScreenShaders() {
 
 void OpenGLVideoController::renderShadowCasters() {
   for (auto* glShadowCaster : glShadowCasters) {
+    if (glShadowCaster->getLight()->power == 0.0f) {
+      continue;
+    }
+
     switch (glShadowCaster->getLight()->type) {
       case Light::LightType::DIRECTIONAL:
         renderDirectionalShadowCaster(glShadowCaster);
@@ -522,7 +526,7 @@ void OpenGLVideoController::renderSpotShadowCaster(OpenGLShadowCaster* glShadowC
   lightViewProgram.setMatrix4("lightMatrix", lightMatrix);
 
   for (auto* glObject : glObjects) {
-    if (glObject->getSourceObject()->canCastShadows) {
+    if (glObject->getSourceObject()->shadowCascadeLimit > 0) {
       setObjectEffects(lightViewProgram, glObject);
 
       glObject->render();
