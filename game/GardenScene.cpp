@@ -23,11 +23,11 @@ static Vec3f getGroundPosition(float x, float z) {
 }
 
 static Vec3f getRandomGroundPosition() {
-  return getGroundPosition(RNG::random(-1250.0f, 1250.0f), RNG::random(-1250.0f, 1250.0f));
+  return getGroundPosition(RNG::random(-1200.0f, 1200.0f), RNG::random(-1200.0f, 1200.0f));
 }
 
 void GardenScene::addGrass() {
-  stage.add<Model>("grass", [](Model* grass) {
+  stage.add<Model>("grass", [&](Model* grass) {
     grass->from(ObjLoader("./game/objects/grass/model.obj"));
     grass->effects = ObjectEffects::GRASS_ANIMATION;
     grass->shadowCascadeLimit = 0;
@@ -44,7 +44,7 @@ void GardenScene::addGrass() {
     blade->onUpdate = [=](float dt) {
       Vec3f relativeBladePosition = viewMatrix * blade->position;
 
-      if (relativeBladePosition.z > 0.0f) {
+      if (relativeBladePosition.z > 0.0f && relativeBladePosition.z < 1250.0f) {
         blade->enable();
       } else {
         blade->disable();
@@ -193,8 +193,9 @@ void GardenScene::onInit() {
     flowerStalk->isReference = true;
   });
   
-  stage.add<Model>("flower-petals", [](Model* flowerPetals) {
+  stage.add<Model>("flower-petals", [&](Model* flowerPetals) {
     flowerPetals->from(ObjLoader("./game/objects/small-flower/petals-model.obj"));
+    flowerPetals->normalMap = assets.createTexture("./game/objects/small-flower/petals-normals.png");
     flowerPetals->effects = ObjectEffects::TREE_ANIMATION | ObjectEffects::GRASS_ANIMATION;
     flowerPetals->shadowCascadeLimit = 2;
     flowerPetals->isReference = true;
@@ -258,14 +259,16 @@ void GardenScene::onInit() {
   });
 
   stage.add<Mesh>([&](Mesh* mesh) {
-    mesh->setSize(250, 250, 10.0f, Vec2f(5.0f, 5.0f));
+    float tileSize = 40.0f;
+
+    mesh->setSize(60, 60, tileSize, Vec2f(5.0f, 5.0f));
     mesh->setPosition(Vec3f(0.0f));
     mesh->texture = assets.createTexture("./game/objects/ground/grass-texture.png");
     mesh->shadowCascadeLimit = 0;
 
     mesh->displace([=](Vec3f& vertex, int x, int z) {
-      float properX = x * 10.0f - 1250.0f;
-      float properZ = 1250.0f - z * 10.0f;
+      float properX = x * tileSize - 1200.0f;
+      float properZ = 1200.0f - z * tileSize;
 
       vertex.y += getGroundHeight(properX, properZ);
     });

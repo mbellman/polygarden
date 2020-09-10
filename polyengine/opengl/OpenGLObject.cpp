@@ -7,7 +7,8 @@
 const static enum Buffer {
   VERTEX = 0,
   MATRIX = 1,
-  COLOR = 2
+  COLOR = 2,
+  ID = 3
 };
 
 const static enum Attribute {
@@ -15,15 +16,16 @@ const static enum Attribute {
   VERTEX_NORMAL = 1,
   VERTEX_TANGENT = 2,
   VERTEX_UV = 3,
-  MODEL_COLOR = 4,
-  MODEL_MATRIX = 5
+  OBJECT_ID = 4,
+  MODEL_COLOR = 5,
+  MODEL_MATRIX = 6
 };
 
 OpenGLObject::OpenGLObject(const Object* object) {
   sourceObject = object;
 
   glGenVertexArrays(1, &vao);
-  glGenBuffers(3, &buffers[0]);
+  glGenBuffers(4, &buffers[0]);
   glBindVertexArray(vao);
 
   bufferVertexData();
@@ -31,6 +33,7 @@ OpenGLObject::OpenGLObject(const Object* object) {
   defineVertexAttributes();
   defineMatrixAttributes();
   defineColorAttributes();
+  defineObjectIdAttributes();
 
   if (object->texture != nullptr) {
     glTexture = OpenGLObject::createOpenGLTexture(object->texture, GL_TEXTURE7);
@@ -68,7 +71,7 @@ void OpenGLObject::bufferColorData() {
   bufferInstanceData(data, size, buffers[Buffer::COLOR]);
 }
 
-void OpenGLObject::bufferInstanceData(const float* data, unsigned int size, GLuint vbo) {
+void OpenGLObject::bufferInstanceData(const void* data, unsigned int size, GLuint vbo) {
   unsigned int totalInstances = sourceObject->getTotalInstances();
 
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -85,6 +88,13 @@ void OpenGLObject::bufferMatrixData() {
   unsigned int size = sourceObject->getTotalInstances() * 16 * sizeof(float);
 
   bufferInstanceData(data, size, buffers[Buffer::MATRIX]);
+}
+
+void OpenGLObject::bufferObjectIdData() {
+  auto* data = sourceObject->getObjectIdBuffer();
+  unsigned int size = sourceObject->getTotalInstances() * sizeof(int);
+
+  bufferInstanceData(data, size, buffers[Buffer::ID]);
 }
 
 void OpenGLObject::bufferVertexData() {
@@ -175,6 +185,14 @@ void OpenGLObject::defineMatrixAttributes() {
   }
 }
 
+void OpenGLObject::defineObjectIdAttributes() {
+  glBindBuffer(GL_ARRAY_BUFFER, buffers[Buffer::ID]);
+
+  glEnableVertexAttribArray(Attribute::OBJECT_ID);
+  glVertexAttribIPointer(Attribute::OBJECT_ID, 1, GL_INT, sizeof(int), (void*)0);
+  glVertexAttribDivisor(Attribute::OBJECT_ID, 1);
+}
+
 void OpenGLObject::defineVertexAttributes() {
   glBindBuffer(GL_ARRAY_BUFFER, buffers[Buffer::VERTEX]);
 
@@ -229,8 +247,10 @@ void OpenGLObject::render() {
 
   if (totalEnabledInstances > 0) {
     bindTextures();
+
     bufferMatrixData();
     bufferColorData();
+    bufferObjectIdData();
 
     glBindVertexArray(vao);
     glDrawArraysInstanced(GL_TRIANGLES, 0, sourceObject->getPolygons().size() * 3, totalEnabledInstances);

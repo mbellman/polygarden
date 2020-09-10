@@ -82,6 +82,7 @@ public:
   const float* getColorBuffer() const;
   const Matrix4& getMatrix() const;
   const float* getMatrixBuffer() const;
+  const int* getObjectIdBuffer() const;
   const std::vector<Polygon*>& getPolygons() const;
   const Object* getReference() const;
   unsigned int getTotalEnabledInstances() const;
@@ -116,6 +117,7 @@ private:
   Object* reference = this;
   float* matrixBuffer = nullptr;
   float* colorBuffer = nullptr;
+  int* objectIdBuffer = nullptr;
   bool shouldReallocateBuffers = true;
   bool shouldRecomputeBuffers = false;
   bool isEnabled = true;
@@ -124,6 +126,7 @@ private:
   void recomputeMatrix();
   void refreshColorBuffer();
   void refreshMatrixBuffer();
+  void refreshObjectIdBuffer();
 };
 
 class Mesh : public Object {

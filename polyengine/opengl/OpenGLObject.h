@@ -29,7 +29,7 @@ private:
   static std::map<std::string, ShaderProgram*> shaderMap;
 
   GLuint vao;
-  GLuint buffers[3];
+  GLuint buffers[4];
   unsigned int previousTotalInstances = 0;
   const Object* sourceObject = nullptr;
   OpenGLTexture* glTexture = nullptr;
@@ -40,10 +40,12 @@ private:
   static ShaderProgram* createShaderProgram(std::string fragShaderPath);
 
   void bufferColorData();
-  void bufferInstanceData(const float* data, unsigned int size, GLuint vbo);
+  void bufferInstanceData(const void* data, unsigned int size, GLuint vbo);
+  void bufferObjectIdData();
   void bufferMatrixData();
   void bufferVertexData();
   void defineColorAttributes();
   void defineMatrixAttributes();
+  void defineObjectIdAttributes();
   void defineVertexAttributes();
 };

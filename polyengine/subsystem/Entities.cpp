@@ -104,6 +104,10 @@ Object::~Object() {
   if (colorBuffer != nullptr) {
     delete[] colorBuffer;
   }
+
+  if (objectIdBuffer != nullptr) {
+    delete[] objectIdBuffer;
+  }
 }
 
 void Object::addPolygon(int v1index, int v2index, int v3index) {
@@ -157,6 +161,10 @@ const Matrix4& Object::getMatrix() const {
 
 const float* Object::getMatrixBuffer() const {
   return matrixBuffer;
+}
+
+const int* Object::getObjectIdBuffer() const {
+  return objectIdBuffer;
 }
 
 const std::vector<Polygon*>& Object::getPolygons() const {
@@ -218,8 +226,13 @@ void Object::reallocateBuffers() {
     delete[] colorBuffer;
   }
 
+  if (objectIdBuffer != nullptr) {
+    delete[] objectIdBuffer;
+  }
+
   colorBuffer = new float[getTotalInstances() * 3];
   matrixBuffer = new float[getTotalInstances() * 16];
+  objectIdBuffer = new int[getTotalInstances()];
 }
 
 void Object::recomputeMatrix() {
@@ -272,6 +285,22 @@ void Object::refreshMatrixBuffer() {
   }
 }
 
+void Object::refreshObjectIdBuffer() {
+  if (hasInstances()) {
+    unsigned int idx = 0;
+
+    for (unsigned int i = 0; i < instances.length(); i++) {
+      auto* instance = instances[i];
+
+      if (instance->isEnabled) {
+        objectIdBuffer[idx++] = (int)i;
+      }
+    }
+  } else {
+    objectIdBuffer[0] = id;
+  }
+}
+
 void Object::rehydrate() {
   if (!isInstance() && getTotalInstances() > 0) {
     if (shouldReallocateBuffers) {
@@ -281,6 +310,7 @@ void Object::rehydrate() {
     if (shouldRecomputeBuffers) {
       refreshMatrixBuffer();
       refreshColorBuffer();
+      refreshObjectIdBuffer();
     }
   }
 
