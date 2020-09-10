@@ -1,6 +1,6 @@
 #version 330 core
 
-#include <polyengine/shaders/helpers/blur.glsl>
+#include <helpers/blur.glsl>
 
 uniform sampler2D baseColor;
 uniform sampler2D bloomColor;

@@ -1,26 +1,40 @@
 #include <string>
-#include <fstream>
+#include <map>
 #include <cstdio>
 
 #include "glew.h"
 #include "opengl/ShaderLoader.h"
 #include "subsystem/FileLoader.h"
 
+const std::string SHADER_DIRECTORY = "polyengine/shaders/";
+const std::string INCLUDE_DIRECTIVE = "#include <";
+
 GLuint ShaderLoader::load(GLenum shaderType, const char* path) {
   GLuint shader = glCreateShader(shaderType);
 
   std::string source = FileLoader::load(path);
+  std::map<std::string, bool> includeMap;
   std::size_t includeStart;
 
-  while ((includeStart = source.find("#include <")) != std::string::npos) {
-    int pathStart = includeStart + 10;
+  while ((includeStart = source.find(INCLUDE_DIRECTIVE)) != std::string::npos) {
+    int pathStart = includeStart + INCLUDE_DIRECTIVE.length();
     int pathEnd = source.find(">", pathStart) - pathStart;
     int includeEnd = source.find("\n", includeStart) - includeStart;
     std::string path = source.substr(pathStart, pathEnd);
-    std::string includeSource = FileLoader::load(path.c_str());
+    bool isUniquePath = includeMap.find(path) == includeMap.end();
 
-    source.replace(includeStart, includeEnd, includeSource);
+    if (isUniquePath) {
+      std::string includeSource = FileLoader::load((SHADER_DIRECTORY + path).c_str());
+
+      includeMap.emplace(path, true);
+
+      source.replace(includeStart, includeEnd, includeSource);
+    } else {
+      source.replace(includeStart, includeEnd, "");
+    }
   }
+
+  includeMap.clear();
 
   const GLchar* shaderSource = source.c_str();
 
@@ -34,7 +48,7 @@ GLuint ShaderLoader::load(GLenum shaderType, const char* path) {
     char error[512];
 
     glGetShaderInfoLog(shader, 512, 0, error);
-    printf("Failed to compile shader: %s\n", path);
+    printf("[ShaderLoader] Failed to compile shader: %s\n", path);
     printf("%s\n", error);
   }
 

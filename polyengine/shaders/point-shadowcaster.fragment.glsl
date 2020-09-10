@@ -1,6 +1,6 @@
 #version 330 core
 
-#include <polyengine/shaders/helpers/lighting.glsl>
+#include <helpers/lighting.glsl>
 
 uniform sampler2D colorTexture;
 uniform sampler2D normalDepthTexture;

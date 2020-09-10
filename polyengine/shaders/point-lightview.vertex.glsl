@@ -1,11 +1,8 @@
 #version 330 core
 
-#include <polyengine/shaders/helpers/vertex-transformers.glsl>
-
-layout (location = 0) in vec3 vertexPosition;
-layout (location = 4) in int objectId;
-layout (location = 6) in mat4 modelMatrix;
+#include <helpers/attributes.glsl>
+#include <helpers/vertex-transformers.glsl>
 
 void main() {
-  gl_Position = modelMatrix * vec4(getTransformedVertex(vertexPosition, float(objectId)), 1.0);
+  gl_Position = Instance.matrix * vec4(getTransformedVertex(Vertex.position), 1.0);
 }

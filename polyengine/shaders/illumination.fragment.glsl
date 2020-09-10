@@ -2,7 +2,7 @@
 
 #define MAX_LIGHTS 128
 
-#include <polyengine/shaders/helpers/lighting.glsl>
+#include <helpers/lighting.glsl>
 
 const int POINT_LIGHT = 0;
 const int DIRECTIONAL_LIGHT = 1;

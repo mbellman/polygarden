@@ -7,7 +7,7 @@ std::string FileLoader::load(const char* path) {
   std::ifstream file(path);
 
   if (file.fail()) {
-    printf("Failed to load file: %s\n", path);
+    printf("[FileLoader] Error opening file: %s\n", path);
   } else {
     std::string line;
 
