@@ -13,7 +13,7 @@
 #include "opengl/SBuffer.h"
 #include "opengl/PointShadowBuffer.h"
 #include "subsystem/Geometry.h"
-#include "subsystem/Entities.h"
+#include "subsystem/entities/Entity.h"
 #include "subsystem/HeapList.h"
 #include "glut.h"
 

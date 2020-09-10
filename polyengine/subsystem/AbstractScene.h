@@ -5,7 +5,7 @@
 
 #include "subsystem/Stage.h"
 #include "subsystem/AssetCache.h"
-#include "subsystem/Entities.h"
+#include "subsystem/entities/Camera.h"
 #include "subsystem/InputSystem.h"
 
 class AbstractScene {

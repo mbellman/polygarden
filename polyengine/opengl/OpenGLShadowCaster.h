@@ -2,7 +2,8 @@
 
 #include <vector>
 
-#include "subsystem/Entities.h"
+#include "subsystem/entities/Light.h"
+#include "subsystem/entities/Camera.h"
 #include "subsystem/Math.h"
 #include "opengl/FrameBuffer.h"
 #include "opengl/OpenGLObject.h"

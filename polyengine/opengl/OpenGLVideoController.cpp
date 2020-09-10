@@ -14,8 +14,9 @@
 #include "opengl/ShaderLoader.h"
 #include "opengl/ScreenShader.h"
 #include "opengl/FrameBuffer.h"
+#include "subsystem/entities/Object.h"
+#include "subsystem/entities/Light.h"
 #include "subsystem/Math.h"
-#include "subsystem/Entities.h"
 
 OpenGLVideoController::OpenGLVideoController() {
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);

@@ -75,9 +75,6 @@
     <ClCompile Include="polyengine\subsystem\AssetCache.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="polyengine\subsystem\Entities.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="polyengine\subsystem\FileLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -109,6 +106,30 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="polyengine\opengl\OpenGLScreenQuad.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="polyengine\subsystem\entities\Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="polyengine\subsystem\entities\Cube.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="polyengine\subsystem\entities\Entity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="polyengine\subsystem\entities\Light.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="polyengine\subsystem\entities\Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="polyengine\subsystem\entities\Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="polyengine\subsystem\entities\Object.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="polyengine\subsystem\entities\Skybox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -437,9 +458,6 @@
     <ClInclude Include="polyengine\subsystem\AssetCache.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="polyengine\subsystem\Entities.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="polyengine\subsystem\FileLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -474,6 +492,30 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="polyengine\opengl\OpenGLScreenQuad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="polyengine\subsystem\entities\Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="polyengine\subsystem\entities\Cube.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="polyengine\subsystem\entities\Entity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="polyengine\subsystem\entities\Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="polyengine\subsystem\entities\Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="polyengine\subsystem\entities\Model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="polyengine\subsystem\entities\Object.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="polyengine\subsystem\entities\Skybox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

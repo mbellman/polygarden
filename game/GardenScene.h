@@ -3,7 +3,6 @@
 #include <map>
 #include <string>
 #include <subsystem/AbstractScene.h>
-#include <subsystem/Entities.h>
 
 class GardenScene : public AbstractScene {
 public:

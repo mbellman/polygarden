@@ -5,7 +5,7 @@
 
 #include "glew.h"
 #include "glut.h"
-#include "subsystem/Entities.h"
+#include "subsystem/entities/Object.h"
 #include "opengl/OpenGLTexture.h"
 #include "opengl/ShaderProgram.h"
 

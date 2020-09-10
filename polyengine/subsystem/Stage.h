@@ -5,7 +5,9 @@
 #include <string>
 #include <map>
 
-#include "subsystem/Entities.h"
+#include "subsystem/entities/Entity.h"
+#include "subsystem/entities/Light.h"
+#include "subsystem/entities/Object.h"
 #include "subsystem/HeapList.h"
 
 typedef std::function<void(Entity*)> EntityHandler;

@@ -2,7 +2,6 @@
 #include "opengl/OpenGLTexture.h"
 #include "opengl/ShaderProgram.h"
 #include "opengl/ShaderLoader.h"
-#include "subsystem/Entities.h"
 
 const static enum Buffer {
   VERTEX = 0,

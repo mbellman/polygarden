@@ -1,6 +1,9 @@
 #include <cmath>
 #include <algorithm>
-#include <subsystem/Entities.h>
+#include <subsystem/entities/Model.h>
+#include <subsystem/entities/Mesh.h>
+#include <subsystem/entities/Skybox.h>
+#include <subsystem/entities/Light.h>
 #include <subsystem/ObjLoader.h>
 #include <subsystem/RNG.h>
 
