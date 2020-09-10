@@ -73,20 +73,24 @@ public:
   unsigned int shadowCascadeLimit = 3;
   bool isEmissive = false;
   bool isReference = false;
-  bool isDirty = false;
 
   virtual ~Object();
 
   void clean();
+  void disable();
+  void enable();
   const float* getColorBuffer() const;
   const Matrix4& getMatrix() const;
   const float* getMatrixBuffer() const;
   const std::vector<Polygon*>& getPolygons() const;
   const Object* getReference() const;
+  unsigned int getTotalEnabledInstances() const;
   unsigned int getTotalInstances() const;
   bool hasInstances() const;
+  bool isDisabled() const;
   bool isInstance() const;
   void move(const Vec3f& movement);
+  void rehydrate();
   void rotate(const Vec3f& rotation);
   void setColor(const Vec3f& color);
   void setOrientation(const Vec3f& orientation);
@@ -112,7 +116,11 @@ private:
   Object* reference = this;
   float* matrixBuffer = nullptr;
   float* colorBuffer = nullptr;
+  bool shouldReallocateBuffers = true;
+  bool shouldRecomputeBuffers = false;
+  bool isEnabled = true;
 
+  void reallocateBuffers();
   void recomputeMatrix();
   void refreshColorBuffer();
   void refreshMatrixBuffer();

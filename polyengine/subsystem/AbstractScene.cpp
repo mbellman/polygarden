@@ -62,9 +62,7 @@ void AbstractScene::update(float dt) {
   }
 
   for (auto* object : stage.getObjects()) {
-    if (object->isDirty) {
-      object->clean();
-    }
+    object->rehydrate();
   }
 
   for (unsigned int i = 0; i < stage.getLights().length(); i++) {

@@ -12,6 +12,7 @@
 class OpenGLObject {
 public:
   OpenGLObject(const Object* object);
+  ~OpenGLObject();
 
   static void freeCachedResources();
 

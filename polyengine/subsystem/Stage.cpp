@@ -33,6 +33,10 @@ StageStats Stage::getStats() const {
   StageStats stats;
 
   for (auto* object : objects) {
+    if (object->isDisabled()) {
+      continue;
+    }
+
     stats.totalObjects++;
     stats.totalVertices += object->getReference()->getPolygons().size() * 3;
 

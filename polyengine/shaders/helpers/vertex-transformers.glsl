@@ -7,10 +7,10 @@ const float SPEED = 2.0;
 const float DEVIATION = 0.1;
 
 vec3 grass(vec3 position) {
-  float offset = sin(time * SPEED + gl_InstanceID + position.y * 0.25) * DEVIATION * position.y * grassTransformFactor;
+  float xOffset = sin(time * SPEED + position.y * 0.25) * DEVIATION * position.y * grassTransformFactor;
 
   return vec3(
-    position.x + offset,
+    position.x + xOffset,
     position.y,
     position.z
   );
@@ -18,11 +18,11 @@ vec3 grass(vec3 position) {
 
 vec3 tree(vec3 position) {
   float magnitude = sqrt(position.x * position.x + position.z * position.z);
-  float offset = sin(time * SPEED + gl_InstanceID) * DEVIATION * magnitude * min(position.y, 1.0) * treeTransformFactor;
+  float yOffset = sin(time * SPEED) * DEVIATION * magnitude * min(position.y, 1.0) * treeTransformFactor;
 
   return vec3(
     position.x,
-    position.y + offset,
+    position.y + yOffset,
     position.z
   );
 }

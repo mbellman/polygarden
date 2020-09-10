@@ -40,6 +40,16 @@ void GardenScene::addGrass() {
     blade->setPosition(getRandomGroundPosition());
     blade->setColor(Vec3f(0.2f, 0.5f, 0.2f));
     blade->rotate(Vec3f(0.0f, RNG::random(0.0f, M_PI * 2.0f), 0.0f));
+
+    blade->onUpdate = [=](float dt) {
+      Vec3f relativeBladePosition = viewMatrix * blade->position;
+
+      if (relativeBladePosition.z > 0.0f) {
+        blade->enable();
+      } else {
+        blade->disable();
+      }
+    };
   });
 }
 
@@ -301,6 +311,8 @@ void GardenScene::onInit() {
 void GardenScene::onUpdate(float dt) {
   float speedFactor = (inputSystem.isKeyHeld(Key::SHIFT) ? 70.0f : 20.0f);
 
+  viewMatrix = Matrix4::rotate(camera.orientation * Vec3f(1.0f, -1.0f, 1.0f)) * Matrix4::translate(camera.position.invert());
+
   if (inputSystem.isKeyHeld(Key::W)) {
     velocity += camera.getDirection().xz() * speedFactor;
   }
@@ -332,6 +344,16 @@ void GardenScene::spawnFlower(float x, float z) {
   Vec3f orientation = Vec3f(0.0f, RNG::random() * M_PI * 2.0f, 0.0f);
   float scale = RNG::random(6.0f, 10.0f);
 
+  auto toggleVisibility = [&](Object* object) {
+    Vec3f relativePosition = viewMatrix * object->position;
+
+    if (relativePosition.z > 0.0f) {
+      object->enable();
+    } else {
+      object->disable();
+    }
+  };
+
   stage.add<Model>([&](Model* flowerStalk) {
     flowerStalk->from(stage.get<Model>("flower-stalk"));
     flowerStalk->setPosition(position);
@@ -346,6 +368,8 @@ void GardenScene::spawnFlower(float x, float z) {
       if (t <= 1.0f) {
         flowerStalk->setScale(Easing::bounceOut(t) * scale);
       }
+
+      toggleVisibility(flowerStalk);
     };
   });
 
@@ -364,6 +388,8 @@ void GardenScene::spawnFlower(float x, float z) {
       if (t <= 1.0f) {
         flowerPetals->setScale(Easing::bounceOut(t) * scale);
       }
+
+      toggleVisibility(flowerPetals);
     };
   });
 }
@@ -372,6 +398,16 @@ void GardenScene::spawnLavender(float x, float z) {
   Vec3f position = getGroundPosition(x, z);
   Vec3f orientation = Vec3f(0.0f, RNG::random() * M_PI * 2.0f, 0.0f);
   float scale = RNG::random(15.0f, 20.0f);
+
+  auto toggleVisibility = [&](Object* object) {
+    Vec3f relativePosition = viewMatrix * object->position;
+
+    if (relativePosition.z > 0.0f) {
+      object->enable();
+    } else {
+      object->disable();
+    }
+  };
 
   stage.add<Model>([&](Model* stalk) {
     stalk->from(stage.get<Model>("lavender-stalk"));
@@ -387,6 +423,8 @@ void GardenScene::spawnLavender(float x, float z) {
       if (t <= 1.0f) {
         stalk->setScale(Easing::bounceOut(t) * scale);
       }
+
+      toggleVisibility(stalk);
     };
   });
 
@@ -404,11 +442,23 @@ void GardenScene::spawnLavender(float x, float z) {
       if (t <= 1.0f) {
         flowers->setScale(Easing::bounceOut(t) * scale);
       }
+
+      toggleVisibility(flowers);
     };
   });
 }
 
 void GardenScene::spawnSprout(float x, float z) {
+  auto toggleVisibility = [&](Object* object) {
+    Vec3f relativePosition = viewMatrix * object->position;
+
+    if (relativePosition.z > 0.0f) {
+      object->enable();
+    } else {
+      object->disable();
+    }
+  };
+
   stage.add<Model>([&](Model* sprout) {
     sprout->from(stage.get<Model>("sprout"));
     sprout->setPosition(getGroundPosition(x, z));
@@ -423,6 +473,8 @@ void GardenScene::spawnSprout(float x, float z) {
       if (t <= 1.0f) {
         sprout->setScale(Easing::bounceOut(t) * 5.0f);
       }
+
+      toggleVisibility(sprout);
     };
   });
 }

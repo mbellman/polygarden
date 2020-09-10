@@ -196,6 +196,15 @@ Matrix4 Matrix4::translate(const Vec3f& translation) {
   };
 }
 
+Matrix4 Matrix4::transpose() const {
+  return {
+    m[0], m[4], m[8], m[12],
+    m[1], m[5], m[9], m[13],
+    m[2], m[6], m[10], m[14],
+    m[3], m[7], m[11], m[15]
+  };
+}
+
 Matrix4 Matrix4::operator*(const Matrix4& matrix) const {
   Matrix4 product;
 
@@ -212,13 +221,17 @@ Matrix4 Matrix4::operator*(const Matrix4& matrix) const {
   return product;
 }
 
-Matrix4 Matrix4::transpose() const {
-  return {
-    m[0], m[4], m[8], m[12],
-    m[1], m[5], m[9], m[13],
-    m[2], m[6], m[10], m[14],
-    m[3], m[7], m[11], m[15]
-  };
+Vec3f Matrix4::operator*(const Vec3f& vector) const {
+  float x = vector.x;
+  float y = vector.y;
+  float z = vector.z;
+  float w = 1.0f;
+
+  return Vec3f(
+    x * m[0] + y * m[1] + z * m[2] + w * m[3],
+    x * m[4] + y * m[5] + z * m[6] + w * m[7],
+    x * m[8] + y * m[9] + z * m[10] + w * m[11]
+  );
 }
 
 /**

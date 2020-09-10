@@ -47,6 +47,10 @@ OpenGLObject::OpenGLObject(const Object* object) {
   }
 }
 
+OpenGLObject::~OpenGLObject() {
+  // TODO
+}
+
 void OpenGLObject::bindTextures() {
   if (glTexture != nullptr) {
     glTexture->use();
@@ -221,18 +225,18 @@ bool OpenGLObject::hasTexture() const {
 }
 
 void OpenGLObject::render() {
-  unsigned int totalInstances = sourceObject->getTotalInstances();
+  unsigned int totalEnabledInstances = sourceObject->getTotalEnabledInstances();
 
-  if (totalInstances > 0) {
+  if (totalEnabledInstances > 0) {
     bindTextures();
     bufferMatrixData();
     bufferColorData();
 
     glBindVertexArray(vao);
-    glDrawArraysInstanced(GL_TRIANGLES, 0, sourceObject->getPolygons().size() * 3, totalInstances);
+    glDrawArraysInstanced(GL_TRIANGLES, 0, sourceObject->getPolygons().size() * 3, totalEnabledInstances);
   }
 
-  previousTotalInstances = totalInstances;
+  previousTotalInstances = sourceObject->getTotalInstances();
 }
 
 std::map<int, OpenGLTexture*> OpenGLObject::textureMap;

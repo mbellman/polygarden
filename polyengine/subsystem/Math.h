@@ -87,6 +87,7 @@ struct Matrix4 {
   static Matrix4 translate(const Vec3f& translation);
 
   Matrix4 operator*(const Matrix4& matrix) const;
+  Vec3f operator*(const Vec3f& vector) const;
 
   void debug() const;
   Matrix4 transpose() const;

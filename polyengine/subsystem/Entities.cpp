@@ -133,13 +133,18 @@ void Object::addVertex(const Vec3f& position, const Vec2f& uv) {
   vertices.push_back(vertex);
 }
 
-void Object::clean() {
-  if (getTotalInstances() > 0) {
-    refreshMatrixBuffer();
-    refreshColorBuffer();
+void Object::disable() {
+  if (isEnabled) {
+    isEnabled = false;
+    reference->shouldRecomputeBuffers = true;
   }
+}
 
-  isDirty = false;
+void Object::enable() {
+  if (!isEnabled) {
+    isEnabled = true;
+    reference->shouldRecomputeBuffers = true;
+  }
 }
 
 const float* Object::getColorBuffer() const {
@@ -162,6 +167,22 @@ const Object* Object::getReference() const {
   return reference;
 }
 
+unsigned int Object::getTotalEnabledInstances() const {
+  if (!hasInstances() && !isReference) {
+    return 1;
+  }
+
+  unsigned int total = 0;
+
+  for (auto* instance : instances) {
+    if (instance->isEnabled) {
+      total++;
+    }
+  }
+
+  return total;
+}
+
 unsigned int Object::getTotalInstances() const {
   return (
     hasInstances()
@@ -176,12 +197,29 @@ bool Object::hasInstances() const {
   return instances.length() > 0;
 }
 
+bool Object::isDisabled() const {
+  return !isEnabled;
+}
+
 bool Object::isInstance() const {
   return reference != this;
 }
 
 void Object::move(const Vec3f& movement) {
   setPosition(position + movement);
+}
+
+void Object::reallocateBuffers() {
+  if (matrixBuffer != nullptr) {
+    delete[] matrixBuffer;
+  }
+
+  if (colorBuffer != nullptr) {
+    delete[] colorBuffer;
+  }
+
+  colorBuffer = new float[getTotalInstances() * 3];
+  matrixBuffer = new float[getTotalInstances() * 16];
 }
 
 void Object::recomputeMatrix() {
@@ -191,21 +229,23 @@ void Object::recomputeMatrix() {
     Matrix4::scale(scale)
   ).transpose();
 
-  reference->isDirty = true;
+  reference->shouldRecomputeBuffers = true;
 }
 
 void Object::refreshColorBuffer() {
-  if (colorBuffer != nullptr) {
-    delete[] colorBuffer;
-  }
-
-  colorBuffer = new float[getTotalInstances() * 3];
-
   if (hasInstances()) {
+    unsigned int idx = 0;
+
     for (unsigned int i = 0; i < instances.length(); i++) {
-      colorBuffer[i * 3] = instances[i]->color.x;
-      colorBuffer[i * 3 + 1] = instances[i]->color.y;
-      colorBuffer[i * 3 + 2] = instances[i]->color.z;
+      auto* instance = instances[i];
+
+      if (instance->isEnabled) {
+        colorBuffer[idx * 3] = instances[i]->color.x;
+        colorBuffer[idx * 3 + 1] = instances[i]->color.y;
+        colorBuffer[idx * 3 + 2] = instances[i]->color.z;
+
+        idx++;
+      }
     }
   } else {
     colorBuffer[0] = color.x;
@@ -215,22 +255,37 @@ void Object::refreshColorBuffer() {
 }
 
 void Object::refreshMatrixBuffer() {
-  if (matrixBuffer != nullptr) {
-    delete[] matrixBuffer;
-  }
+  if (hasInstances()) {
+    unsigned int idx = 0;
 
-  matrixBuffer = new float[getTotalInstances() * 16];
-
-  if (hasInstances()) {  
     for (unsigned int i = 0; i < instances.length(); i++) {
       auto* instance = instances[i];
-      const Matrix4& matrix = instance->getMatrix();
 
-      memcpy(&matrixBuffer[i * 16], matrix.m, 16 * sizeof(float));
+      if (instance->isEnabled) {
+        const Matrix4& matrix = instance->getMatrix();
+
+        memcpy(&matrixBuffer[idx++ * 16], matrix.m, 16 * sizeof(float));
+      }
     }
   } else {
     memcpy(matrixBuffer, matrix.m, 16 * sizeof(float));
   }
+}
+
+void Object::rehydrate() {
+  if (!isInstance() && getTotalInstances() > 0) {
+    if (shouldReallocateBuffers) {
+      reallocateBuffers();
+    }
+
+    if (shouldRecomputeBuffers) {
+      refreshMatrixBuffer();
+      refreshColorBuffer();
+    }
+  }
+
+  shouldReallocateBuffers = false;
+  shouldRecomputeBuffers = false;
 }
 
 void Object::rotate(const Vec3f& rotation) {
@@ -241,7 +296,7 @@ void Object::rotate(const Vec3f& rotation) {
 
 void Object::setColor(const Vec3f& color) {
   this->color = color;
-  reference->isDirty = true;
+  reference->shouldRecomputeBuffers = true;
 }
 
 void Object::setOrientation(const Vec3f& orientation) {
@@ -275,13 +330,15 @@ void Object::setScale(float scale) {
 void Object::trackInstance(Object* instance) {
   instances.push(instance);
 
-  isDirty = true;
+  shouldReallocateBuffers = true;
+  shouldRecomputeBuffers = true;
 }
 
 void Object::untrackInstance(Object* instance) {
   instances.remove(instance);
 
-  isDirty = true;
+  shouldReallocateBuffers = true;
+  shouldRecomputeBuffers = true;
 }
 
 void Object::updateNormals() {

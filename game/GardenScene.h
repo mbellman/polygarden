@@ -12,6 +12,7 @@ public:
 
 private:
   Vec3f velocity = Vec3f(0.0f);
+  Matrix4 viewMatrix;
 
   void addGrass();
   void addRocks();
