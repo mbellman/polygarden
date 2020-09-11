@@ -123,13 +123,13 @@
     <ClCompile Include="polyengine\subsystem\entities\Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="polyengine\subsystem\entities\Model.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="polyengine\subsystem\entities\Object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="polyengine\subsystem\entities\Skybox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="polyengine\subsystem\entities\Plane.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -509,13 +509,13 @@
     <ClInclude Include="polyengine\subsystem\entities\Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="polyengine\subsystem\entities\Model.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="polyengine\subsystem\entities\Object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="polyengine\subsystem\entities\Skybox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="polyengine\subsystem\entities\Plane.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,14 +1,14 @@
 #pragma once
 
 #include "subsystem/entities/Object.h"
-#include "subsystem/Math.h"
+#include "subsystem/ObjLoader.h"
 
 class Mesh : public Object {
 public:
-  void displace(std::function<void(Vec3f&, int, int)> offsetHandler);
-  void setSize(int w, int h, float tileSize, Vec2f textureCycle = Vec2f(1.0f, 1.0f));
+  void from(const ObjLoader& loader);
+  void from(Mesh* reference);
 
 private:
-  int width;
-  int height;
+  void buildTexturedMesh(const ObjLoader& loader);
+  void buildUntexturedMesh(const ObjLoader& loader);
 };

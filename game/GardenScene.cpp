@@ -1,7 +1,7 @@
 #include <cmath>
 #include <algorithm>
-#include <subsystem/entities/Model.h>
 #include <subsystem/entities/Mesh.h>
+#include <subsystem/entities/Plane.h>
 #include <subsystem/entities/Skybox.h>
 #include <subsystem/entities/Light.h>
 #include <subsystem/ObjLoader.h>
@@ -30,15 +30,15 @@ static Vec3f getRandomGroundPosition() {
 }
 
 void GardenScene::addGrass() {
-  stage.add<Model>("grass", [&](Model* grass) {
+  stage.add<Mesh>("grass", [&](Mesh* grass) {
     grass->from(ObjLoader("./assets/grass/model.obj"));
     grass->effects = ObjectEffects::GRASS_ANIMATION;
     grass->shadowCascadeLimit = 0;
     grass->isReference = true;
   });
 
-  stage.addMultiple<Model, 10000>([&](Model* blade, int index) {
-    blade->from(stage.get<Model>("grass"));
+  stage.addMultiple<Mesh, 10000>([&](Mesh* blade, int index) {
+    blade->from(stage.get<Mesh>("grass"));
     blade->setScale(RNG::random(5.0f, 15.0f));
     blade->setPosition(getRandomGroundPosition());
     blade->setColor(Vec3f(0.2f, 0.5f, 0.2f));
@@ -57,15 +57,15 @@ void GardenScene::addGrass() {
 }
 
 void GardenScene::addRocks() {
-  stage.add<Model>("rock", [&](Model* rock) {
+  stage.add<Mesh>("rock", [&](Mesh* rock) {
     rock->from(ObjLoader("./assets/rock-1/model.obj"));
     rock->texture = assets.createTexture("./assets/rock-1/texture.png");
     rock->normalMap = assets.createTexture("./assets/rock-1/normals.png");
     rock->isReference = true;
   });
 
-  stage.addMultiple<Model, 20>([&](Model* rock, int index) {
-    rock->from(stage.get<Model>("rock"));
+  stage.addMultiple<Mesh, 20>([&](Mesh* rock, int index) {
+    rock->from(stage.get<Mesh>("rock"));
     rock->setPosition(getRandomGroundPosition());
     rock->setScale(RNG::random(15.0f, 30.0f));
     rock->setOrientation(Vec3f(0.0f, RNG::random(0.0f, M_PI * 2.0f), 0.0f));
@@ -73,37 +73,37 @@ void GardenScene::addRocks() {
 }
 
 void GardenScene::addTrees() {
-  stage.add<Model>("tree", [&](Model* tree) {
+  stage.add<Mesh>("tree", [&](Mesh* tree) {
     tree->from(ObjLoader("./assets/pine-tree/trunk-model.obj"));
     tree->texture = assets.createTexture("./assets/pine-tree/bark-texture.png");
     tree->normalMap = assets.createTexture("./assets/pine-tree/bark-normals.png");
     tree->isReference = true;
   });
 
-  stage.add<Model>("leaves", [&](Model* leaves) {
+  stage.add<Mesh>("leaves", [&](Mesh* leaves) {
     leaves->from(ObjLoader("./assets/pine-tree/leaves1-model.obj"));
     leaves->texture = assets.createTexture("./assets/pine-tree/leaves1-texture.png");
     leaves->isReference = true;
   });
 
-  stage.add<Model>("leaves-2", [&](Model* leaves) {
+  stage.add<Mesh>("leaves-2", [&](Mesh* leaves) {
     leaves->from(ObjLoader("./assets/pine-tree/leaves2-model.obj"));
     leaves->texture = assets.createTexture("./assets/pine-tree/leaves2-texture.png");
     leaves->isReference = true;
   });
 
-  stage.add<Model>("mushroom-base", [&](Model* mushroomBase) {
+  stage.add<Mesh>("mushroom-base", [&](Mesh* mushroomBase) {
     mushroomBase->from(ObjLoader("./assets/mushroom/base-model.obj"));
     mushroomBase->isReference = true;
   });
 
-  stage.add<Model>("mushroom-head", [&](Model* mushroomHead) {
+  stage.add<Mesh>("mushroom-head", [&](Mesh* mushroomHead) {
     mushroomHead->from(ObjLoader("./assets/mushroom/head-model.obj"));
     mushroomHead->isEmissive = true;
     mushroomHead->isReference = true;
   });
 
-  stage.addMultiple<Model, 10>([&](Model* tree, int index) {
+  stage.addMultiple<Mesh, 10>([&](Mesh* tree, int index) {
     Vec3f position = getRandomGroundPosition();
     Vec3f mushroomPosition = position + Vec3f(RNG::random(-30.0f, 30.0f), 0.0f, RNG::random(-30.0f, 30.0f));
     Vec3f orientation(0.0f, RNG::random(0.0f, M_PI * 2.0f), 0.0f);
@@ -111,36 +111,36 @@ void GardenScene::addTrees() {
 
     mushroomPosition.y = getGroundHeight(mushroomPosition.x, mushroomPosition.z);
 
-    tree->from(stage.get<Model>("tree"));
+    tree->from(stage.get<Mesh>("tree"));
     tree->setScale(scale);
     tree->setColor(Vec3f(0.2f, 0.175f, 0.05f));
     tree->setOrientation(orientation);
     tree->setPosition(position);
 
-    stage.add<Model>([&](Model* leaves) {
-      leaves->from(stage.get<Model>("leaves"));
+    stage.add<Mesh>([&](Mesh* leaves) {
+      leaves->from(stage.get<Mesh>("leaves"));
       leaves->setScale(scale);
       leaves->setPosition(position);
       leaves->setOrientation(orientation);
     });
 
-    stage.add<Model>([&](Model* leaves2) {
-      leaves2->from(stage.get<Model>("leaves-2"));
+    stage.add<Mesh>([&](Mesh* leaves2) {
+      leaves2->from(stage.get<Mesh>("leaves-2"));
       leaves2->setScale(scale);
       leaves2->setPosition(position);
       leaves2->setOrientation(orientation);
     });
 
-    stage.add<Model>([&](Model* mushroomBase) {
-      mushroomBase->from(stage.get<Model>("mushroom-base"));
+    stage.add<Mesh>([&](Mesh* mushroomBase) {
+      mushroomBase->from(stage.get<Mesh>("mushroom-base"));
       mushroomBase->setScale(4.0f);
       mushroomBase->setColor(Vec3f(0.8f, 0.65f, 0.5f));
       mushroomBase->setOrientation(orientation);
       mushroomBase->setPosition(mushroomPosition);
     });
 
-    stage.add<Model>([&](Model* mushroomHead) {
-      mushroomHead->from(stage.get<Model>("mushroom-head"));
+    stage.add<Mesh>([&](Mesh* mushroomHead) {
+      mushroomHead->from(stage.get<Mesh>("mushroom-head"));
       mushroomHead->setScale(4.0f);
       mushroomHead->setOrientation(orientation);
       mushroomHead->setPosition(mushroomPosition);
@@ -177,26 +177,26 @@ void GardenScene::addTrees() {
 }
 
 void GardenScene::onInit() {
-  stage.add<Model>("seed", [](Model* seed) {
+  stage.add<Mesh>("seed", [](Mesh* seed) {
     seed->from(ObjLoader("./assets/seed/model.obj"));
     seed->isReference = true;
   });
 
-  stage.add<Model>("sprout", [](Model* sprout) {
+  stage.add<Mesh>("sprout", [](Mesh* sprout) {
     sprout->from(ObjLoader("./assets/sprout/model.obj"));
     sprout->effects = ObjectEffects::GRASS_ANIMATION;
     sprout->shadowCascadeLimit = 2;
     sprout->isReference = true;
   });
 
-  stage.add<Model>("flower-stalk", [](Model* flowerStalk) {
+  stage.add<Mesh>("flower-stalk", [](Mesh* flowerStalk) {
     flowerStalk->from(ObjLoader("./assets/small-flower/stalk-model.obj"));
     flowerStalk->effects = ObjectEffects::GRASS_ANIMATION;
     flowerStalk->shadowCascadeLimit = 2;
     flowerStalk->isReference = true;
   });
   
-  stage.add<Model>("flower-petals", [&](Model* flowerPetals) {
+  stage.add<Mesh>("flower-petals", [&](Mesh* flowerPetals) {
     flowerPetals->from(ObjLoader("./assets/small-flower/petals-model.obj"));
     flowerPetals->normalMap = assets.createTexture("./assets/small-flower/petals-normals.png");
     flowerPetals->effects = ObjectEffects::TREE_ANIMATION | ObjectEffects::GRASS_ANIMATION;
@@ -204,32 +204,32 @@ void GardenScene::onInit() {
     flowerPetals->isReference = true;
   });
 
-  stage.add<Model>("lavender-stalk", [&](Model* lavenderStalk) {
+  stage.add<Mesh>("lavender-stalk", [&](Mesh* lavenderStalk) {
     lavenderStalk->from(ObjLoader("./assets/lavender/stalk-model.obj"));
     lavenderStalk->effects = ObjectEffects::GRASS_ANIMATION;
     lavenderStalk->shadowCascadeLimit = 2;
     lavenderStalk->isReference = true;
   });
 
-  stage.add<Model>("lavender-flowers", [&](Model* lavenderFlowers) {
+  stage.add<Mesh>("lavender-flowers", [&](Mesh* lavenderFlowers) {
     lavenderFlowers->from(ObjLoader("./assets/lavender/flowers-model.obj"));
     lavenderFlowers->effects = ObjectEffects::GRASS_ANIMATION;
     lavenderFlowers->shadowCascadeLimit = 2;
     lavenderFlowers->isReference = true;
   });
 
-  stage.add<Model>("lantern", [&](Model* lantern) {
+  stage.add<Mesh>("lantern", [&](Mesh* lantern) {
     lantern->from(ObjLoader("./assets/lantern/model.obj"));
     lantern->texture = assets.createTexture("./assets/lantern/texture.png");
     lantern->normalMap = assets.createTexture("./assets/lantern/normals.png");
     lantern->isReference = true;
   });
 
-  stage.addMultiple<Model, 10>([&](Model* lantern, int index) {
+  stage.addMultiple<Mesh, 10>([&](Mesh* lantern, int index) {
     Vec3f lanternPosition = getRandomGroundPosition() - Vec3f(0.0f, 5.0f, 0.0f);
     Vec3f lightPosition = lanternPosition + Vec3f(0.0f, 75.0f, 0.0f);
 
-    lantern->from(stage.get<Model>("lantern"));
+    lantern->from(stage.get<Mesh>("lantern"));
     lantern->setScale(100.0f);
     lantern->setPosition(lanternPosition);
 
@@ -261,15 +261,15 @@ void GardenScene::onInit() {
     light->direction = Vec3f(0.0f, -1.0f, 0.0f);
   });
 
-  stage.add<Mesh>([&](Mesh* mesh) {
+  stage.add<Plane>([&](Plane* plane) {
     float tileSize = 40.0f;
 
-    mesh->setSize(60, 60, tileSize, Vec2f(5.0f, 5.0f));
-    mesh->setPosition(Vec3f(0.0f));
-    mesh->texture = assets.createTexture("./assets/ground/grass-texture.png");
-    mesh->shadowCascadeLimit = 0;
+    plane->setSize(60, 60, tileSize, Vec2f(5.0f, 5.0f));
+    plane->setPosition(Vec3f(0.0f));
+    plane->texture = assets.createTexture("./assets/ground/grass-texture.png");
+    plane->shadowCascadeLimit = 0;
 
-    mesh->displace([=](Vec3f& vertex, int x, int z) {
+    plane->displaceVertices([=](Vec3f& vertex, int x, int z) {
       float properX = x * tileSize - 1200.0f;
       float properZ = 1200.0f - z * tileSize;
 
@@ -360,8 +360,8 @@ void GardenScene::spawnFlower(float x, float z) {
     }
   };
 
-  stage.add<Model>([&](Model* flowerStalk) {
-    flowerStalk->from(stage.get<Model>("flower-stalk"));
+  stage.add<Mesh>([&](Mesh* flowerStalk) {
+    flowerStalk->from(stage.get<Mesh>("flower-stalk"));
     flowerStalk->setPosition(position);
     flowerStalk->setOrientation(orientation);
     flowerStalk->color = Vec3f(0.3f, 1.0f, 0.4f);
@@ -379,8 +379,8 @@ void GardenScene::spawnFlower(float x, float z) {
     };
   });
 
-  stage.add<Model>([&](Model* flowerPetals) {
-    flowerPetals->from(stage.get<Model>("flower-petals"));
+  stage.add<Mesh>([&](Mesh* flowerPetals) {
+    flowerPetals->from(stage.get<Mesh>("flower-petals"));
     flowerPetals->setPosition(position);
     flowerPetals->setOrientation(orientation);
     flowerPetals->color = Vec3f(RNG::random(), RNG::random(), RNG::random());
@@ -415,8 +415,8 @@ void GardenScene::spawnLavender(float x, float z) {
     }
   };
 
-  stage.add<Model>([&](Model* stalk) {
-    stalk->from(stage.get<Model>("lavender-stalk"));
+  stage.add<Mesh>([&](Mesh* stalk) {
+    stalk->from(stage.get<Mesh>("lavender-stalk"));
     stalk->setPosition(position);
     stalk->setOrientation(orientation);
     stalk->setColor(Vec3f(0.2f, 0.75f, 0.4f));
@@ -434,8 +434,8 @@ void GardenScene::spawnLavender(float x, float z) {
     };
   });
 
-  stage.add<Model>([&](Model* flowers) {
-    flowers->from(stage.get<Model>("lavender-flowers"));
+  stage.add<Mesh>([&](Mesh* flowers) {
+    flowers->from(stage.get<Mesh>("lavender-flowers"));
     flowers->setPosition(position);
     flowers->setOrientation(orientation);
     flowers->setColor(Vec3f(0.5f, 0.2f, 0.8f));
@@ -465,8 +465,8 @@ void GardenScene::spawnSprout(float x, float z) {
     }
   };
 
-  stage.add<Model>([&](Model* sprout) {
-    sprout->from(stage.get<Model>("sprout"));
+  stage.add<Mesh>([&](Mesh* sprout) {
+    sprout->from(stage.get<Mesh>("sprout"));
     sprout->setPosition(getGroundPosition(x, z));
     sprout->setOrientation(Vec3f(0.0f, RNG::random() * M_PI * 2.0f, 0.0f));
     sprout->color = Vec3f(0.25f, 1.0f, 0.5f);
@@ -488,8 +488,8 @@ void GardenScene::spawnSprout(float x, float z) {
 void GardenScene::throwSeeds() {
   bool shouldSpawnLavender = RNG::random() < 0.2f;
 
-  stage.addMultiple<Model, 5>([&](Model* seed, int index) {
-    seed->from(stage.get<Model>("seed"));
+  stage.addMultiple<Mesh, 5>([&](Mesh* seed, int index) {
+    seed->from(stage.get<Mesh>("seed"));
     seed->setScale(0.5f);
     seed->setPosition(camera.position + camera.getDirection() * 50.0f);
     seed->color = Vec3f(0.6f, 0.5f, 0.2f);
