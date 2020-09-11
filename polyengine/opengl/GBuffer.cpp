@@ -28,18 +28,18 @@ void GBuffer::createFrameBuffer(unsigned int width, unsigned int height) {
 
 void GBuffer::createShaderPrograms() {
   geometryProgram.create();
-  geometryProgram.attachShader(ShaderLoader::loadVertexShader("./polyengine/shaders/geometry.vertex.glsl"));
-  geometryProgram.attachShader(ShaderLoader::loadFragmentShader("./polyengine/shaders/geometry.fragment.glsl"));
+  geometryProgram.attachShader(ShaderLoader::loadVertexShader("./shaders/geometry.vertex.glsl"));
+  geometryProgram.attachShader(ShaderLoader::loadFragmentShader("./shaders/geometry.fragment.glsl"));
   geometryProgram.link();
 
   illuminationProgram.create();
-  illuminationProgram.attachShader(ShaderLoader::loadVertexShader("./polyengine/shaders/quad.vertex.glsl"));
-  illuminationProgram.attachShader(ShaderLoader::loadFragmentShader("./polyengine/shaders/illumination.fragment.glsl"));
+  illuminationProgram.attachShader(ShaderLoader::loadVertexShader("./shaders/quad.vertex.glsl"));
+  illuminationProgram.attachShader(ShaderLoader::loadFragmentShader("./shaders/illumination.fragment.glsl"));
   illuminationProgram.link();
 
   albedoProgram.create();
-  albedoProgram.attachShader(ShaderLoader::loadVertexShader("./polyengine/shaders/quad.vertex.glsl"));
-  albedoProgram.attachShader(ShaderLoader::loadFragmentShader("./polyengine/shaders/albedo.fragment.glsl"));
+  albedoProgram.attachShader(ShaderLoader::loadVertexShader("./shaders/quad.vertex.glsl"));
+  albedoProgram.attachShader(ShaderLoader::loadFragmentShader("./shaders/albedo.fragment.glsl"));
   albedoProgram.link();
 }
 

@@ -155,7 +155,7 @@ ShaderProgram* OpenGLObject::createShaderProgram(std::string path) {
     auto* program = new ShaderProgram();
 
     program->create();
-    program->attachShader(ShaderLoader::loadVertexShader("./polyengine/shaders/geometry.vertex.glsl"));
+    program->attachShader(ShaderLoader::loadVertexShader("./shaders/geometry.vertex.glsl"));
     program->attachShader(ShaderLoader::loadFragmentShader(path.c_str()));
     program->link();
     program->use();

@@ -2,7 +2,7 @@
 
 ScreenShader::ScreenShader(const char* shaderPath) {
   program.create();
-  program.attachShader(ShaderLoader::loadVertexShader("./polyengine/shaders/quad.vertex.glsl"));
+  program.attachShader(ShaderLoader::loadVertexShader("./shaders/quad.vertex.glsl"));
   program.attachShader(ShaderLoader::loadFragmentShader(shaderPath));
   program.link();
 

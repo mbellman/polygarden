@@ -40,9 +40,9 @@ OpenGLVideoController::~OpenGLVideoController() {
 }
 
 void OpenGLVideoController::createScreenShaders() {
-  auto* dofShader = new ScreenShader("./polyengine/shaders/dof.fragment.glsl");
-  auto* preBloomShader = new ScreenShader("./polyengine/shaders/prebloom.fragment.glsl");
-  auto* postBloomShader = new ScreenShader("./polyengine/shaders/postbloom.fragment.glsl");
+  auto* dofShader = new ScreenShader("./shaders/dof.fragment.glsl");
+  auto* preBloomShader = new ScreenShader("./shaders/prebloom.fragment.glsl");
+  auto* postBloomShader = new ScreenShader("./shaders/postbloom.fragment.glsl");
 
   // Depth-of-field
   dofShader->onCreateFrameBuffer([=](const ShaderProgram& program, auto screen) {

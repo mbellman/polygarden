@@ -11,7 +11,7 @@ Texture::Texture(std::string path) {
   surface = IMG_Load(path.c_str());
 
   if (!surface) {
-    printf("Failed to load texture: %s\n", path);
+    printf("[Texture] Failed to load texture: %s\n", path);
   }
 }
 

@@ -6,7 +6,7 @@
 #include "opengl/ShaderLoader.h"
 #include "subsystem/FileLoader.h"
 
-const std::string SHADER_DIRECTORY = "polyengine/shaders/";
+const std::string SHADER_DIRECTORY = "shaders/";
 const std::string INCLUDE_DIRECTIVE = "#include <";
 
 GLuint ShaderLoader::load(GLenum shaderType, const char* path) {
