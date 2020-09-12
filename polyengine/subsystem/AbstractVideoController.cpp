@@ -3,7 +3,6 @@
 
 AbstractVideoController::~AbstractVideoController() {
   SDL_DestroyWindow(sdlWindow);
-  SDL_Quit();
 }
 
 const AbstractScene* AbstractVideoController::getScene() const {

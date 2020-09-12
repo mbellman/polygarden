@@ -14,6 +14,8 @@ Window::~Window() {
   videoController->onDestroy();
 
   delete videoController;
+
+  SDL_Quit();
 }
 
 void Window::handleStats() {
@@ -45,6 +47,8 @@ void Window::open(const char* title, Region2d<int> region) {
 void Window::run() {
   int lastTick = SDL_GetTicks();
 
+  // TODO: Detect SDL_QUIT events in Window, rather than
+  // relying on AbstractVideoController to 'report' the event
   while (videoController->isActive()) {
     float dt = (SDL_GetTicks() - lastTick) / 1000.0f;
 
@@ -61,5 +65,7 @@ void Window::run() {
 }
 
 void Window::setVideoController(AbstractVideoController* videoController) {
+  // TODO: Allow video controller switching to perform a scene
+  // handoff and delete the existing video controller instance
   this->videoController = videoController;
 }
