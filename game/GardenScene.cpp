@@ -290,14 +290,14 @@ void GardenScene::onInit() {
   addRocks();
   addTrees();
 
-  inputSystem.onMouseMotion([=](const SDL_MouseMotionEvent& event) {
+  input.onMouseMotion([=](const SDL_MouseMotionEvent& event) {
     if (SDL_GetRelativeMouseMode()) {
       camera.orientation.x -= event.yrel / 1000.0f;
       camera.orientation.y += event.xrel / 1000.0f;
     }
   });
 
-  inputSystem.onMouseButton([=](const SDL_MouseButtonEvent& event) {
+  input.onMouseButton([=](const SDL_MouseButtonEvent& event) {
     if (event.type == SDL_MOUSEBUTTONDOWN) {
       if (SDL_GetRelativeMouseMode() == SDL_TRUE) {
         throwSeeds();
@@ -307,7 +307,7 @@ void GardenScene::onInit() {
     }
   });
 
-  inputSystem.onKeyDown([=](const SDL_KeyboardEvent& event) {
+  input.onKeyDown([=](const SDL_KeyboardEvent& event) {
     if (event.keysym.sym == SDLK_ESCAPE) {
       SDL_SetRelativeMouseMode(SDL_FALSE);
     }
@@ -315,23 +315,23 @@ void GardenScene::onInit() {
 }
 
 void GardenScene::onUpdate(float dt) {
-  float speedFactor = (inputSystem.isKeyHeld(Key::SHIFT) ? 70.0f : 20.0f);
+  float speedFactor = (input.isKeyHeld(Key::SHIFT) ? 70.0f : 20.0f);
 
   viewMatrix = Matrix4::rotate(camera.orientation * Vec3f(1.0f, -1.0f, 1.0f)) * Matrix4::translate(camera.position.invert());
 
-  if (inputSystem.isKeyHeld(Key::W)) {
+  if (input.isKeyHeld(Key::W)) {
     velocity += camera.getDirection().xz() * speedFactor;
   }
 
-  if (inputSystem.isKeyHeld(Key::A)) {
+  if (input.isKeyHeld(Key::A)) {
     velocity += camera.getLeftDirection().xz() * speedFactor;
   }
 
-  if (inputSystem.isKeyHeld(Key::S)) {
+  if (input.isKeyHeld(Key::S)) {
     velocity -= camera.getDirection().xz() * speedFactor;
   }
 
-  if (inputSystem.isKeyHeld(Key::D)) {
+  if (input.isKeyHeld(Key::D)) {
     velocity += camera.getRightDirection().xz() * speedFactor;
   }
 

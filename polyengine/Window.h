@@ -16,8 +16,7 @@ public:
   void setVideoController(AbstractVideoController* videoController);
 
 private:
-  AbstractVideoController* videoController = 0;
-  InputSystem inputSystem;
+  AbstractVideoController* videoController = nullptr;
   Stats stats;
 
   void handleStats();

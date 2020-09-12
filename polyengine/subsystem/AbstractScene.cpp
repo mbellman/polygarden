@@ -13,7 +13,7 @@ const Camera& AbstractScene::getCamera() const {
 }
 
 InputSystem& AbstractScene::getInputSystem() {
-  return inputSystem;
+  return input;
 }
 
 float AbstractScene::getRunningTime() {
@@ -39,10 +39,6 @@ void AbstractScene::onEntityAdded(EntityHandler handler) {
 void AbstractScene::onEntityRemoved(EntityHandler handler) {
   stage.onEntityRemoved(handler);
 }
-
-void AbstractScene::onInit() {}
-
-void AbstractScene::onUpdate(float dt) {}
 
 void AbstractScene::update(float dt) {
   onUpdate(dt);

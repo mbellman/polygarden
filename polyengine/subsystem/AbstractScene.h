@@ -19,14 +19,14 @@ public:
   virtual const Stage& getStage() const final;
   void onEntityAdded(EntityHandler handler);
   void onEntityRemoved(EntityHandler handler);
-  virtual void onInit();
-  virtual void onUpdate(float dt);
+  virtual void onInit() {};
+  virtual void onUpdate(float dt) {};
   virtual void update(float dt) final;
 
 protected:
   Stage stage;
   AssetCache assets;
-  InputSystem inputSystem;
+  InputSystem input;
   Camera camera;
 
   std::function<float()> getTimer();

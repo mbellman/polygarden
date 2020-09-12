@@ -25,10 +25,6 @@ bool AbstractVideoController::isActive() const {
   return !didCloseWindow;
 }
 
-void AbstractVideoController::onDestroy() {}
-
-void AbstractVideoController::onScreenSizeChange(int width, int height) {}
-
 void AbstractVideoController::pollEvents() {
   SDL_Event event;
 
