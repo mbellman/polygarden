@@ -4,10 +4,6 @@
 #include "subsystem/AbstractScene.h"
 #include "subsystem/RNG.h"
 
-AbstractScene::AbstractScene() {
-  RNG::seed();
-}
-
 const Camera& AbstractScene::getCamera() const {
   return camera;
 }

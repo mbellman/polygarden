@@ -8,6 +8,8 @@
 
 Window::Window() {
   SDL_Init(SDL_INIT_EVERYTHING);
+
+  RNG::seed();
 }
 
 Window::~Window() {

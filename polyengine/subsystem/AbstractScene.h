@@ -10,7 +10,6 @@
 
 class AbstractScene {
 public:
-  AbstractScene();
   virtual ~AbstractScene() {};
 
   const Camera& getCamera() const;
