@@ -27,7 +27,6 @@ public:
 
 protected:
   Stage stage;
-  AssetCache assets;
   InputSystem input;
   Camera camera;
 

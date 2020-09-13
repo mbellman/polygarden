@@ -134,7 +134,6 @@
     <ClCompile Include="polyengine\subsystem\AbstractLoader.cpp" />
     <ClCompile Include="polyengine\subsystem\AbstractScene.cpp" />
     <ClCompile Include="polyengine\subsystem\AbstractVideoController.cpp" />
-    <ClCompile Include="polyengine\subsystem\AssetCache.cpp" />
     <ClCompile Include="polyengine\subsystem\entities\Camera.cpp" />
     <ClCompile Include="polyengine\subsystem\entities\Cube.cpp" />
     <ClCompile Include="polyengine\subsystem\entities\Entity.cpp" />

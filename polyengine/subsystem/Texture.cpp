@@ -31,4 +31,9 @@ int Texture::getId() const {
   return id;
 }
 
+Texture* Texture::use(std::string path) {
+  return Texture::textureCache.request(path);
+}
+
 int Texture::total = 0;
+AssetCache<Texture> Texture::textureCache;

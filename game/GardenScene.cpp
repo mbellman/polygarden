@@ -4,6 +4,7 @@
 #include <subsystem/entities/Plane.h>
 #include <subsystem/entities/Skybox.h>
 #include <subsystem/entities/Light.h>
+#include <subsystem/Texture.h>
 #include <subsystem/ObjLoader.h>
 #include <subsystem/RNG.h>
 
@@ -59,8 +60,8 @@ void GardenScene::addGrass() {
 void GardenScene::addRocks() {
   stage.add<Mesh>("rock", [&](Mesh* rock) {
     rock->from(ObjLoader("./assets/rock-1/model.obj"));
-    rock->texture = assets.createTexture("./assets/rock-1/texture.png");
-    rock->normalMap = assets.createTexture("./assets/rock-1/normals.png");
+    rock->texture = Texture::use("./assets/rock-1/texture.png");
+    rock->normalMap = Texture::use("./assets/rock-1/normals.png");
     rock->isReference = true;
   });
 
@@ -75,20 +76,20 @@ void GardenScene::addRocks() {
 void GardenScene::addTrees() {
   stage.add<Mesh>("tree", [&](Mesh* tree) {
     tree->from(ObjLoader("./assets/pine-tree/trunk-model.obj"));
-    tree->texture = assets.createTexture("./assets/pine-tree/bark-texture.png");
-    tree->normalMap = assets.createTexture("./assets/pine-tree/bark-normals.png");
+    tree->texture = Texture::use("./assets/pine-tree/bark-texture.png");
+    tree->normalMap = Texture::use("./assets/pine-tree/bark-normals.png");
     tree->isReference = true;
   });
 
   stage.add<Mesh>("leaves", [&](Mesh* leaves) {
     leaves->from(ObjLoader("./assets/pine-tree/leaves1-model.obj"));
-    leaves->texture = assets.createTexture("./assets/pine-tree/leaves1-texture.png");
+    leaves->texture = Texture::use("./assets/pine-tree/leaves1-texture.png");
     leaves->isReference = true;
   });
 
   stage.add<Mesh>("leaves-2", [&](Mesh* leaves) {
     leaves->from(ObjLoader("./assets/pine-tree/leaves2-model.obj"));
-    leaves->texture = assets.createTexture("./assets/pine-tree/leaves2-texture.png");
+    leaves->texture = Texture::use("./assets/pine-tree/leaves2-texture.png");
     leaves->isReference = true;
   });
 
@@ -198,7 +199,7 @@ void GardenScene::onInit() {
   
   stage.add<Mesh>("flower-petals", [&](Mesh* flowerPetals) {
     flowerPetals->from(ObjLoader("./assets/small-flower/petals-model.obj"));
-    flowerPetals->normalMap = assets.createTexture("./assets/small-flower/petals-normals.png");
+    flowerPetals->normalMap = Texture::use("./assets/small-flower/petals-normals.png");
     flowerPetals->effects = ObjectEffects::TREE_ANIMATION | ObjectEffects::GRASS_ANIMATION;
     flowerPetals->shadowCascadeLimit = 2;
     flowerPetals->isReference = true;
@@ -220,8 +221,8 @@ void GardenScene::onInit() {
 
   stage.add<Mesh>("lantern", [&](Mesh* lantern) {
     lantern->from(ObjLoader("./assets/lantern/model.obj"));
-    lantern->texture = assets.createTexture("./assets/lantern/texture.png");
-    lantern->normalMap = assets.createTexture("./assets/lantern/normals.png");
+    lantern->texture = Texture::use("./assets/lantern/texture.png");
+    lantern->normalMap = Texture::use("./assets/lantern/normals.png");
     lantern->isReference = true;
   });
 
@@ -266,7 +267,7 @@ void GardenScene::onInit() {
 
     plane->setSize(60, 60, tileSize, Vec2f(5.0f, 5.0f));
     plane->setPosition(Vec3f(0.0f));
-    plane->texture = assets.createTexture("./assets/ground/grass-texture.png");
+    plane->texture = Texture::use("./assets/ground/grass-texture.png");
     plane->shadowCascadeLimit = 0;
 
     plane->displaceVertices([=](Vec3f& vertex, int x, int z) {
@@ -278,7 +279,7 @@ void GardenScene::onInit() {
   });
 
   stage.add<Skybox>([&](Skybox* skybox) {
-    skybox->from(assets.createTexture("./assets/skybox/night.png"));
+    skybox->from(Texture::use("./assets/skybox/night.png"));
     skybox->setScale(5000.0f);
 
     skybox->onUpdate = [=](float dt) {

@@ -72,9 +72,6 @@
     <ClCompile Include="polyengine\subsystem\AbstractVideoController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="polyengine\subsystem\AssetCache.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="polyengine\subsystem\FileLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
