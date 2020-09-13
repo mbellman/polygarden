@@ -28,6 +28,10 @@ std::function<float()> AbstractScene::getTimer() {
   };
 }
 
+bool AbstractScene::isInitialized() {
+  return runningTime > 0.0f;
+}
+
 void AbstractScene::onEntityAdded(EntityHandler handler) {
   stage.onEntityAdded(handler);
 }

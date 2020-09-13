@@ -112,6 +112,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="game\Easing.cpp" />
+    <ClCompile Include="game\GameController.cpp" />
     <ClCompile Include="game\GardenScene.cpp" />
     <ClCompile Include="game\main.cpp" />
     <ClCompile Include="polyengine\opengl\AbstractBuffer.cpp" />
@@ -129,6 +130,7 @@
     <ClCompile Include="polyengine\opengl\ShaderLoader.cpp" />
     <ClCompile Include="polyengine\opengl\ShaderProgram.cpp" />
     <ClCompile Include="polyengine\Stats.cpp" />
+    <ClCompile Include="polyengine\subsystem\AbstractGameController.cpp" />
     <ClCompile Include="polyengine\subsystem\AbstractLoader.cpp" />
     <ClCompile Include="polyengine\subsystem\AbstractScene.cpp" />
     <ClCompile Include="polyengine\subsystem\AbstractVideoController.cpp" />
@@ -242,6 +244,7 @@
     <ClInclude Include="external\sdl2\include\SDL_vulkan.h" />
     <ClInclude Include="external\sdl_image\include\SDL_image.h" />
     <ClInclude Include="game\Easing.h" />
+    <ClInclude Include="game\GameController.h" />
     <ClInclude Include="game\GardenScene.h" />
     <ClInclude Include="polyengine\opengl\AbstractBuffer.h" />
     <ClInclude Include="polyengine\opengl\FrameBuffer.h" />
@@ -258,6 +261,7 @@
     <ClInclude Include="polyengine\opengl\ShaderLoader.h" />
     <ClInclude Include="polyengine\opengl\ShaderProgram.h" />
     <ClInclude Include="polyengine\Stats.h" />
+    <ClInclude Include="polyengine\subsystem\AbstractGameController.h" />
     <ClInclude Include="polyengine\subsystem\AbstractLoader.h" />
     <ClInclude Include="polyengine\subsystem\AbstractScene.h" />
     <ClInclude Include="polyengine\subsystem\AbstractVideoController.h" />
@@ -279,6 +283,7 @@
     <ClInclude Include="polyengine\subsystem\RNG.h" />
     <ClInclude Include="polyengine\subsystem\Stage.h" />
     <ClInclude Include="polyengine\subsystem\Texture.h" />
+    <ClInclude Include="polyengine\subsystem\Types.h" />
     <ClInclude Include="polyengine\Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

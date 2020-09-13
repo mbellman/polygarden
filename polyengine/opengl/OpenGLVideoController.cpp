@@ -120,10 +120,6 @@ Matrix4 OpenGLVideoController::createViewMatrix() {
   ).transpose();
 }
 
-SDL_Window* OpenGLVideoController::createWindow(const char* title, Region2d<int> region) {
-  return SDL_CreateWindow(title, region.x, region.y, region.width, region.height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-}
-
 void OpenGLVideoController::onDestroy() {
   SDL_GL_DeleteContext(glContext);
 }
@@ -136,6 +132,9 @@ void OpenGLVideoController::onEntityAdded(Entity* entity) {
   } else if (entity->isOfType<Light>() && ((Light*)entity)->canCastShadows) {
     glShadowCasters.push(new OpenGLShadowCaster((Light*)entity));
   }
+
+  // TODO: Investigate 1280 error here
+  OpenGLDebugger::checkErrors("Entity Added");
 }
 
 void OpenGLVideoController::onEntityRemoved(Entity* entity) {
@@ -152,7 +151,10 @@ void OpenGLVideoController::onEntityRemoved(Entity* entity) {
   }
 }
 
-void OpenGLVideoController::onInit() {
+void OpenGLVideoController::onInit(SDL_Window* sdlWindow, int width, int height) {
+  screenSize.width = width;
+  screenSize.height = height;
+
   glContext = SDL_GL_CreateContext(sdlWindow);
   glewExperimental = true;
 
@@ -163,6 +165,7 @@ void OpenGLVideoController::onInit() {
   glEnable(GL_STENCIL_TEST);
   glCullFace(GL_BACK);
   glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+  glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
   SDL_GL_SetSwapInterval(0);
 
@@ -178,20 +181,10 @@ void OpenGLVideoController::onInit() {
 
   gBuffer->getFrameBuffer()->shareDepthStencilBuffer(screenShaders[0]->getFrameBuffer());
 
-  scene->onEntityAdded([=](auto* entity) {
-    onEntityAdded(entity);
-  });
-
-  scene->onEntityRemoved([=](auto* entity) {
-    onEntityRemoved(entity);
-  });
-
-  scene->onInit();
-
-  OpenGLDebugger::checkErrors("Scene Initialization");
+  OpenGLDebugger::checkErrors("Initialization");
 }
 
-void OpenGLVideoController::onRender() {
+void OpenGLVideoController::onRender(SDL_Window* sdlWindow) {
   gBuffer->startWriting();
   gBuffer->writeToAllBuffers();
 
@@ -211,6 +204,27 @@ void OpenGLVideoController::onRender() {
 
   SDL_GL_SwapWindow(sdlWindow);
   glFinish();
+}
+
+void OpenGLVideoController::onSceneChange(AbstractScene* scene) {
+  glObjects.free();
+  glShadowCasters.free();
+
+  for (auto* object : scene->getStage().getObjects()) {
+    onEntityAdded(object);
+  }
+
+  for (auto* light : scene->getStage().getLights()) {
+    onEntityAdded(light);
+  }
+
+  scene->onEntityAdded([=](auto* entity) {
+    onEntityAdded(entity);
+  });
+
+  scene->onEntityRemoved([=](auto* entity) {
+    onEntityRemoved(entity);
+  });
 }
 
 void OpenGLVideoController::onScreenSizeChange(int width, int height) {
@@ -239,7 +253,6 @@ void OpenGLVideoController::renderDirectionalShadowCaster(OpenGLShadowCaster* gl
 
   const Camera& camera = scene->getCamera();
 
-  glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
   glDisable(GL_BLEND);
   glDisable(GL_STENCIL_TEST);
   glEnable(GL_DEPTH_TEST);

@@ -16,6 +16,7 @@ public:
   virtual InputSystem& getInputSystem() final;
   float getRunningTime();
   virtual const Stage& getStage() const final;
+  bool isInitialized();
   void onEntityAdded(EntityHandler handler);
   void onEntityRemoved(EntityHandler handler);
   virtual void onInit() {};

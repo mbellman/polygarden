@@ -4,13 +4,11 @@
 #include <vector>
 
 #include "SDL.h"
+#include "subsystem/Types.h"
 
-template<typename T>
-using InputHandler = std::function<void(T)>;
-
-typedef InputHandler<SDL_KeyboardEvent> KeyboardHandler;
-typedef InputHandler<SDL_MouseMotionEvent> MouseMotionHandler;
-typedef InputHandler<SDL_MouseButtonEvent> MouseButtonHandler;
+typedef Callback<SDL_KeyboardEvent> KeyboardHandler;
+typedef Callback<SDL_MouseMotionEvent> MouseMotionHandler;
+typedef Callback<SDL_MouseButtonEvent> MouseButtonHandler;
 
 enum Key {
   W = 1 << 0,

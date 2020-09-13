@@ -3,6 +3,7 @@
 #include <vector>
 #include <map>
 
+#include "SDL.h"
 #include "subsystem/AbstractVideoController.h"
 #include "opengl/ShaderProgram.h"
 #include "opengl/OpenGLObject.h"
@@ -22,10 +23,10 @@ public:
   OpenGLVideoController();
   ~OpenGLVideoController();
 
-  SDL_Window* createWindow(const char* title, Region2d<int> region) override;
   void onDestroy() override;
-  void onInit() override;
-  void onRender() override;
+  void onInit(SDL_Window* sdlWindow, int width, int height) override;
+  void onRender(SDL_Window* sdlWindow) override;
+  void onSceneChange(AbstractScene* scene) override;
   void onScreenSizeChange(int width, int height) override;
 
 private:

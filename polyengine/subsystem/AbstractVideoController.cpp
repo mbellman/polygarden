@@ -1,68 +1,14 @@
 #include "SDL.h"
 #include "subsystem/AbstractVideoController.h"
 
-AbstractVideoController::~AbstractVideoController() {
-  SDL_DestroyWindow(sdlWindow);
-}
-
-const AbstractScene* AbstractVideoController::getScene() const {
-  return scene;
-}
-
-SDL_Window* AbstractVideoController::getWindow() {
-  return sdlWindow;
-}
-
-void AbstractVideoController::initWindow(const char* title, Region2d<int> region) {
-  sdlWindow = createWindow(title, region);
-
-  screenSize.width = region.width;
-  screenSize.height = region.height;
-}
-
-bool AbstractVideoController::isActive() const {
-  return !didCloseWindow;
-}
-
-void AbstractVideoController::pollEvents() {
-  SDL_Event event;
-
-  while (SDL_PollEvent(&event)) {
-    switch (event.type) {
-      case SDL_QUIT:
-        didCloseWindow = true;
-        break;
-      case SDL_WINDOWEVENT:
-        if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
-          onScreenSizeChange(event.window.data1, event.window.data2);
-        }
-
-        break;
-      case SDL_KEYDOWN:
-        if (event.key.keysym.sym == SDLK_f) {
-          toggleFullScreen();
-        }
-
-        break;
-      default:
-        break;
-    }
-
-    scene->getInputSystem().handleEvent(event);
-  }
-}
-
-void AbstractVideoController::update(float dt) {
-  pollEvents();
-
-  scene->update(dt);
-}
-
 void AbstractVideoController::setScene(AbstractScene* scene) {
   this->scene = scene;
+
+  onSceneChange(scene);
 }
 
-void AbstractVideoController::toggleFullScreen() {
+// TODO: Move to Window
+void AbstractVideoController::toggleFullScreen(SDL_Window* sdlWindow) {
   int flags = SDL_GetWindowFlags(sdlWindow);
   bool isFullScreen = flags & SDL_WINDOW_FULLSCREEN;
 

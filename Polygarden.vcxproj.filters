@@ -132,6 +132,12 @@
     <ClCompile Include="polyengine\subsystem\entities\Plane.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="polyengine\subsystem\AbstractGameController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\GameController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="external\glew\include\eglew.h">
@@ -516,6 +522,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="polyengine\subsystem\entities\Plane.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="polyengine\subsystem\AbstractGameController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="polyengine\subsystem\Types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\GameController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

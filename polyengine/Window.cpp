@@ -5,6 +5,7 @@
 #include "SDL.h"
 #include "Stats.h"
 #include "subsystem/RNG.h"
+#include "subsystem/AbstractScene.h"
 
 Window::Window() {
   SDL_Init(SDL_INIT_EVERYTHING);
@@ -17,13 +18,14 @@ Window::~Window() {
 
   delete videoController;
 
+  SDL_DestroyWindow(sdlWindow);
   SDL_Quit();
 }
 
 void Window::handleStats() {
   char title[100];
 
-  auto stageStats = videoController->getScene()->getStage().getStats();
+  auto stageStats = gameController->getActiveScene()->getStage().getStats();
 
   sprintf_s(
     title,
@@ -38,27 +40,67 @@ void Window::handleStats() {
     stageStats.totalShadowCasters
   );
 
-  SDL_SetWindowTitle(videoController->getWindow(), title);
+  SDL_SetWindowTitle(sdlWindow, title);
 }
 
 void Window::open(const char* title, Region2d<int> region) {
-  videoController->initWindow(title, region);
-  videoController->onInit();
+  Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
+
+  sdlWindow = SDL_CreateWindow(title, region.x, region.y, region.width, region.height, flags);
+
+  size.width = region.width;
+  size.height = region.height;
+}
+
+void Window::pollEvents() {
+  SDL_Event event;
+
+  while (SDL_PollEvent(&event)) {
+    switch (event.type) {
+      case SDL_QUIT:
+        didCloseWindow = true;
+        break;
+      case SDL_WINDOWEVENT:
+        if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+          size.width = event.window.data1;
+          size.height = event.window.data2;
+
+          videoController->onScreenSizeChange(size.width, size.height);
+        }
+
+        break;
+      case SDL_KEYDOWN:
+        if (event.key.keysym.sym == SDLK_f) {
+          videoController->toggleFullScreen(sdlWindow);
+        }
+
+        break;
+      default:
+        break;
+    }
+
+    gameController->getActiveScene()->getInputSystem().handleEvent(event);
+  }
 }
 
 void Window::run() {
+  gameController->handleSceneChange([&](AbstractScene* scene) {
+    videoController->setScene(scene);
+  });
+
+  gameController->onInit();
+
   int lastTick = SDL_GetTicks();
 
-  // TODO: Detect SDL_QUIT events in Window, rather than
-  // relying on AbstractVideoController to 'report' the event
-  while (videoController->isActive()) {
+  while (!didCloseWindow) {
     float dt = (SDL_GetTicks() - lastTick) / 1000.0f;
 
     lastTick = SDL_GetTicks();
 
     stats.trackFrameStart();
-    videoController->update(dt);
-    videoController->onRender();
+    pollEvents();
+    gameController->update(dt);
+    videoController->onRender(sdlWindow);
     stats.trackFrameEnd();
     handleStats();
 
@@ -66,8 +108,18 @@ void Window::run() {
   }
 }
 
+void Window::setGameController(AbstractGameController* gameController) {
+  this->gameController = gameController;
+}
+
 void Window::setVideoController(AbstractVideoController* videoController) {
-  // TODO: Allow video controller switching to perform a scene
-  // handoff and delete the existing video controller instance
+  if (this->videoController != nullptr) {
+    this->videoController->onDestroy();
+
+    delete this->videoController;
+  }
+
   this->videoController = videoController;
+
+  videoController->onInit(sdlWindow, size.width, size.height);
 }
