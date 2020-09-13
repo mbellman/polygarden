@@ -9,8 +9,7 @@
 #include "subsystem/entities/Light.h"
 #include "subsystem/entities/Object.h"
 #include "subsystem/HeapList.h"
-
-typedef std::function<void(Entity*)> EntityHandler;
+#include "subsystem/Types.h"
 
 struct StageStats {
   unsigned int totalObjects = 0;
@@ -58,8 +57,8 @@ public:
   const HeapList<Light>& getLights() const;
   const HeapList<Object>& getObjects() const;
   StageStats getStats() const;
-  void onEntityAdded(EntityHandler handler);
-  void onEntityRemoved(EntityHandler handler);
+  void onEntityAdded(Callback<Entity*> handler);
+  void onEntityRemoved(Callback<Entity*> handler);
   void remove(Entity* entity);
   void removeExpiredEntities();
 
@@ -67,6 +66,6 @@ private:
   HeapList<Object> objects;
   HeapList<Light> lights;
   std::map<std::string, Entity*> entityMap;
-  EntityHandler entityAddedHandler = nullptr;
-  EntityHandler entityRemovedHandler = nullptr;
+  Callback<Entity*> entityAddedHandler = nullptr;
+  Callback<Entity*> entityRemovedHandler = nullptr;
 };

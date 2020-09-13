@@ -56,11 +56,11 @@ StageStats Stage::getStats() const {
   return stats;
 }
 
-void Stage::onEntityAdded(EntityHandler handler) {
+void Stage::onEntityAdded(Callback<Entity*> handler) {
   entityAddedHandler = handler;
 }
 
-void Stage::onEntityRemoved(EntityHandler handler) {
+void Stage::onEntityRemoved(Callback<Entity*> handler) {
   entityRemovedHandler = handler;
 }
 

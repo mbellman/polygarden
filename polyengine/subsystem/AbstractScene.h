@@ -5,8 +5,10 @@
 
 #include "subsystem/Stage.h"
 #include "subsystem/AssetCache.h"
+#include "subsystem/entities/Entity.h"
 #include "subsystem/entities/Camera.h"
 #include "subsystem/InputSystem.h"
+#include "subsystem/Types.h"
 
 class AbstractScene {
 public:
@@ -17,8 +19,8 @@ public:
   float getRunningTime();
   virtual const Stage& getStage() const final;
   bool isInitialized();
-  void onEntityAdded(EntityHandler handler);
-  void onEntityRemoved(EntityHandler handler);
+  void onEntityAdded(Callback<Entity*> handler);
+  void onEntityRemoved(Callback<Entity*> handler);
   virtual void onInit() {};
   virtual void onUpdate(float dt) {};
   virtual void update(float dt) final;

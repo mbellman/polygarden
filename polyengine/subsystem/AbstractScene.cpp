@@ -32,11 +32,11 @@ bool AbstractScene::isInitialized() {
   return runningTime > 0.0f;
 }
 
-void AbstractScene::onEntityAdded(EntityHandler handler) {
+void AbstractScene::onEntityAdded(Callback<Entity*> handler) {
   stage.onEntityAdded(handler);
 }
 
-void AbstractScene::onEntityRemoved(EntityHandler handler) {
+void AbstractScene::onEntityRemoved(Callback<Entity*> handler) {
   stage.onEntityRemoved(handler);
 }
 

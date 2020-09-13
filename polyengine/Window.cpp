@@ -122,4 +122,10 @@ void Window::setVideoController(AbstractVideoController* videoController) {
   this->videoController = videoController;
 
   videoController->onInit(sdlWindow, size.width, size.height);
+
+  // If the video controller is changed mid-scene, make sure
+  // the new controller receives the existing scene instance
+  if (gameController != nullptr && gameController->getActiveScene() != nullptr) {
+    videoController->setScene(gameController->getActiveScene());
+  }
 }
