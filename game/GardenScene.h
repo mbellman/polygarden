@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 #include <subsystem/AbstractScene.h>
+#include <subsystem/Math.h>
 
 class GardenScene : public AbstractScene {
 public:
@@ -11,7 +12,7 @@ public:
 
 private:
   Vec3f velocity = Vec3f(0.0f);
-  Matrix4 viewMatrix;
+  Matrix4 viewMatrix = Matrix4::identity();
 
   void addGrass();
   void addRocks();

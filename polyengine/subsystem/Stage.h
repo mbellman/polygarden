@@ -4,10 +4,12 @@
 #include <functional>
 #include <string>
 #include <map>
+#include <set>
 
 #include "subsystem/entities/Entity.h"
 #include "subsystem/entities/Light.h"
 #include "subsystem/entities/Object.h"
+#include "subsystem/entities/Actor.h"
 #include "subsystem/HeapList.h"
 #include "subsystem/Types.h"
 
@@ -24,6 +26,7 @@ public:
   ~Stage();
 
   void add(Entity* entity);
+  void add(Actor* actor);
 
   template<typename T>
   void add(std::function<void(T*)> handler) {
@@ -32,26 +35,26 @@ public:
 
   template<typename T>
   void add(std::string name, std::function<void(T*)> handler) {
-    T* entity = new T();
+    T* t = new T();
 
-    handler(entity);
-    add(entity);
+    handler(t);
+    add(t);
 
-    entityMap.emplace(name, entity);
+    store.emplace(name, t);
   }
 
   template<typename T, unsigned int total>
   void addMultiple(std::function<void(T*, int)> handler) {
     for (unsigned int i = 0; i < total; i++) {
-      add<T>([=](T* entity) {
-        handler(entity, i);
+      add<T>([=](T* t) {
+        handler(t, i);
       });
     }
   }
 
   template<typename T>
   T* get(std::string name) {
-    return (T*)entityMap.at(name);
+    return (T*)store.at(name);
   }
 
   const HeapList<Light>& getLights() const;
@@ -60,12 +63,17 @@ public:
   void onEntityAdded(Callback<Entity*> handler);
   void onEntityRemoved(Callback<Entity*> handler);
   void remove(Entity* entity);
-  void removeExpiredEntities();
+  void update(float dt);
 
 private:
   HeapList<Object> objects;
   HeapList<Light> lights;
-  std::map<std::string, Entity*> entityMap;
+  HeapList<Actor> actors;
+  std::map<std::string, void*> store;
+  std::set<std::size_t> registeredActorTypes;
   Callback<Entity*> entityAddedHandler = nullptr;
   Callback<Entity*> entityRemovedHandler = nullptr;
+
+  bool isActorRegistered(Actor* actor);
+  void removeExpiredEntities();
 };

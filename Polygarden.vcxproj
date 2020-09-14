@@ -111,9 +111,11 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="game\actors\GrassField.cpp" />
     <ClCompile Include="game\Easing.cpp" />
     <ClCompile Include="game\GameController.cpp" />
     <ClCompile Include="game\GardenScene.cpp" />
+    <ClCompile Include="game\HeightMap.cpp" />
     <ClCompile Include="game\main.cpp" />
     <ClCompile Include="polyengine\opengl\AbstractBuffer.cpp" />
     <ClCompile Include="polyengine\opengl\FrameBuffer.cpp" />
@@ -134,6 +136,7 @@
     <ClCompile Include="polyengine\subsystem\AbstractLoader.cpp" />
     <ClCompile Include="polyengine\subsystem\AbstractScene.cpp" />
     <ClCompile Include="polyengine\subsystem\AbstractVideoController.cpp" />
+    <ClCompile Include="polyengine\subsystem\entities\Actor.cpp" />
     <ClCompile Include="polyengine\subsystem\entities\Camera.cpp" />
     <ClCompile Include="polyengine\subsystem\entities\Cube.cpp" />
     <ClCompile Include="polyengine\subsystem\entities\Entity.cpp" />
@@ -150,6 +153,7 @@
     <ClCompile Include="polyengine\subsystem\RNG.cpp" />
     <ClCompile Include="polyengine\subsystem\Stage.cpp" />
     <ClCompile Include="polyengine\subsystem\Texture.cpp" />
+    <ClCompile Include="polyengine\subsystem\traits\LifeCycle.cpp" />
     <ClCompile Include="polyengine\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -242,9 +246,11 @@
     <ClInclude Include="external\sdl2\include\SDL_video.h" />
     <ClInclude Include="external\sdl2\include\SDL_vulkan.h" />
     <ClInclude Include="external\sdl_image\include\SDL_image.h" />
+    <ClInclude Include="game\actors\GrassField.h" />
     <ClInclude Include="game\Easing.h" />
     <ClInclude Include="game\GameController.h" />
     <ClInclude Include="game\GardenScene.h" />
+    <ClInclude Include="game\HeightMap.h" />
     <ClInclude Include="polyengine\opengl\AbstractBuffer.h" />
     <ClInclude Include="polyengine\opengl\FrameBuffer.h" />
     <ClInclude Include="polyengine\opengl\GBuffer.h" />
@@ -265,6 +271,7 @@
     <ClInclude Include="polyengine\subsystem\AbstractScene.h" />
     <ClInclude Include="polyengine\subsystem\AbstractVideoController.h" />
     <ClInclude Include="polyengine\subsystem\AssetCache.h" />
+    <ClInclude Include="polyengine\subsystem\entities\Actor.h" />
     <ClInclude Include="polyengine\subsystem\entities\Camera.h" />
     <ClInclude Include="polyengine\subsystem\entities\Cube.h" />
     <ClInclude Include="polyengine\subsystem\entities\Entity.h" />
@@ -282,6 +289,7 @@
     <ClInclude Include="polyengine\subsystem\RNG.h" />
     <ClInclude Include="polyengine\subsystem\Stage.h" />
     <ClInclude Include="polyengine\subsystem\Texture.h" />
+    <ClInclude Include="polyengine\subsystem\traits\LifeCycle.h" />
     <ClInclude Include="polyengine\subsystem\Types.h" />
     <ClInclude Include="polyengine\Window.h" />
   </ItemGroup>

@@ -12,7 +12,6 @@ public:
   virtual AbstractScene* getActiveScene() final;
   virtual void handleSceneChange(Callback<AbstractScene*> handler) final;
   virtual void onInit() = 0;
-  void update(float dt);
 
 protected:
   void changeScene(AbstractScene* scene);

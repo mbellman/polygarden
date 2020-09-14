@@ -7,31 +7,25 @@
 #include "subsystem/AssetCache.h"
 #include "subsystem/entities/Entity.h"
 #include "subsystem/entities/Camera.h"
+#include "subsystem/traits/LifeCycle.h"
 #include "subsystem/InputSystem.h"
 #include "subsystem/Types.h"
 
-class AbstractScene {
+class AbstractScene : public LifeCycle {
 public:
   virtual ~AbstractScene() {};
 
   const Camera& getCamera() const;
   virtual InputSystem& getInputSystem() final;
-  float getRunningTime();
   virtual const Stage& getStage() const final;
-  bool isInitialized();
   void onEntityAdded(Callback<Entity*> handler);
   void onEntityRemoved(Callback<Entity*> handler);
-  virtual void onInit() {};
-  virtual void onUpdate(float dt) {};
-  virtual void update(float dt) final;
+  virtual void onUpdate(float dt) override;
 
 protected:
+  using super = AbstractScene;
+
   Stage stage;
   InputSystem input;
   Camera camera;
-
-  std::function<float()> getTimer();
-
-private:
-  float runningTime = 0.0f;
 };

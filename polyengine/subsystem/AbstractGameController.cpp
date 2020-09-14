@@ -1,4 +1,5 @@
 #include "subsystem/AbstractGameController.h"
+#include "subsystem/entities/Camera.h"
 
 AbstractGameController::~AbstractGameController() {
   for (auto* scene : sceneStack) {
@@ -46,6 +47,8 @@ void AbstractGameController::handleSceneChange(Callback<AbstractScene*> handler)
 void AbstractGameController::setActiveScene(AbstractScene* scene) {
   activeScene = scene;
 
+  Camera::active = &activeScene->getCamera();
+
   if (sceneChangeHandler != nullptr) {
     sceneChangeHandler(scene);
   }
@@ -53,8 +56,4 @@ void AbstractGameController::setActiveScene(AbstractScene* scene) {
   if (!scene->isInitialized()) {
     scene->onInit();
   }
-}
-
-void AbstractGameController::update(float dt) {
-  activeScene->update(dt);
 }

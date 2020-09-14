@@ -99,7 +99,7 @@ void Window::run() {
 
     stats.trackFrameStart();
     pollEvents();
-    gameController->update(dt);
+    gameController->getActiveScene()->update(dt);
     videoController->onRender(sdlWindow);
     stats.trackFrameEnd();
     handleStats();

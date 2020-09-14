@@ -33,3 +33,5 @@ Vec3f Camera::getOrientationDirection(const Vec3f& orientation) const {
 Vec3f Camera::getRightDirection() const {
   return getOrientationDirection({ 0, orientation.y + RAD_90, 0 });
 }
+
+const Camera* Camera::active = nullptr;

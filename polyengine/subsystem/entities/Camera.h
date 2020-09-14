@@ -5,6 +5,8 @@
 
 class Camera : public Entity {
 public:
+  static const Camera* active;
+
   // TODO: Create 'Orientation' struct with below methods
   Vec3f getDirection() const;
   Vec3f getLeftDirection() const;

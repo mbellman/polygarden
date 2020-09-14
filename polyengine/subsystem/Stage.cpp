@@ -1,12 +1,13 @@
 #include <algorithm>
 #include <cstdio>
+#include <typeinfo>
 
 #include "subsystem/Stage.h"
 
 Stage::~Stage() {
   objects.free();
   lights.free();
-  entityMap.clear();
+  store.clear();
 }
 
 void Stage::add(Entity* entity) {
@@ -19,6 +20,20 @@ void Stage::add(Entity* entity) {
   if (entityAddedHandler) {
     entityAddedHandler(entity);
   }
+}
+
+void Stage::add(Actor* actor) {
+  actor->setStage(this);
+
+  if (!isActorRegistered(actor)) {
+    actor->onRegistered();
+
+    registeredActorTypes.insert(typeid(actor).hash_code());
+  }
+
+  actors.push(actor);
+
+  actor->onInit();
 }
 
 const HeapList<Light>& Stage::getLights() const {
@@ -54,6 +69,10 @@ StageStats Stage::getStats() const {
   }
 
   return stats;
+}
+
+bool Stage::isActorRegistered(Actor* actor) {
+  return registeredActorTypes.find(typeid(actor).hash_code()) != registeredActorTypes.end();
 }
 
 void Stage::onEntityAdded(Callback<Entity*> handler) {
@@ -95,4 +114,34 @@ void Stage::removeExpiredEntities() {
 
   removeExpired(objects);
   removeExpired(lights);
+}
+
+void Stage::update(float dt) {
+  auto updateEntity = [=](Entity* entity) {
+    if (entity->onUpdate) {
+      entity->onUpdate(dt);
+    }
+
+    if (entity->lifetime > 0.0f) {
+      entity->lifetime = std::max(entity->lifetime - dt, 0.0f);
+    }
+  };
+
+  for (auto* actor : actors) {
+    actor->update(dt);
+  }
+
+  for (unsigned int i = 0; i < objects.length(); i++) {
+    updateEntity(objects[i]);
+  }
+
+  for (auto* object : objects) {
+    object->rehydrate();
+  }
+
+  for (unsigned int i = 0; i < lights.length(); i++) {
+    updateEntity(lights[i]);
+  }
+
+  removeExpiredEntities();
 }

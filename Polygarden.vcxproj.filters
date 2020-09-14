@@ -135,6 +135,18 @@
     <ClCompile Include="game\GameController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="polyengine\subsystem\entities\Actor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="polyengine\subsystem\traits\LifeCycle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\actors\GrassField.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game\HeightMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="external\glew\include\eglew.h">
@@ -528,6 +540,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="game\GameController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="polyengine\subsystem\entities\Actor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="polyengine\subsystem\traits\LifeCycle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\actors\GrassField.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\HeightMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

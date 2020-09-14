@@ -9,53 +9,9 @@
 #include <subsystem/RNG.h>
 
 #include "GardenScene.h"
+#include "HeightMap.h"
 #include "Easing.h"
-
-static float getGroundHeight(float x, float z) {
-  float fx = M_PI / 150.0f * x;
-  float fz = M_PI / 150.0f * z;
-
-  return (
-    5.0f * (sinf(fx) + cosf(fz)) +
-    20.0f * sinf(fx * 0.3f) +
-    10.0f * cosf(fz * 0.2f)
-  );
-}
-
-static Vec3f getGroundPosition(float x, float z) {
-  return Vec3f(x, getGroundHeight(x, z), z);
-}
-
-static Vec3f getRandomGroundPosition() {
-  return getGroundPosition(RNG::random(-1200.0f, 1200.0f), RNG::random(-1200.0f, 1200.0f));
-}
-
-void GardenScene::addGrass() {
-  stage.add<Mesh>("grass", [&](Mesh* grass) {
-    grass->from(ObjLoader("./assets/grass/model.obj"));
-    grass->effects = ObjectEffects::GRASS_ANIMATION;
-    grass->shadowCascadeLimit = 0;
-    grass->isReference = true;
-  });
-
-  stage.addMultiple<Mesh, 10000>([&](Mesh* blade, int index) {
-    blade->from(stage.get<Mesh>("grass"));
-    blade->setScale(RNG::random(5.0f, 15.0f));
-    blade->setPosition(getRandomGroundPosition());
-    blade->setColor(Vec3f(0.2f, 0.5f, 0.2f));
-    blade->rotate(Vec3f(0.0f, RNG::random(0.0f, M_PI * 2.0f), 0.0f));
-
-    blade->onUpdate = [=](float dt) {
-      Vec3f relativeBladePosition = viewMatrix * blade->position;
-
-      if (relativeBladePosition.z > 0.0f && relativeBladePosition.z < 1250.0f) {
-        blade->enable();
-      } else {
-        blade->disable();
-      }
-    };
-  });
-}
+#include "actors/GrassField.h"
 
 void GardenScene::addRocks() {
   stage.add<Mesh>("rock", [&](Mesh* rock) {
@@ -67,7 +23,7 @@ void GardenScene::addRocks() {
 
   stage.addMultiple<Mesh, 20>([&](Mesh* rock, int index) {
     rock->from(stage.get<Mesh>("rock"));
-    rock->setPosition(getRandomGroundPosition());
+    rock->setPosition(HeightMap::getRandomGroundPosition());
     rock->setScale(RNG::random(15.0f, 30.0f));
     rock->setOrientation(Vec3f(0.0f, RNG::random(0.0f, M_PI * 2.0f), 0.0f));
   });
@@ -105,12 +61,12 @@ void GardenScene::addTrees() {
   });
 
   stage.addMultiple<Mesh, 10>([&](Mesh* tree, int index) {
-    Vec3f position = getRandomGroundPosition();
+    Vec3f position = HeightMap::getRandomGroundPosition();
     Vec3f mushroomPosition = position + Vec3f(RNG::random(-30.0f, 30.0f), 0.0f, RNG::random(-30.0f, 30.0f));
     Vec3f orientation(0.0f, RNG::random(0.0f, M_PI * 2.0f), 0.0f);
     float scale = 40.0f;
 
-    mushroomPosition.y = getGroundHeight(mushroomPosition.x, mushroomPosition.z);
+    mushroomPosition.y = HeightMap::getGroundHeight(mushroomPosition.x, mushroomPosition.z);
 
     tree->from(stage.get<Mesh>("tree"));
     tree->setScale(scale);
@@ -227,7 +183,7 @@ void GardenScene::onInit() {
   });
 
   stage.addMultiple<Mesh, 10>([&](Mesh* lantern, int index) {
-    Vec3f lanternPosition = getRandomGroundPosition() - Vec3f(0.0f, 5.0f, 0.0f);
+    Vec3f lanternPosition = HeightMap::getRandomGroundPosition() - Vec3f(0.0f, 5.0f, 0.0f);
     Vec3f lightPosition = lanternPosition + Vec3f(0.0f, 75.0f, 0.0f);
 
     lantern->from(stage.get<Mesh>("lantern"));
@@ -274,7 +230,7 @@ void GardenScene::onInit() {
       float properX = x * tileSize - 1200.0f;
       float properZ = 1200.0f - z * tileSize;
 
-      vertex.y += getGroundHeight(properX, properZ);
+      vertex.y += HeightMap::getGroundHeight(properX, properZ);
     });
   });
 
@@ -287,7 +243,8 @@ void GardenScene::onInit() {
     };
   });
 
-  addGrass();
+  stage.add<GrassField>([&](GrassField* field) {});
+
   addRocks();
   addTrees();
 
@@ -316,6 +273,8 @@ void GardenScene::onInit() {
 }
 
 void GardenScene::onUpdate(float dt) {
+  super::onUpdate(dt);
+
   float speedFactor = (input.isKeyHeld(Key::SHIFT) ? 70.0f : 20.0f);
 
   viewMatrix = Matrix4::rotate(camera.orientation * Vec3f(1.0f, -1.0f, 1.0f)) * Matrix4::translate(camera.position.invert());
@@ -341,13 +300,13 @@ void GardenScene::onUpdate(float dt) {
   }
 
   camera.position += velocity * dt;
-  camera.position.y = 60.0f + getGroundHeight(camera.position.x, camera.position.z);
+  camera.position.y = 60.0f + HeightMap::getGroundHeight(camera.position.x, camera.position.z);
 
   velocity *= 0.8f;
 }
 
 void GardenScene::spawnFlower(float x, float z) {
-  Vec3f position = getGroundPosition(x, z);
+  Vec3f position = HeightMap::getGroundPosition(x, z);
   Vec3f orientation = Vec3f(0.0f, RNG::random() * M_PI * 2.0f, 0.0f);
   float scale = RNG::random(6.0f, 10.0f);
 
@@ -367,7 +326,7 @@ void GardenScene::spawnFlower(float x, float z) {
     flowerStalk->setOrientation(orientation);
     flowerStalk->color = Vec3f(0.3f, 1.0f, 0.4f);
 
-    auto timer = getTimer();
+    auto timer = createTimer();
 
     flowerStalk->onUpdate = [=](float dt) {
       float t = timer() / 1.0f;
@@ -387,7 +346,7 @@ void GardenScene::spawnFlower(float x, float z) {
     flowerPetals->color = Vec3f(RNG::random(), RNG::random(), RNG::random());
     flowerPetals->effects = ObjectEffects::TREE_ANIMATION;
 
-    auto timer = getTimer();
+    auto timer = createTimer();
 
     flowerPetals->onUpdate = [=](float dt) {
       float t = timer() / 1.0f;
@@ -402,7 +361,7 @@ void GardenScene::spawnFlower(float x, float z) {
 }
 
 void GardenScene::spawnLavender(float x, float z) {
-  Vec3f position = getGroundPosition(x, z);
+  Vec3f position = HeightMap::getGroundPosition(x, z);
   Vec3f orientation = Vec3f(0.0f, RNG::random() * M_PI * 2.0f, 0.0f);
   float scale = RNG::random(15.0f, 20.0f);
 
@@ -422,7 +381,7 @@ void GardenScene::spawnLavender(float x, float z) {
     stalk->setOrientation(orientation);
     stalk->setColor(Vec3f(0.2f, 0.75f, 0.4f));
 
-    auto timer = getTimer();
+    auto timer = createTimer();
 
     stalk->onUpdate = [=](float dt) {
       float t = timer() / 2.0f;
@@ -441,7 +400,7 @@ void GardenScene::spawnLavender(float x, float z) {
     flowers->setOrientation(orientation);
     flowers->setColor(Vec3f(0.5f, 0.2f, 0.8f));
 
-    auto timer = getTimer();
+    auto timer = createTimer();
 
     flowers->onUpdate = [=](float dt) {
       float t = timer() / 2.0f;
@@ -468,11 +427,11 @@ void GardenScene::spawnSprout(float x, float z) {
 
   stage.add<Mesh>([&](Mesh* sprout) {
     sprout->from(stage.get<Mesh>("sprout"));
-    sprout->setPosition(getGroundPosition(x, z));
+    sprout->setPosition(HeightMap::getGroundPosition(x, z));
     sprout->setOrientation(Vec3f(0.0f, RNG::random() * M_PI * 2.0f, 0.0f));
     sprout->color = Vec3f(0.25f, 1.0f, 0.5f);
 
-    auto timer = getTimer();
+    auto timer = createTimer();
 
     sprout->onUpdate = [=](float dt) {
       float t = timer() / 1.0f;
@@ -507,7 +466,7 @@ void GardenScene::throwSeeds() {
 
       seed->move(velocity * dt);
 
-      float groundHeight = getGroundHeight(seed->position.x, seed->position.z);
+      float groundHeight = HeightMap::getGroundHeight(seed->position.x, seed->position.z);
 
       if (seed->position.y < groundHeight) {
         if (!shouldSpawnLavender) {
