@@ -7,6 +7,8 @@
 Stage::~Stage() {
   objects.free();
   lights.free();
+  actors.free();
+
   store.clear();
 }
 

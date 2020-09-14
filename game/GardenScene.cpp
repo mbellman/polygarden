@@ -12,6 +12,8 @@
 #include "HeightMap.h"
 #include "Easing.h"
 #include "actors/GrassField.h"
+#include "actors/Background.h"
+#include "actors/ProximalShadowLight.h"
 
 void GardenScene::addRocks() {
   stage.add<Mesh>("rock", [&](Mesh* rock) {
@@ -102,33 +104,12 @@ void GardenScene::addTrees() {
       mushroomHead->setOrientation(orientation);
       mushroomHead->setPosition(mushroomPosition);
       mushroomHead->setColor(Vec3f(0.2f, 1.0f, 0.2f));
+    });
 
-      Vec3f lightColor = Vec3f(0.2f, 1.0f, 0.4f);
-
-      stage.add<Light>([&](Light* light) {
-        light->position = mushroomPosition + Vec3f(0.0f, 10.0f, 0.0f);
-        light->color = lightColor;
-        light->radius = 150.0f;
-      });
-
-      stage.add<Light>([&](Light* light) {
-        light->position = mushroomPosition + Vec3f(0.0f, 10.0f, 0.0f);
-        light->color = lightColor;
-        light->radius = 150.0f;
-        light->canCastShadows = true;
-
-        light->onUpdate = [=](float dt) {
-          float lightDistance = (light->position - camera.position).magnitude();
-
-          if (lightDistance > 150.0f) {
-            float attenuation = (lightDistance - 150.0f) / 100.0f;
-
-            light->power = std::max(1.0f - attenuation, 0.0f);
-          } else {
-            light->power = 1.0f;
-          }
-        };
-      });
+    stage.add<ProximalShadowLight>([&](ProximalShadowLight* light) {
+      light->setPosition(mushroomPosition + Vec3f(0.0f, 10.0f, 0.0f));
+      light->setColor(Vec3f(0.2f, 1.0f, 0.4f));
+      light->setRadius(250.0f);
     });
   });
 }
@@ -204,46 +185,8 @@ void GardenScene::onInit() {
     });
   });
 
-  stage.add<Light>([](Light* light) {
-    light->type = Light::LightType::DIRECTIONAL;
-    light->color = Vec3f(0.2f, 0.5f, 1.0f);
-    light->direction = Vec3f(-1.0f, -0.5f, 0.25f);
-    light->power = 0.5f;
-    light->canCastShadows = true;
-  });
-
-  stage.add<Light>([](auto* light) {
-    light->type = Light::LightType::DIRECTIONAL;
-    light->color = Vec3f(0.2f, 0.2f, 0.3f);
-    light->direction = Vec3f(0.0f, -1.0f, 0.0f);
-  });
-
-  stage.add<Plane>([&](Plane* plane) {
-    float tileSize = 40.0f;
-
-    plane->setSize(60, 60, tileSize, Vec2f(5.0f, 5.0f));
-    plane->setPosition(Vec3f(0.0f));
-    plane->texture = Texture::use("./assets/ground/grass-texture.png");
-    plane->shadowCascadeLimit = 0;
-
-    plane->displaceVertices([=](Vec3f& vertex, int x, int z) {
-      float properX = x * tileSize - 1200.0f;
-      float properZ = 1200.0f - z * tileSize;
-
-      vertex.y += HeightMap::getGroundHeight(properX, properZ);
-    });
-  });
-
-  stage.add<Skybox>([&](Skybox* skybox) {
-    skybox->from(Texture::use("./assets/skybox/night.png"));
-    skybox->setScale(5000.0f);
-
-    skybox->onUpdate = [=](float dt) {
-      skybox->setPosition(camera.position);
-    };
-  });
-
-  stage.add<GrassField>([&](GrassField* field) {});
+  stage.add<GrassField>();
+  stage.add<Background>();
 
   addRocks();
   addTrees();

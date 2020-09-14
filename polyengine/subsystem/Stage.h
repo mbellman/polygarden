@@ -5,6 +5,7 @@
 #include <string>
 #include <map>
 #include <set>
+#include <type_traits>
 
 #include "subsystem/entities/Entity.h"
 #include "subsystem/entities/Light.h"
@@ -29,16 +30,33 @@ public:
   void add(Actor* actor);
 
   template<typename T>
+  void add() {
+    add<T>([](T* t) {});
+  }
+
+  template<typename T>
   void add(std::function<void(T*)> handler) {
     add<T>("__dummy__", handler);
+  }
+
+  template<typename T>
+  void add(std::string name) {
+    add<T>(name, [](T* t) {});
   }
 
   template<typename T>
   void add(std::string name, std::function<void(T*)> handler) {
     T* t = new T();
 
-    handler(t);
-    add(t);
+    if (std::is_base_of<Actor, T>::value) {
+      // TODO: Determine why this ordering crashes for
+      // regular entities, shadowcasters notwithstanding
+      add(t);
+      handler(t);
+    } else {
+      handler(t);
+      add(t);
+    }
 
     store.emplace(name, t);
   }

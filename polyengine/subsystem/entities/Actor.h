@@ -1,7 +1,5 @@
 #pragma once
 
-#include "subsystem/entities/Object.h"
-#include "subsystem/entities/Light.h"
 #include "subsystem/traits/LifeCycle.h"
 
 class Stage;
