@@ -30,7 +30,7 @@ void Stage::add(Actor* actor) {
   if (!isActorRegistered(actor)) {
     actor->onRegistered();
 
-    registeredActorTypes.insert(typeid(actor).hash_code());
+    registeredActorTypes.insert(typeid(*actor).hash_code());
   }
 
   actors.push(actor);
@@ -74,7 +74,7 @@ StageStats Stage::getStats() const {
 }
 
 bool Stage::isActorRegistered(Actor* actor) {
-  return registeredActorTypes.find(typeid(actor).hash_code()) != registeredActorTypes.end();
+  return registeredActorTypes.find(typeid(*actor).hash_code()) != registeredActorTypes.end();
 }
 
 void Stage::onEntityAdded(Callback<Entity*> handler) {

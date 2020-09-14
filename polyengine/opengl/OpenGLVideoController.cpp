@@ -318,6 +318,8 @@ void OpenGLVideoController::renderEmissiveSurfaces() {
   auto& albedoProgram = gBuffer->getShaderProgram(GBuffer::Shader::ALBEDO);
 
   albedoProgram.use();
+  albedoProgram.setInt("colorTexture", 0);
+  albedoProgram.setInt("normalDepthTexture", 1);
 
   glDisable(GL_DEPTH_TEST);
   glDisable(GL_CULL_FACE);

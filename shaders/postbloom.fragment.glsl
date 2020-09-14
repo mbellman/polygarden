@@ -25,11 +25,14 @@ void main() {
   vec3 base = texture(baseColor, fragmentUv).xyz;
   vec3 bloom = vec3(0.0);
   
-  for (int i = 1; i <= 4; i++) {
+  for (int i = 1; i <= 3; i++) {
     for (int s = 0; s < 8; s++) {
-      bloom += texture(bloomColor, fragmentUv + SAMPLE_OFFSETS[s] * texelSize * i * 2.0).xyz;
+      float factor = 4.0 - float(i);
+      vec2 sampleUv = fragmentUv + SAMPLE_OFFSETS[s] * texelSize * i * 2.5;
+
+      bloom += factor * texture(bloomColor, sampleUv).xyz;
     }
   }
 
-  color = base + bloom / 32.0;
+  color = base + bloom / 24.0;
 }

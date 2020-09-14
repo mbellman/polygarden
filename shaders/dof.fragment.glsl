@@ -6,6 +6,17 @@ in vec2 fragmentUv;
 
 layout (location = 0) out vec3 color;
 
+const vec2 SAMPLE_OFFSETS[8] = vec2[8](
+  vec2(-0.7, -0.7),
+  vec2(0.0, -1.0),
+  vec2(0.7, -0.7),
+  vec2(-1.0, 0.0),
+  vec2(1.0, 0.0),
+  vec2(-0.7, 0.7),
+  vec2(0.0, 1.0),
+  vec2(0.7, 0.7)
+);
+
 const float MAX_BLUR_DEPTH = 1000.0;
 
 vec2 getBlur(float depth) {
@@ -26,13 +37,11 @@ vec3 getDoF() {
   float depth = texture(screen, fragmentUv).w;
   vec2 blur = getBlur(depth);
 
-  for (int x = -2; x <= 2; x++) {
-    for (int y = -2; y <= 2; y++) {
-      sum += texture(screen, fragmentUv + vec2(x, y) * blur).xyz;
-    }
+  for (int s = 0; s < 8; s++) {
+    sum += texture(screen, fragmentUv + SAMPLE_OFFSETS[s] * blur * 1.5).xyz;
   }
 
-  return sum / 25.0;
+  return sum / 8.0;
 }
 
 void main() {
