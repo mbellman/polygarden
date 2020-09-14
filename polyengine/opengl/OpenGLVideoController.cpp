@@ -395,10 +395,9 @@ void OpenGLVideoController::renderIlluminatedSurfaces() {
 
   int index = 0;
 
-  // TODO: Render lights in chunks to allow a unlimited number
-  // of lights + loop unrolling within the lighting shader
+  // TODO: Use instance-rendered lighting quad + buffered light structs
   for (auto* light : lights) {
-    if (!light->canCastShadows) {
+    if (light->power > 0.0f && !light->canCastShadows) {
       std::string idx = std::to_string(index++);
 
       illuminationProgram.setVec3f("lights[" + idx + "].position", light->position);
