@@ -139,13 +139,13 @@ void Stage::update(float dt) {
     updateEntity(objects[i]);
   }
 
-  for (auto* object : objects) {
-    object->rehydrate();
-  }
-
   for (unsigned int i = 0; i < lights.length(); i++) {
     updateEntity(lights[i]);
   }
 
   removeExpiredEntities();
+
+  for (auto* object : objects) {
+    object->rehydrate();
+  }
 }

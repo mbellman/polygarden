@@ -15,6 +15,8 @@
 #include "opengl/PointShadowBuffer.h"
 #include "subsystem/Geometry.h"
 #include "subsystem/entities/Entity.h"
+#include "subsystem/entities/Object.h"
+#include "subsystem/entities/Light.h"
 #include "subsystem/HeapList.h"
 #include "glut.h"
 
@@ -40,6 +42,7 @@ private:
 
   void createScreenShaders();
   Matrix4 createViewMatrix();
+  bool isObjectWithinLightRadius(const Object* object, const Light* light);
   void onEntityAdded(Entity* entity);
   void onEntityRemoved(Entity* entity);
   void renderDirectionalShadowCaster(OpenGLShadowCaster* glShadowCaster);

@@ -34,7 +34,7 @@ public:
 private:
   GLuint fbo;
   GLuint depthStencilBuffer;
-  GLuint depthCubeMap;
+  GLuint depthCubeMap = 0;
   GLenum depthCubeMapUnit;
   std::vector<ColorTexture> colorTextures;
   Region2d<int> size;

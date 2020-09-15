@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <functional>
 
 #include "subsystem/entities/Entity.h"
 #include "subsystem/Texture.h"
@@ -12,6 +13,7 @@ enum ObjectEffects {
   GRASS_ANIMATION = 1 << 1
 };
 
+// TODO: Split instancing logic into ReferenceObject + InstanceObject
 class Object : public Entity {
 public:
   Vec3f color = Vec3f(1.0f);
@@ -29,6 +31,8 @@ public:
   void clean();
   void disable();
   void enable();
+  void enableInstances();
+  void filterInstances(std::function<bool(Object*)> predicate);
   const float* getColorBuffer() const;
   const Matrix4& getMatrix() const;
   const float* getMatrixBuffer() const;

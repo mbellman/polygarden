@@ -1,6 +1,7 @@
 #include <cmath>
 #include <ctime>
 #include <cstdio>
+#include <algorithm>
 
 #include "SDL.h"
 #include "glew.h"
@@ -120,6 +121,14 @@ Matrix4 OpenGLVideoController::createViewMatrix() {
   ).transpose();
 }
 
+bool OpenGLVideoController::isObjectWithinLightRadius(const Object* object, const Light* light) {
+  return (
+    std::abs(object->position.x - light->position.x) < light->radius &&
+    std::abs(object->position.y - light->position.y) < light->radius &&
+    std::abs(object->position.z - light->position.z) < light->radius
+  );
+}
+
 void OpenGLVideoController::onDestroy() {
   SDL_GL_DeleteContext(glContext);
 }
@@ -133,7 +142,6 @@ void OpenGLVideoController::onEntityAdded(Entity* entity) {
     glShadowCasters.push(new OpenGLShadowCaster((Light*)entity));
   }
 
-  // TODO: Investigate 1280 error here
   OpenGLDebugger::checkErrors("Entity Added");
 }
 
@@ -204,6 +212,8 @@ void OpenGLVideoController::onRender(SDL_Window* sdlWindow) {
 
   SDL_GL_SwapWindow(sdlWindow);
   glFinish();
+
+  OpenGLDebugger::checkErrors("onRender");
 }
 
 void OpenGLVideoController::onSceneChange(AbstractScene* scene) {
@@ -448,6 +458,11 @@ void OpenGLVideoController::renderPointShadowCaster(OpenGLShadowCaster* glShadow
     if (glObject->getSourceObject()->shadowCascadeLimit > 0) {
       setObjectEffects(pointLightViewProgram, glObject);
 
+      glObject->getSourceObject()->filterInstances([&](Object* instance) {
+        return isObjectWithinLightRadius(instance, glShadowCaster->getLight());
+      });
+
+      glObject->getSourceObject()->rehydrate();
       glObject->render();
     }
   }
@@ -496,24 +511,44 @@ void OpenGLVideoController::renderScreenShaders() {
 }
 
 void OpenGLVideoController::renderShadowCasters() {
+  // Render the effects of shadow-casting directional lights first,
+  // since these don't need to dynamically enable/disable objects
+  // based on their proximity to the light. Instead we defer to the
+  // existing object enabled/disabled states, which can be determined
+  // in game logic rather than engine logic.
   for (auto* glShadowCaster : glShadowCasters) {
-    if (glShadowCaster->getLight()->power == 0.0f) {
-      continue;
+    if (glShadowCaster->getLight()->type == Light::LightType::DIRECTIONAL && glShadowCaster->getLight()->power > 0.0f) {
+      renderDirectionalShadowCaster(glShadowCaster);
     }
+  }
 
-    switch (glShadowCaster->getLight()->type) {
-      case Light::LightType::DIRECTIONAL:
-        renderDirectionalShadowCaster(glShadowCaster);
-        break;
-      case Light::LightType::SPOTLIGHT:
-        renderSpotShadowCaster(glShadowCaster);
-        break;
-      case Light::LightType::POINT:
-        renderPointShadowCaster(glShadowCaster);
-        break;
-      default:
-        break;
+  // Render spot/point lights next, since these dynamically update
+  // object enabled/disabled states based on proximity.
+  //
+  // TODO: Allow objects to force spot/point lights to render them
+  // anyway, e.g. large objects with origins further away from the
+  // light source than their radius, but geometry within the radius
+  for (auto* glShadowCaster : glShadowCasters) {
+    if (glShadowCaster->getLight()->power > 0.0f) {
+      switch (glShadowCaster->getLight()->type) {
+        case Light::LightType::SPOTLIGHT:
+          renderSpotShadowCaster(glShadowCaster);
+          break;
+        case Light::LightType::POINT:
+          renderPointShadowCaster(glShadowCaster);
+          break;
+        default:
+          break;
+      }
     }
+  }
+
+  // Tentatively re-enable all objects. No objects will actually be
+  // rendered again until after the next game tick, which can allow
+  // enabled/disabled states to be changed once more before objects
+  // are rehydrated in Stage::update().
+  for (auto* glObject : glObjects) {
+    glObject->getSourceObject()->enableInstances();
   }
 
   glDisable(GL_BLEND);
@@ -544,6 +579,11 @@ void OpenGLVideoController::renderSpotShadowCaster(OpenGLShadowCaster* glShadowC
     if (glObject->getSourceObject()->shadowCascadeLimit > 0) {
       setObjectEffects(lightViewProgram, glObject);
 
+      glObject->getSourceObject()->filterInstances([&](Object* instance) {
+        return isObjectWithinLightRadius(instance, glShadowCaster->getLight());
+      });
+
+      glObject->getSourceObject()->rehydrate();
       glObject->render();
     }
   }

@@ -20,7 +20,7 @@ const static enum Attribute {
   MODEL_MATRIX = 6
 };
 
-OpenGLObject::OpenGLObject(const Object* object) {
+OpenGLObject::OpenGLObject(Object* object) {
   sourceObject = object;
 
   glGenVertexArrays(1, &vao);
@@ -75,6 +75,8 @@ void OpenGLObject::bufferInstanceData(const void* data, unsigned int size, GLuin
 
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
+  // TODO: Consider an alternate approach to determining
+  // when to recreate the data buffer
   if (previousTotalInstances != totalInstances) {
     glBufferData(GL_ARRAY_BUFFER, size, data, GL_DYNAMIC_DRAW);
   } else {
@@ -221,7 +223,7 @@ void OpenGLObject::freeCachedResources() {
   shaderMap.clear();
 }
 
-const Object* OpenGLObject::getSourceObject() const {
+Object* OpenGLObject::getSourceObject() const {
   return sourceObject;
 }
 
@@ -253,9 +255,9 @@ void OpenGLObject::render() {
 
     glBindVertexArray(vao);
     glDrawArraysInstanced(GL_TRIANGLES, 0, sourceObject->getPolygons().size() * 3, totalEnabledInstances);
-  }
 
-  previousTotalInstances = sourceObject->getTotalInstances();
+    previousTotalInstances = sourceObject->getTotalInstances();
+  }
 }
 
 std::map<int, OpenGLTexture*> OpenGLObject::textureMap;

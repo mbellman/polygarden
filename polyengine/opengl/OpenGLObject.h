@@ -11,14 +11,14 @@
 
 class OpenGLObject {
 public:
-  OpenGLObject(const Object* object);
+  OpenGLObject(Object* object);
   ~OpenGLObject();
 
   static void freeCachedResources();
 
   void bindTextures();
   ShaderProgram* getCustomShader() const;
-  const Object* getSourceObject() const;
+  Object* getSourceObject() const;
   bool hasNormalMap() const;
   bool hasCustomShader() const;
   bool hasTexture() const;
@@ -31,7 +31,7 @@ private:
   GLuint vao;
   GLuint buffers[4];
   unsigned int previousTotalInstances = 0;
-  const Object* sourceObject = nullptr;
+  Object* sourceObject = nullptr;
   OpenGLTexture* glTexture = nullptr;
   OpenGLTexture* glNormalMap = nullptr;
   ShaderProgram* customShader = nullptr;

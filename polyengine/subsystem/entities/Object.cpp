@@ -80,6 +80,30 @@ void Object::enable() {
   }
 }
 
+void Object::enableInstances() {
+  enable();
+
+  for (auto* instance : instances) {
+    instance->enable();
+  }
+}
+
+void Object::filterInstances(std::function<bool(Object*)> predicate) {
+  if (predicate(this)) {
+    enable();
+  } else {
+    disable();
+  }
+
+  for (auto* instance : instances) {
+    if (predicate(instance)) {
+      instance->enable();
+    } else {
+      instance->disable();
+    }
+  }
+}
+
 const float* Object::getColorBuffer() const {
   return colorBuffer;
 }
@@ -106,7 +130,7 @@ const Object* Object::getReference() const {
 
 unsigned int Object::getTotalEnabledInstances() const {
   if (!hasInstances() && !isReference) {
-    return 1;
+    return isDisabled() ? 0 : 1;
   }
 
   unsigned int total = 0;
