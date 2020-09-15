@@ -373,7 +373,7 @@ void GardenScene::spawnSprout(float x, float z) {
     sprout->from(stage.get<Mesh>("sprout"));
     sprout->setPosition(HeightMap::getGroundPosition(x, z));
     sprout->setOrientation(Vec3f(0.0f, RNG::random() * M_PI * 2.0f, 0.0f));
-    sprout->color = Vec3f(0.25f, 1.0f, 0.5f);
+    sprout->color = Vec3f(0.1f, RNG::random(0.75f, 1.0f), RNG::random(0.1f, 0.3f));
 
     auto timer = createTimer();
 

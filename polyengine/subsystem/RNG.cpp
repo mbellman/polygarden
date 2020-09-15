@@ -15,5 +15,5 @@ float RNG::random() {
 float RNG::random(float low, float high) {
   float range = high - low;
 
-  return low + floorf(range * random() + 1.0f);
+  return low + random() * range;
 }
