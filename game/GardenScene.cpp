@@ -122,6 +122,7 @@ void GardenScene::onInit() {
 
   stage.add<Mesh>("sprout", [](Mesh* sprout) {
     sprout->from(ObjLoader("./assets/sprout/model.obj"));
+    sprout->normalMap = Texture::use("./assets/sprout/normals.png");
     sprout->effects = ObjectEffects::GRASS_ANIMATION;
     sprout->shadowCascadeLimit = 2;
     sprout->isReference = true;
