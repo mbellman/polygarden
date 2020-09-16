@@ -13,8 +13,13 @@ enum ObjectEffects {
   GRASS_ANIMATION = 1 << 1
 };
 
-// TODO: Split instancing logic into ReferenceObject + InstanceObject
+class Instance;
+class ReferenceMesh;
+
 class Object : public Entity {
+  friend class Instance;
+  friend class ReferenceMesh;
+
 public:
   Vec3f color = Vec3f(1.0f);
   Vec3f scale = Vec3f(1.0f, 1.0f, 1.0f);
@@ -24,28 +29,25 @@ public:
   unsigned int effects = 0;
   unsigned int shadowCascadeLimit = 3;
   bool isEmissive = false;
-  bool isReference = false;
 
   virtual ~Object();
 
-  void clean();
-  void disable();
-  void enable();
-  void enableInstances();
-  void filterInstances(std::function<bool(Object*)> predicate);
+  void disableRendering();
+  void enableRendering();
+  void enableRenderingAll();
+  void enableRenderingWhere(std::function<bool(Object*)> predicate);
   const float* getColorBuffer() const;
   const Matrix4& getMatrix() const;
   const float* getMatrixBuffer() const;
   const int* getObjectIdBuffer() const;
   const std::vector<Polygon*>& getPolygons() const;
   const Object* getReference() const;
-  unsigned int getTotalEnabledInstances() const;
+  unsigned int getTotalRenderableInstances() const;
   unsigned int getTotalInstances() const;
   bool hasInstances() const;
-  bool isDisabled() const;
-  bool isInstance() const;
+  bool isRenderable() const;
   void move(const Vec3f& movement);
-  void rehydrate();
+  virtual void rehydrate();
   void rotate(const Vec3f& rotation);
   void setColor(const Vec3f& color);
   void setOrientation(const Vec3f& orientation);
@@ -56,25 +58,25 @@ public:
 protected:
   std::vector<Vertex3d*> vertices;
   std::vector<Polygon*> polygons;
-  Matrix4 matrix;
+  Matrix4 matrix = Matrix4::identity();
 
   void addPolygon(int v1index, int v2index, int v3index);
   void addVertex(const Vec3f& position);
   void addVertex(const Vec3f& position, const Vec2f& uv);
-  void setReference(Object* reference);
-  void trackInstance(Object* instance);
-  void untrackInstance(Object* instance);
+  void trackInstance(Instance* instance);
+  void untrackInstance(Instance* instance);
   void updateNormals();
 
 private:
-  HeapList<Object> instances;
+  HeapList<Instance> instances;
   Object* reference = this;
+  bool isReference = false;
   float* matrixBuffer = nullptr;
   float* colorBuffer = nullptr;
   int* objectIdBuffer = nullptr;
   bool shouldReallocateBuffers = true;
   bool shouldRecomputeBuffers = false;
-  bool isEnabled = true;
+  bool isRenderingEnabled = true;
 
   void reallocateBuffers();
   void recomputeMatrix();

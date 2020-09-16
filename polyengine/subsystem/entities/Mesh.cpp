@@ -16,10 +16,6 @@ void Mesh::from(const ObjLoader& loader) {
   updateNormals();
 }
 
-void Mesh::from(Mesh* reference) {
-  setReference(reference);
-}
-
 void Mesh::buildTexturedMesh(const ObjLoader& loader) {
   // Since there may be a different number of defined vertex
   // vectors and vertex texture coordinates (owing to the way

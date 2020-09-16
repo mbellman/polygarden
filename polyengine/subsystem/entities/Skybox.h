@@ -6,7 +6,7 @@
 
 class Skybox : public Object {
 public:
-  void from(const Texture* texture);
+  Skybox();
 
 private:
   static Vec3f vertexPositions[14];

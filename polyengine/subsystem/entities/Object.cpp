@@ -1,31 +1,11 @@
 #include "subsystem/entities/Object.h"
+#include "subsystem/entities/Instance.h"
 
 /**
  * Object
  * ------
  */
 Object::~Object() {
-  if (isInstance()) {
-    reference->untrackInstance(this);
-  } else if (hasInstances()) {
-    for (auto* instance : instances) {
-      instance->expire();
-    }
-
-    instances.clear();
-  }
-
-  for (auto* polygon : polygons) {
-    delete polygon;
-  }
-
-  for (auto* vertex : vertices) {
-    delete vertex;
-  }
-
-  polygons.clear();
-  vertices.clear();
-
   if (matrixBuffer != nullptr) {
     delete[] matrixBuffer;
   }
@@ -37,6 +17,22 @@ Object::~Object() {
   if (objectIdBuffer != nullptr) {
     delete[] objectIdBuffer;
   }
+
+  for (auto* polygon : polygons) {
+    delete polygon;
+  }
+
+  for (auto* vertex : vertices) {
+    delete vertex;
+  }
+
+  for (auto* instance : instances) {
+    instance->expire();
+  }
+
+  polygons.clear();
+  vertices.clear();
+  instances.clear();
 }
 
 void Object::addPolygon(int v1index, int v2index, int v3index) {
@@ -66,40 +62,40 @@ void Object::addVertex(const Vec3f& position, const Vec2f& uv) {
   vertices.push_back(vertex);
 }
 
-void Object::disable() {
-  if (isEnabled) {
-    isEnabled = false;
+void Object::disableRendering() {
+  if (isRenderingEnabled) {
+    isRenderingEnabled = false;
     reference->shouldRecomputeBuffers = true;
   }
 }
 
-void Object::enable() {
-  if (!isEnabled) {
-    isEnabled = true;
+void Object::enableRendering() {
+  if (!isRenderingEnabled) {
+    isRenderingEnabled = true;
     reference->shouldRecomputeBuffers = true;
   }
 }
 
-void Object::enableInstances() {
-  enable();
+void Object::enableRenderingAll() {
+  enableRendering();
 
   for (auto* instance : instances) {
-    instance->enable();
+    instance->enableRendering();
   }
 }
 
-void Object::filterInstances(std::function<bool(Object*)> predicate) {
+void Object::enableRenderingWhere(std::function<bool(Object*)> predicate) {
   if (predicate(this)) {
-    enable();
+    enableRendering();
   } else {
-    disable();
+    disableRendering();
   }
 
   for (auto* instance : instances) {
     if (predicate(instance)) {
-      instance->enable();
+      instance->enableRendering();
     } else {
-      instance->disable();
+      instance->disableRendering();
     }
   }
 }
@@ -128,15 +124,15 @@ const Object* Object::getReference() const {
   return reference;
 }
 
-unsigned int Object::getTotalEnabledInstances() const {
+unsigned int Object::getTotalRenderableInstances() const {
   if (!hasInstances() && !isReference) {
-    return isDisabled() ? 0 : 1;
+    return isRenderable() ? 1 : 0;
   }
 
   unsigned int total = 0;
 
   for (auto* instance : instances) {
-    if (instance->isEnabled) {
+    if (instance->isRenderingEnabled) {
       total++;
     }
   }
@@ -158,12 +154,8 @@ bool Object::hasInstances() const {
   return instances.length() > 0;
 }
 
-bool Object::isDisabled() const {
-  return !isEnabled;
-}
-
-bool Object::isInstance() const {
-  return reference != this;
+bool Object::isRenderable() const {
+  return isRenderingEnabled;
 }
 
 void Object::move(const Vec3f& movement) {
@@ -205,7 +197,7 @@ void Object::refreshColorBuffer() {
     for (unsigned int i = 0; i < instances.length(); i++) {
       auto* instance = instances[i];
 
-      if (instance->isEnabled) {
+      if (instance->isRenderingEnabled) {
         colorBuffer[idx * 3] = instances[i]->color.x;
         colorBuffer[idx * 3 + 1] = instances[i]->color.y;
         colorBuffer[idx * 3 + 2] = instances[i]->color.z;
@@ -227,7 +219,7 @@ void Object::refreshMatrixBuffer() {
     for (unsigned int i = 0; i < instances.length(); i++) {
       auto* instance = instances[i];
 
-      if (instance->isEnabled) {
+      if (instance->isRenderingEnabled) {
         const Matrix4& matrix = instance->getMatrix();
 
         memcpy(&matrixBuffer[idx++ * 16], matrix.m, 16 * sizeof(float));
@@ -245,7 +237,7 @@ void Object::refreshObjectIdBuffer() {
     for (unsigned int i = 0; i < instances.length(); i++) {
       auto* instance = instances[i];
 
-      if (instance->isEnabled) {
+      if (instance->isRenderingEnabled) {
         objectIdBuffer[idx++] = (int)i;
       }
     }
@@ -255,7 +247,7 @@ void Object::refreshObjectIdBuffer() {
 }
 
 void Object::rehydrate() {
-  if (!isInstance() && getTotalInstances() > 0) {
+  if (getTotalInstances() > 0) {
     if (shouldReallocateBuffers) {
       reallocateBuffers();
     }
@@ -294,12 +286,6 @@ void Object::setPosition(const Vec3f& position) {
   recomputeMatrix();
 }
 
-void Object::setReference(Object* reference) {
-  this->reference = reference;
-
-  reference->trackInstance(this);
-}
-
 void Object::setScale(const Vec3f& scale) {
   this->scale = scale;
 
@@ -310,14 +296,14 @@ void Object::setScale(float scale) {
   setScale(Vec3f(scale));
 }
 
-void Object::trackInstance(Object* instance) {
+void Object::trackInstance(Instance* instance) {
   instances.push(instance);
 
   shouldReallocateBuffers = true;
   shouldRecomputeBuffers = true;
 }
 
-void Object::untrackInstance(Object* instance) {
+void Object::untrackInstance(Instance* instance) {
   instances.remove(instance);
 
   shouldReallocateBuffers = true;

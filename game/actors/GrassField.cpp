@@ -1,9 +1,12 @@
 #include <subsystem/entities/Mesh.h>
 #include <subsystem/entities/Camera.h>
 #include <subsystem/entities/Plane.h>
+#include <subsystem/entities/ReferenceMesh.h>
+#include <subsystem/entities/Instance.h>
 #include <subsystem/Stage.h>
 #include <subsystem/ObjLoader.h>
 #include <subsystem/RNG.h>
+#include <algorithm>
 
 #include "actors/GrassField.h"
 #include "HeightMap.h"
@@ -25,7 +28,7 @@ void GrassField::onInit() {
     });
   });
 
-  stage->addMultiple<Mesh, 10000>([&](Mesh* blade, int index) {
+  stage->addMultiple<Instance, 10000>([&](Instance* blade, int index) {
     blade->from(stage->get<Mesh>("grass"));
     blade->setScale(RNG::random(5.0f, 15.0f));
     blade->setPosition(HeightMap::getRandomGroundPosition());
@@ -35,21 +38,20 @@ void GrassField::onInit() {
     blade->onUpdate = [=](float dt) {
       Vec3f relativeBladePosition = viewMatrix * blade->position;
 
-      if (relativeBladePosition.z > 0.0f && relativeBladePosition.z < 1250.0f) {
-        blade->enable();
+      if (relativeBladePosition.z > 0.0f) {
+        blade->enableRendering();
       } else {
-        blade->disable();
+        blade->disableRendering();
       }
     };
   });
 }
 
 void GrassField::onRegistered() {
-  stage->add<Mesh>("grass", [&](Mesh* grass) {
+  stage->add<ReferenceMesh>("grass", [&](ReferenceMesh* grass) {
     grass->from(ObjLoader("./assets/grass/model.obj"));
     grass->effects = ObjectEffects::GRASS_ANIMATION;
     grass->shadowCascadeLimit = 0;
-    grass->isReference = true;
   });
 }
 

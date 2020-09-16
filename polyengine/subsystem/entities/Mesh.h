@@ -6,7 +6,6 @@
 class Mesh : public Object {
 public:
   void from(const ObjLoader& loader);
-  void from(Mesh* reference);
 
 private:
   void buildTexturedMesh(const ObjLoader& loader);

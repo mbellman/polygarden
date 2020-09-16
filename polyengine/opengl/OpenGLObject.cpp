@@ -244,20 +244,22 @@ bool OpenGLObject::hasTexture() const {
 }
 
 void OpenGLObject::render() {
-  unsigned int totalEnabledInstances = sourceObject->getTotalEnabledInstances();
+  unsigned int totalRenderableInstances = sourceObject->getTotalRenderableInstances();
 
-  if (totalEnabledInstances > 0) {
-    bindTextures();
-
-    bufferMatrixData();
-    bufferColorData();
-    bufferObjectIdData();
-
-    glBindVertexArray(vao);
-    glDrawArraysInstanced(GL_TRIANGLES, 0, sourceObject->getPolygons().size() * 3, totalEnabledInstances);
-
-    previousTotalInstances = sourceObject->getTotalInstances();
+  if (totalRenderableInstances == 0) {
+    return;
   }
+
+  bindTextures();
+
+  bufferMatrixData();
+  bufferColorData();
+  bufferObjectIdData();
+
+  glBindVertexArray(vao);
+  glDrawArraysInstanced(GL_TRIANGLES, 0, sourceObject->getPolygons().size() * 3, totalRenderableInstances);
+
+  previousTotalInstances = sourceObject->getTotalInstances();
 }
 
 std::map<int, OpenGLTexture*> OpenGLObject::textureMap;

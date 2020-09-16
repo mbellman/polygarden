@@ -21,8 +21,8 @@ void Background::onInit() {
   });
 
   stage->add<Skybox>([&](Skybox* skybox) {
-    skybox->from(Texture::use("./assets/skybox/night.png"));
     skybox->setScale(5000.0f);
+    skybox->texture = Texture::use("./assets/skybox/night.png");
 
     skybox->onUpdate = [=](float dt) {
       skybox->setPosition(Camera::active->position);

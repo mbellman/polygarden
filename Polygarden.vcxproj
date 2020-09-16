@@ -142,10 +142,12 @@
     <ClCompile Include="polyengine\subsystem\entities\Camera.cpp" />
     <ClCompile Include="polyengine\subsystem\entities\Cube.cpp" />
     <ClCompile Include="polyengine\subsystem\entities\Entity.cpp" />
+    <ClCompile Include="polyengine\subsystem\entities\Instance.cpp" />
     <ClCompile Include="polyengine\subsystem\entities\Light.cpp" />
     <ClCompile Include="polyengine\subsystem\entities\Mesh.cpp" />
     <ClCompile Include="polyengine\subsystem\entities\Object.cpp" />
     <ClCompile Include="polyengine\subsystem\entities\Plane.cpp" />
+    <ClCompile Include="polyengine\subsystem\entities\ReferenceMesh.cpp" />
     <ClCompile Include="polyengine\subsystem\entities\Skybox.cpp" />
     <ClCompile Include="polyengine\subsystem\FileLoader.cpp" />
     <ClCompile Include="polyengine\subsystem\Geometry.cpp" />
@@ -279,10 +281,12 @@
     <ClInclude Include="polyengine\subsystem\entities\Camera.h" />
     <ClInclude Include="polyengine\subsystem\entities\Cube.h" />
     <ClInclude Include="polyengine\subsystem\entities\Entity.h" />
+    <ClInclude Include="polyengine\subsystem\entities\Instance.h" />
     <ClInclude Include="polyengine\subsystem\entities\Light.h" />
     <ClInclude Include="polyengine\subsystem\entities\Mesh.h" />
     <ClInclude Include="polyengine\subsystem\entities\Object.h" />
     <ClInclude Include="polyengine\subsystem\entities\Plane.h" />
+    <ClInclude Include="polyengine\subsystem\entities\ReferenceMesh.h" />
     <ClInclude Include="polyengine\subsystem\entities\Skybox.h" />
     <ClInclude Include="polyengine\subsystem\FileLoader.h" />
     <ClInclude Include="polyengine\subsystem\Geometry.h" />

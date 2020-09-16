@@ -3,6 +3,7 @@
 #include <typeinfo>
 
 #include "subsystem/Stage.h"
+#include "subsystem/entities/Instance.h"
 
 Stage::~Stage() {
   objects.free();
@@ -50,14 +51,14 @@ StageStats Stage::getStats() const {
   StageStats stats;
 
   for (auto* object : objects) {
-    if (object->isDisabled()) {
+    if (!object->isRenderable()) {
       continue;
     }
 
     stats.totalObjects++;
     stats.totalVertices += object->getReference()->getPolygons().size() * 3;
 
-    if (object->isInstance()) {
+    if (object->isOfType<Instance>()) {
       stats.totalInstances++;
     }
   }

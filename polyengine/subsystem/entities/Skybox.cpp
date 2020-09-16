@@ -4,8 +4,7 @@
  * Skybox
  * ------
  */
-void Skybox::from(const Texture* texture) {
-  this->texture = texture;
+Skybox::Skybox() {
   this->isEmissive = true;
 
   for (int i = 0; i < 14; i++) {

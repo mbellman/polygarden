@@ -17,6 +17,7 @@
 #include "opengl/FrameBuffer.h"
 #include "subsystem/entities/Object.h"
 #include "subsystem/entities/Light.h"
+#include "subsystem/entities/Instance.h"
 #include "subsystem/Math.h"
 
 OpenGLVideoController::OpenGLVideoController() {
@@ -134,10 +135,8 @@ void OpenGLVideoController::onDestroy() {
 }
 
 void OpenGLVideoController::onEntityAdded(Entity* entity) {
-  if (entity->isOfType<Object>()) {
-    if (!((Object*)entity)->isInstance()) {
-      glObjects.push(new OpenGLObject((Object*)entity));
-    }
+  if (entity->isOfType<Object>() && !entity->isOfType<Instance>()) {
+    glObjects.push(new OpenGLObject((Object*)entity));
   } else if (entity->isOfType<Light>() && ((Light*)entity)->canCastShadows) {
     glShadowCasters.push(new OpenGLShadowCaster((Light*)entity));
   }
@@ -458,8 +457,8 @@ void OpenGLVideoController::renderPointShadowCaster(OpenGLShadowCaster* glShadow
     if (glObject->getSourceObject()->shadowCascadeLimit > 0) {
       setObjectEffects(pointLightViewProgram, glObject);
 
-      glObject->getSourceObject()->filterInstances([&](Object* instance) {
-        return isObjectWithinLightRadius(instance, glShadowCaster->getLight());
+      glObject->getSourceObject()->enableRenderingWhere([&](Object* object) {
+        return isObjectWithinLightRadius(object, glShadowCaster->getLight());
       });
 
       glObject->getSourceObject()->rehydrate();
@@ -543,12 +542,12 @@ void OpenGLVideoController::renderShadowCasters() {
     }
   }
 
-  // Tentatively re-enable all objects. No objects will actually be
-  // rendered again until after the next game tick, which can allow
-  // enabled/disabled states to be changed once more before objects
-  // are rehydrated in Stage::update().
+  // Tentatively re-enable all objects for rendering. No objects will
+  // actually be rendered again until after the next game tick, which
+  // can allow enabled/disabled states to be changed once more before
+  // objects are rehydrated in Stage::update().
   for (auto* glObject : glObjects) {
-    glObject->getSourceObject()->enableInstances();
+    glObject->getSourceObject()->enableRenderingAll();
   }
 
   glDisable(GL_BLEND);
@@ -579,8 +578,8 @@ void OpenGLVideoController::renderSpotShadowCaster(OpenGLShadowCaster* glShadowC
     if (glObject->getSourceObject()->shadowCascadeLimit > 0) {
       setObjectEffects(lightViewProgram, glObject);
 
-      glObject->getSourceObject()->filterInstances([&](Object* instance) {
-        return isObjectWithinLightRadius(instance, glShadowCaster->getLight());
+      glObject->getSourceObject()->enableRenderingWhere([&](Object* object) {
+        return isObjectWithinLightRadius(object, glShadowCaster->getLight());
       });
 
       glObject->getSourceObject()->rehydrate();
