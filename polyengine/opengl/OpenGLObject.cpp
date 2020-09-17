@@ -257,6 +257,7 @@ void OpenGLObject::render() {
   bufferObjectIdData();
 
   glBindVertexArray(vao);
+  // TODO: Use glDrawElementsInstanced with vertex indexing
   glDrawArraysInstanced(GL_TRIANGLES, 0, sourceObject->getPolygons().size() * 3, totalRenderableInstances);
 
   previousTotalInstances = sourceObject->getTotalInstances();

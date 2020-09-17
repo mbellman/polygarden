@@ -21,6 +21,8 @@
 #include "glut.h"
 
 class OpenGLVideoController final : public AbstractVideoController {
+  friend class OpenGLIlluminator;
+
 public:
   OpenGLVideoController();
   ~OpenGLVideoController();
@@ -36,22 +38,18 @@ private:
   GBuffer* gBuffer = nullptr;
   SBuffer* sBuffer = nullptr;
   PointShadowBuffer* pointShadowBuffer = nullptr;
+  OpenGLIlluminator* glIlluminator = nullptr;
   HeapList<ScreenShader> screenShaders;
   HeapList<OpenGLObject> glObjects;
   HeapList<OpenGLShadowCaster> glShadowCasters;
 
   void createScreenShaders();
   Matrix4 createViewMatrix();
-  bool isObjectWithinLightRadius(const Object* object, const Light* light);
   void onEntityAdded(Entity* entity);
   void onEntityRemoved(Entity* entity);
-  void renderDirectionalShadowCaster(OpenGLShadowCaster* glShadowCaster);
   void renderEmissiveSurfaces();
   void renderGeometry();
-  void renderIlluminatedSurfaces();
-  void renderPointShadowCaster(OpenGLShadowCaster* glShadowCaster);
   void renderScreenShaders();
   void renderShadowCasters();
-  void renderSpotShadowCaster(OpenGLShadowCaster* glShadowCaster);
   void setObjectEffects(ShaderProgram& program, OpenGLObject* glObject);
 };
