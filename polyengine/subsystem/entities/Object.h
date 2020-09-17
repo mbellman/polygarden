@@ -44,6 +44,7 @@ public:
   const Object* getReference() const;
   unsigned int getTotalRenderableInstances() const;
   unsigned int getTotalInstances() const;
+  const std::vector<Vertex3d*>& getVertices() const;
   bool hasInstances() const;
   bool isRenderable() const;
   void move(const Vec3f& movement);

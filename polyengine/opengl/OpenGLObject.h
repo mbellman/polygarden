@@ -29,6 +29,7 @@ private:
   static std::map<std::string, ShaderProgram*> shaderMap;
 
   GLuint vao;
+  GLuint ebo;
   GLuint buffers[4];
   unsigned int previousTotalInstances = 0;
   Object* sourceObject = nullptr;
@@ -44,6 +45,7 @@ private:
   void bufferObjectIdData();
   void bufferMatrixData();
   void bufferVertexData();
+  void bufferVertexElementData();
   void defineColorAttributes();
   void defineMatrixAttributes();
   void defineObjectIdAttributes();

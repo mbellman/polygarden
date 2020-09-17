@@ -25,9 +25,11 @@ OpenGLObject::OpenGLObject(Object* object) {
 
   glGenVertexArrays(1, &vao);
   glGenBuffers(4, &buffers[0]);
+  glGenBuffers(1, &ebo);
   glBindVertexArray(vao);
 
   bufferVertexData();
+  bufferVertexElementData();
 
   defineVertexAttributes();
   defineMatrixAttributes();
@@ -99,7 +101,7 @@ void OpenGLObject::bufferObjectIdData() {
 }
 
 void OpenGLObject::bufferVertexData() {
-  unsigned int totalVertices = sourceObject->getPolygons().size() * 3;
+  unsigned int totalVertices = sourceObject->getVertices().size();
 
   if (totalVertices == 0) {
     return;
@@ -109,29 +111,48 @@ void OpenGLObject::bufferVertexData() {
   float* buffer = new float[bufferSize];
   unsigned int i = 0;
 
-  for (auto* polygon : sourceObject->getPolygons()) {
-    for (int v = 0; v < 3; v++) {
-      const Vertex3d& vertex = *polygon->vertices[v];
+  for (auto* vertex : sourceObject->getVertices()) {
+    buffer[i++] = vertex->position.x;
+    buffer[i++] = vertex->position.y;
+    buffer[i++] = vertex->position.z;
 
-      buffer[i++] = vertex.position.x;
-      buffer[i++] = vertex.position.y;
-      buffer[i++] = vertex.position.z;
+    buffer[i++] = vertex->normal.x;
+    buffer[i++] = vertex->normal.y;
+    buffer[i++] = vertex->normal.z;
 
-      buffer[i++] = vertex.normal.x;
-      buffer[i++] = vertex.normal.y;
-      buffer[i++] = vertex.normal.z;
+    buffer[i++] = vertex->tangent.x;
+    buffer[i++] = vertex->tangent.y;
+    buffer[i++] = vertex->tangent.z;
 
-      buffer[i++] = vertex.tangent.x;
-      buffer[i++] = vertex.tangent.y;
-      buffer[i++] = vertex.tangent.z;
-
-      buffer[i++] = vertex.uv.x;
-      buffer[i++] = vertex.uv.y;
-    }
+    buffer[i++] = vertex->uv.x;
+    buffer[i++] = vertex->uv.y;
   }
 
   glBindBuffer(GL_ARRAY_BUFFER, buffers[Buffer::VERTEX]);
   glBufferData(GL_ARRAY_BUFFER, bufferSize * sizeof(float), buffer, GL_STATIC_DRAW);
+
+  delete[] buffer;
+}
+
+void OpenGLObject::bufferVertexElementData() {
+  unsigned int totalFaces = sourceObject->getPolygons().size();
+
+  if (totalFaces == 0) {
+    return;
+  }
+
+  unsigned int bufferSize = totalFaces * 3;
+  unsigned int* buffer = new unsigned int[bufferSize];
+  unsigned int i = 0;
+
+  for (auto* polygon : sourceObject->getPolygons()) {
+    for (unsigned int v = 0; v < 3; v++) {
+      buffer[i++] = polygon->vertices[v]->index;
+    }
+  }
+
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, bufferSize * sizeof(unsigned int), buffer, GL_STATIC_DRAW);
 
   delete[] buffer;
 }
@@ -257,8 +278,8 @@ void OpenGLObject::render() {
   bufferObjectIdData();
 
   glBindVertexArray(vao);
-  // TODO: Use glDrawElementsInstanced with vertex indexing
-  glDrawArraysInstanced(GL_TRIANGLES, 0, sourceObject->getPolygons().size() * 3, totalRenderableInstances);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+  glDrawElementsInstanced(GL_TRIANGLES, sourceObject->getPolygons().size() * 3, GL_UNSIGNED_INT, (void*)0, totalRenderableInstances);
 
   previousTotalInstances = sourceObject->getTotalInstances();
 }

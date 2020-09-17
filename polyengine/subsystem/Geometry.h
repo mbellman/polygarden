@@ -17,6 +17,7 @@ struct Vertex3d {
   Vec3f tangent;
   Vec2f uv;
   std::vector<Polygon*> polygons;
+  unsigned int index = 0;
 
   void updateNormal();
   void updateTangent();

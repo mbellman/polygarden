@@ -58,6 +58,7 @@ void Object::addVertex(const Vec3f& position, const Vec2f& uv) {
 
   vertex->position = position;
   vertex->uv = uv;
+  vertex->index = vertices.size();
 
   vertices.push_back(vertex);
 }
@@ -148,6 +149,10 @@ unsigned int Object::getTotalInstances() const {
       ? 0 :
     1
   );
+}
+
+const std::vector<Vertex3d*>& Object::getVertices() const {
+  return vertices;
 }
 
 bool Object::hasInstances() const {
