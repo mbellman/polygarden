@@ -8,7 +8,6 @@
 #include <subsystem/RNG.h>
 
 #include "actors/GrassField.h"
-#include "actors/VisibilityCuller.h"
 #include "HeightMap.h"
 
 void GrassField::onInit() {

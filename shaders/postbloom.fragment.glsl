@@ -28,7 +28,7 @@ void main() {
   for (int i = 1; i <= 3; i++) {
     for (int s = 0; s < 8; s++) {
       float factor = 4.0 - float(i);
-      vec2 sampleUv = fragmentUv + SAMPLE_OFFSETS[s] * texelSize * i * 2.5;
+      vec2 sampleUv = fragmentUv + SAMPLE_OFFSETS[s] * texelSize * i * 3.0;
 
       bloom += factor * texture(bloomColor, sampleUv).xyz;
     }

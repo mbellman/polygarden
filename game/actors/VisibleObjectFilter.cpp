@@ -25,7 +25,7 @@ void VisibleObjectFilter::onUpdate(float dt) {
   for (auto* object : objects) {
     object->enableRenderingWhere([&](Object* object) {
       Vec3f relativePosition = viewMatrix * object->position;
-      float frustumLimit = relativePosition.z * frustumFactor;
+      float frustumLimit = 25.0f + relativePosition.z * frustumFactor;
 
       return (
         relativePosition.z > 0.0f &&
