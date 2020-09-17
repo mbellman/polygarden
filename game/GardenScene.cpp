@@ -16,6 +16,7 @@
 #include "actors/GrassField.h"
 #include "actors/Background.h"
 #include "actors/ProximalShadowLight.h"
+#include "actors/VisibleObjectFilter.h"
 
 void GardenScene::addRocks() {
   stage.add<ReferenceMesh>("rock", [&](ReferenceMesh* rock) {
@@ -111,11 +112,13 @@ void GardenScene::addTrees() {
 }
 
 void GardenScene::onInit() {
+  stage.add<VisibleObjectFilter>("object-filter");
+
   stage.add<ReferenceMesh>("seed", [](ReferenceMesh* seed) {
     seed->from(ObjLoader("./assets/seed/model.obj"));
   });
 
-  stage.add<ReferenceMesh>("sprout", [](ReferenceMesh* sprout) {
+  stage.add<ReferenceMesh>("sprout", [&](ReferenceMesh* sprout) {
     sprout->from(ObjLoader("./assets/sprout/model.obj"));
     sprout->normalMap = Texture::use("./assets/sprout/normals.png");
     sprout->effects = ObjectEffects::GRASS_ANIMATION;
@@ -181,6 +184,16 @@ void GardenScene::onInit() {
   addRocks();
   addTrees();
 
+  stage.get<VisibleObjectFilter>("object-filter")->addObjects({
+    stage.get("sprout"),
+    stage.get("flower-stalk"),
+    stage.get("flower-petals"),
+    stage.get("lavender-stalk"),
+    stage.get("lavender-flowers"),
+    stage.get("grass"),
+    stage.get("rock")
+  });
+
   input.onMouseMotion([=](const SDL_MouseMotionEvent& event) {
     if (SDL_GetRelativeMouseMode()) {
       camera.orientation.x -= event.yrel / 1000.0f;
@@ -209,8 +222,6 @@ void GardenScene::onUpdate(float dt) {
   super::onUpdate(dt);
 
   float speedFactor = (input.isKeyHeld(Key::SHIFT) ? 70.0f : 20.0f);
-
-  viewMatrix = Matrix4::rotate(camera.orientation * Vec3f(1.0f, -1.0f, 1.0f)) * Matrix4::translate(camera.position.invert());
 
   if (input.isKeyHeld(Key::W)) {
     velocity += camera.getDirection().xz() * speedFactor;
@@ -243,16 +254,6 @@ void GardenScene::spawnFlower(float x, float z) {
   Vec3f orientation = Vec3f(0.0f, RNG::random() * M_PI * 2.0f, 0.0f);
   float scale = RNG::random(6.0f, 10.0f);
 
-  auto toggleVisibility = [&](Object* object) {
-    Vec3f relativePosition = viewMatrix * object->position;
-
-    if (relativePosition.z > 0.0f) {
-      object->enableRendering();
-    } else {
-      object->disableRendering();
-    }
-  };
-
   stage.add<Instance>([&](Instance* flowerStalk) {
     flowerStalk->from(stage.get<Mesh>("flower-stalk"));
     flowerStalk->setPosition(position);
@@ -267,8 +268,6 @@ void GardenScene::spawnFlower(float x, float z) {
       if (t <= 1.0f) {
         flowerStalk->setScale(Easing::bounceOut(t) * scale);
       }
-
-      toggleVisibility(flowerStalk);
     };
   });
 
@@ -287,8 +286,6 @@ void GardenScene::spawnFlower(float x, float z) {
       if (t <= 1.0f) {
         flowerPetals->setScale(Easing::bounceOut(t) * scale);
       }
-
-      toggleVisibility(flowerPetals);
     };
   });
 }
@@ -297,16 +294,6 @@ void GardenScene::spawnLavender(float x, float z) {
   Vec3f position = HeightMap::getGroundPosition(x, z);
   Vec3f orientation = Vec3f(0.0f, RNG::random() * M_PI * 2.0f, 0.0f);
   float scale = RNG::random(15.0f, 20.0f);
-
-  auto toggleVisibility = [&](Object* object) {
-    Vec3f relativePosition = viewMatrix * object->position;
-
-    if (relativePosition.z > 0.0f) {
-      object->enableRendering();
-    } else {
-      object->disableRendering();
-    }
-  };
 
   stage.add<Instance>([&](Instance* stalk) {
     stalk->from(stage.get<Mesh>("lavender-stalk"));
@@ -322,8 +309,6 @@ void GardenScene::spawnLavender(float x, float z) {
       if (t <= 1.0f) {
         stalk->setScale(Easing::bounceOut(t) * scale);
       }
-
-      toggleVisibility(stalk);
     };
   });
 
@@ -341,23 +326,11 @@ void GardenScene::spawnLavender(float x, float z) {
       if (t <= 1.0f) {
         flowers->setScale(Easing::bounceOut(t) * scale);
       }
-
-      toggleVisibility(flowers);
     };
   });
 }
 
 void GardenScene::spawnSprout(float x, float z) {
-  auto toggleVisibility = [&](Object* object) {
-    Vec3f relativePosition = viewMatrix * object->position;
-
-    if (relativePosition.z > 0.0f) {
-      object->enableRendering();
-    } else {
-      object->disableRendering();
-    }
-  };
-
   stage.add<Instance>([&](Instance* sprout) {
     sprout->from(stage.get<Mesh>("sprout"));
     sprout->setPosition(HeightMap::getGroundPosition(x, z));
@@ -372,8 +345,6 @@ void GardenScene::spawnSprout(float x, float z) {
       if (t <= 1.0f) {
         sprout->setScale(Easing::bounceOut(t) * 5.0f);
       }
-
-      toggleVisibility(sprout);
     };
   });
 }
@@ -395,7 +366,7 @@ void GardenScene::throwSeeds() {
     ).unit() * RNG::random(30.0f, 60.0f);
 
     seed->onUpdate = [=](float dt) mutable {
-      velocity.y -= 2.0f;
+      velocity.y -= 100.0f * dt;
 
       seed->move(velocity * dt);
 

@@ -7,6 +7,8 @@ class Camera : public Entity {
 public:
   static const Camera* active;
 
+  float fov = 90.0f;
+
   // TODO: Create 'Orientation' struct with below methods
   Vec3f getDirection() const;
   Vec3f getLeftDirection() const;

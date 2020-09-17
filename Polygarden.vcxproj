@@ -114,6 +114,7 @@
     <ClCompile Include="game\actors\Background.cpp" />
     <ClCompile Include="game\actors\GrassField.cpp" />
     <ClCompile Include="game\actors\ProximalShadowLight.cpp" />
+    <ClCompile Include="game\actors\VisibleObjectFilter.cpp" />
     <ClCompile Include="game\Easing.cpp" />
     <ClCompile Include="game\GameController.cpp" />
     <ClCompile Include="game\GardenScene.cpp" />
@@ -253,6 +254,7 @@
     <ClInclude Include="game\actors\Background.h" />
     <ClInclude Include="game\actors\GrassField.h" />
     <ClInclude Include="game\actors\ProximalShadowLight.h" />
+    <ClInclude Include="game\actors\VisibleObjectFilter.h" />
     <ClInclude Include="game\Easing.h" />
     <ClInclude Include="game\GameController.h" />
     <ClInclude Include="game\GardenScene.h" />

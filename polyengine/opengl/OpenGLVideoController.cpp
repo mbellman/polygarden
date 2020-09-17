@@ -349,7 +349,7 @@ void OpenGLVideoController::renderGeometry() {
   geometryProgram.setInt("modelTexture", 7);
   geometryProgram.setInt("normalMap", 8);
 
-  Matrix4 projectionMatrix = Matrix4::projection(screenSize, 45.0f, 1.0f, 10000.0f).transpose();
+  Matrix4 projectionMatrix = Matrix4::projection(screenSize, scene->getCamera().fov * 0.5f, 1.0f, 10000.0f).transpose();
   Matrix4 viewMatrix = createViewMatrix();
 
   auto renderObject = [&](OpenGLObject* glObject) {

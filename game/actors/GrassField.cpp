@@ -6,9 +6,9 @@
 #include <subsystem/Stage.h>
 #include <subsystem/ObjLoader.h>
 #include <subsystem/RNG.h>
-#include <algorithm>
 
 #include "actors/GrassField.h"
+#include "actors/VisibilityCuller.h"
 #include "HeightMap.h"
 
 void GrassField::onInit() {
@@ -28,22 +28,12 @@ void GrassField::onInit() {
     });
   });
 
-  stage->addMultiple<Instance, 10000>([&](Instance* blade, int index) {
+  stage->addMultiple<Instance, 5000>([&](Instance* blade, int index) {
     blade->from(stage->get<Mesh>("grass"));
-    blade->setScale(RNG::random(5.0f, 15.0f));
     blade->setPosition(HeightMap::getRandomGroundPosition());
     blade->setColor(Vec3f(0.2f, 0.5f, 0.2f));
     blade->rotate(Vec3f(0.0f, RNG::random(0.0f, M_PI * 2.0f), 0.0f));
-
-    blade->onUpdate = [=](float dt) {
-      Vec3f relativeBladePosition = viewMatrix * blade->position;
-
-      if (relativeBladePosition.z > 0.0f) {
-        blade->enableRendering();
-      } else {
-        blade->disableRendering();
-      }
-    };
+    blade->setScale(RNG::random(15.0f, 30.0f));
   });
 }
 
@@ -51,10 +41,5 @@ void GrassField::onRegistered() {
   stage->add<ReferenceMesh>("grass", [&](ReferenceMesh* grass) {
     grass->from(ObjLoader("./assets/grass/model.obj"));
     grass->effects = ObjectEffects::GRASS_ANIMATION;
-    grass->shadowCascadeLimit = 0;
   });
-}
-
-void GrassField::onUpdate(float dt) {
-  viewMatrix = Matrix4::rotate(Camera::active->orientation * Vec3f(1.0f, -1.0f, 1.0f)) * Matrix4::translate(Camera::active->position.invert());
 }

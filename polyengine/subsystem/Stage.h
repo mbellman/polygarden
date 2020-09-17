@@ -48,9 +48,9 @@ public:
   void add(std::string name, std::function<void(T*)> handler) {
     T* t = new T();
 
+    // TODO: Normalize ordering for both Actors and regular Entities,
+    // or consider calling entityAddedHandler() after adding/handling
     if (std::is_base_of<Actor, T>::value) {
-      // TODO: Determine why this ordering crashes for
-      // regular entities, shadowcasters notwithstanding
       add(t);
       handler(t);
     } else {
@@ -70,7 +70,7 @@ public:
     }
   }
 
-  template<typename T>
+  template<typename T = Object>
   T* get(std::string name) {
     return (T*)store.at(name);
   }

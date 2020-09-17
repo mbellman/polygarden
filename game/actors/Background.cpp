@@ -14,7 +14,7 @@ void Background::onInit() {
     light->canCastShadows = true;
   });
 
-  stage->add<Light>([](auto* light) {
+  stage->add<Light>([](Light* light) {
     light->type = Light::LightType::DIRECTIONAL;
     light->color = Vec3f(0.2f, 0.2f, 0.3f);
     light->direction = Vec3f(0.0f, -1.0f, 0.0f);
