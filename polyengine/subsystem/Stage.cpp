@@ -56,7 +56,7 @@ StageStats Stage::getStats() const {
     }
 
     stats.totalObjects++;
-    stats.totalVertices += object->getReference()->getPolygons().size() * 3;
+    stats.totalVertices += object->getReference()->getVertices().size();
 
     if (object->isOfType<Instance>()) {
       stats.totalInstances++;
