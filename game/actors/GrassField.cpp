@@ -39,6 +39,6 @@ void GrassField::onInit() {
 void GrassField::onRegistered() {
   stage->add<ReferenceMesh>("grass", [&](ReferenceMesh* grass) {
     grass->from(ObjLoader("./assets/grass/model.obj"));
-    grass->effects = ObjectEffects::GRASS_ANIMATION;
+    grass->effects = ObjectEffects::GRASS_ANIMATION | ObjectEffects::TREE_ANIMATION;
   });
 }

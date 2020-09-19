@@ -1,20 +1,20 @@
-#include "opengl/ScreenShader.h"
+#include "opengl/OpenGLPostShader.h"
 
-ScreenShader::ScreenShader(const char* shaderPath) {
+OpenGLPostShader::OpenGLPostShader(const char* path) {
   program.create();
   program.attachShader(ShaderLoader::loadVertexShader("./shaders/quad.vertex.glsl"));
-  program.attachShader(ShaderLoader::loadFragmentShader(shaderPath));
+  program.attachShader(ShaderLoader::loadFragmentShader(path));
   program.link();
 
   glScreenQuad = new OpenGLScreenQuad();
 }
 
-ScreenShader::~ScreenShader() {
+OpenGLPostShader::~OpenGLPostShader() {
   delete glScreenQuad;
   delete frameBuffer;
 }
 
-void ScreenShader::createFrameBuffer(const Region2d<int>& screen) {
+void OpenGLPostShader::createFrameBuffer(const Region2d<int>& screen) {
   if (frameBuffer != nullptr) {
     delete frameBuffer;
   }
@@ -24,25 +24,25 @@ void ScreenShader::createFrameBuffer(const Region2d<int>& screen) {
   frameBuffer = frameBufferFactory(program, screen);
 }
 
-FrameBuffer* ScreenShader::getFrameBuffer() const {
+FrameBuffer* OpenGLPostShader::getFrameBuffer() const {
   return frameBuffer;
 }
 
-void ScreenShader::onCreateFrameBuffer(FrameBufferFactory factory) {
+void OpenGLPostShader::onCreateFrameBuffer(FrameBufferFactory factory) {
   frameBufferFactory = factory;
 }
 
-void ScreenShader::onRender(RenderHandler handler) {
+void OpenGLPostShader::onRender(RenderHandler handler) {
   renderHandler = handler;
 }
 
-void ScreenShader::render() {
+void OpenGLPostShader::render() {
   frameBuffer->startReading();
   program.use();
 
   renderHandler(program, glScreenQuad);
 }
 
-void ScreenShader::startWriting() {
+void OpenGLPostShader::startWriting() {
   frameBuffer->startWriting();
 }

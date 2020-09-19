@@ -18,10 +18,11 @@ void ProximalShadowLight::onInit() {
 }
 
 void ProximalShadowLight::onUpdate(float dt) {
-  float lightDistance = (fallbackLight->position - Camera::active->position).magnitude();
+  float lightDistance = fallbackLight->getLocalDistance();
+  float attenuationLimit = shadowLight->radius * 0.6f;
 
-  if (lightDistance > 150.0f) {
-    float attenuation = (lightDistance - 150.0f) / 100.0f;
+  if (lightDistance > attenuationLimit) {
+    float attenuation = (lightDistance - attenuationLimit) / 100.0f;
 
     shadowLight->power = std::max(1.0f - attenuation, 0.0f);
     fallbackLight->power = std::min(attenuation, 1.0f);

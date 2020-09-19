@@ -7,6 +7,7 @@
 template<typename T>
 using ItemPredicate = std::function<bool(T*)>;
 
+// TODO: Rename Array, add method delete(T*)
 template<typename T>
 class HeapList {
 public:

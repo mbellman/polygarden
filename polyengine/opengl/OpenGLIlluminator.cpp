@@ -141,7 +141,7 @@ void OpenGLIlluminator::renderDirectionalShadowCaster(OpenGLShadowCaster* glShad
   // Camera view shadowcaster lighting pass
   auto* light = glShadowCaster->getLight();
 
-  glVideoController->screenShaders[0]->startWriting();
+  glVideoController->glPostShaders[0]->startWriting();
   glVideoController->sBuffer->startReading();
   glVideoController->gBuffer->startReading();
 
@@ -149,7 +149,6 @@ void OpenGLIlluminator::renderDirectionalShadowCaster(OpenGLShadowCaster* glShad
   glDisable(GL_CULL_FACE);
   glEnable(GL_STENCIL_TEST);
   glEnable(GL_BLEND);
-  glBlendFuncSeparate(GL_ONE, GL_ONE, GL_ONE, GL_ZERO);
 
   directionalShadowProgram.use();
   directionalShadowProgram.setInt("colorTexture", 0);
@@ -223,7 +222,7 @@ void OpenGLIlluminator::renderPointShadowCaster(OpenGLShadowCaster* glShadowCast
   }
 
   // Camera view shadowcaster lighting pass
-  glVideoController->screenShaders[0]->startWriting();
+  glVideoController->glPostShaders[0]->startWriting();
   glVideoController->pointShadowBuffer->startReading();
   glVideoController->gBuffer->startReading();
 
@@ -231,7 +230,6 @@ void OpenGLIlluminator::renderPointShadowCaster(OpenGLShadowCaster* glShadowCast
   glDisable(GL_CULL_FACE);
   glEnable(GL_STENCIL_TEST);
   glEnable(GL_BLEND);
-  glBlendFuncSeparate(GL_ONE, GL_ONE, GL_ONE, GL_ZERO);
 
   pointShadowProgram.use();
   pointShadowProgram.setInt("colorTexture", 0);
@@ -286,7 +284,7 @@ void OpenGLIlluminator::renderSpotShadowCaster(OpenGLShadowCaster* glShadowCaste
   // Camera view shadowcaster lighting pass
   const Camera& camera = glVideoController->scene->getCamera();
 
-  glVideoController->screenShaders[0]->startWriting();
+  glVideoController->glPostShaders[0]->startWriting();
   glVideoController->sBuffer->startReading();
   glVideoController->gBuffer->startReading();
 
@@ -294,7 +292,6 @@ void OpenGLIlluminator::renderSpotShadowCaster(OpenGLShadowCaster* glShadowCaste
   glDisable(GL_CULL_FACE);
   glEnable(GL_STENCIL_TEST);
   glEnable(GL_BLEND);
-  glBlendFuncSeparate(GL_ONE, GL_ONE, GL_ONE, GL_ZERO);
 
   spotShadowProgram.use();
   spotShadowProgram.setInt("colorTexture", 0);

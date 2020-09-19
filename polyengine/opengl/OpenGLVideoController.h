@@ -9,7 +9,8 @@
 #include "opengl/OpenGLObject.h"
 #include "opengl/OpenGLShadowCaster.h"
 #include "opengl/FrameBuffer.h"
-#include "opengl/ScreenShader.h"
+#include "opengl/OpenGLPostShader.h"
+#include "opengl/OpenGLPreShader.h"
 #include "opengl/GBuffer.h"
 #include "opengl/SBuffer.h"
 #include "opengl/PointShadowBuffer.h"
@@ -39,17 +40,20 @@ private:
   SBuffer* sBuffer = nullptr;
   PointShadowBuffer* pointShadowBuffer = nullptr;
   OpenGLIlluminator* glIlluminator = nullptr;
-  HeapList<ScreenShader> screenShaders;
+  HeapList<OpenGLPreShader> glPreShaders;
+  HeapList<OpenGLPostShader> glPostShaders;
   HeapList<OpenGLObject> glObjects;
   HeapList<OpenGLShadowCaster> glShadowCasters;
 
-  void createScreenShaders();
+  void createPostShaders();
+  void createPreShaders();
   Matrix4 createViewMatrix();
   void onEntityAdded(Entity* entity);
   void onEntityRemoved(Entity* entity);
   void renderEmissiveSurfaces();
   void renderGeometry();
-  void renderScreenShaders();
+  void renderPostShaders();
+  void renderPreShaders();
   void renderShadowCasters();
   void setObjectEffects(ShaderProgram& program, OpenGLObject* glObject);
 };

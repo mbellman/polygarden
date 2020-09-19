@@ -12,8 +12,8 @@ float HeightMap::getGroundHeight(float x, float z) {
 
   return (
     5.0f * (sinf(fx) + cosf(fz)) +
-    20.0f * sinf(fx * 0.3f) +
-    10.0f * cosf(fz * 0.2f)
+    25.0f * sinf(fx * 0.3f) +
+    30.0f * sinf(fz * 0.2f)
   );
 }
 

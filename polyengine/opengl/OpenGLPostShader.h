@@ -11,10 +11,10 @@
 typedef std::function<FrameBuffer*(const ShaderProgram&, const Region2d<int>&)> FrameBufferFactory;
 typedef std::function<void(const ShaderProgram&, OpenGLScreenQuad* glScreenQuad)> RenderHandler;
 
-class ScreenShader {
+class OpenGLPostShader {
 public:
-  ScreenShader(const char* shaderPath);
-  ~ScreenShader();
+  OpenGLPostShader(const char* path);
+  ~OpenGLPostShader();
 
   void createFrameBuffer(const Region2d<int>& screen);
   FrameBuffer* getFrameBuffer() const;

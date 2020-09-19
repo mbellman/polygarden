@@ -14,7 +14,6 @@
 #include "opengl/OpenGLDebugger.h"
 #include "opengl/ShaderProgram.h"
 #include "opengl/ShaderLoader.h"
-#include "opengl/ScreenShader.h"
 #include "opengl/FrameBuffer.h"
 #include "subsystem/entities/Object.h"
 #include "subsystem/entities/Light.h"
@@ -31,7 +30,8 @@ OpenGLVideoController::OpenGLVideoController() {
 }
 
 OpenGLVideoController::~OpenGLVideoController() {
-  screenShaders.free();
+  glPreShaders.free();
+  glPostShaders.free();
   glObjects.free();
   glShadowCasters.free();
 
@@ -43,10 +43,10 @@ OpenGLVideoController::~OpenGLVideoController() {
   delete glIlluminator;
 }
 
-void OpenGLVideoController::createScreenShaders() {
-  auto* dofShader = new ScreenShader("./shaders/dof.fragment.glsl");
-  auto* preBloomShader = new ScreenShader("./shaders/prebloom.fragment.glsl");
-  auto* postBloomShader = new ScreenShader("./shaders/postbloom.fragment.glsl");
+void OpenGLVideoController::createPostShaders() {
+  auto* dofShader = new OpenGLPostShader("./shaders/dof.fragment.glsl");
+  auto* preBloomShader = new OpenGLPostShader("./shaders/prebloom.fragment.glsl");
+  auto* postBloomShader = new OpenGLPostShader("./shaders/postbloom.fragment.glsl");
 
   // Depth-of-field
   dofShader->onCreateFrameBuffer([=](const ShaderProgram& program, auto screen) {
@@ -108,9 +108,13 @@ void OpenGLVideoController::createScreenShaders() {
   preBloomShader->createFrameBuffer(screenSize);
   postBloomShader->createFrameBuffer(screenSize);
 
-  screenShaders.push(dofShader);
-  screenShaders.push(preBloomShader);
-  screenShaders.push(postBloomShader);
+  glPostShaders.push(dofShader);
+  glPostShaders.push(preBloomShader);
+  glPostShaders.push(postBloomShader);
+}
+
+void OpenGLVideoController::createPreShaders() {
+  glPreShaders.push(new OpenGLPreShader("./shaders/fog.fragment.glsl"));
 }
 
 Matrix4 OpenGLVideoController::createViewMatrix() {
@@ -164,6 +168,7 @@ void OpenGLVideoController::onInit(SDL_Window* sdlWindow, int width, int height)
   glEnable(GL_STENCIL_TEST);
   glCullFace(GL_BACK);
   glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+  glBlendFuncSeparate(GL_ONE, GL_ONE, GL_ONE, GL_ZERO);
   glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
   SDL_GL_SetSwapInterval(0);
@@ -178,9 +183,10 @@ void OpenGLVideoController::onInit(SDL_Window* sdlWindow, int width, int height)
   pointShadowBuffer->createFrameBuffer(1024, 1024);
   glIlluminator->setVideoController(this);
 
-  createScreenShaders();
+  createPreShaders();
+  createPostShaders();
 
-  gBuffer->getFrameBuffer()->shareDepthStencilBuffer(screenShaders[0]->getFrameBuffer());
+  gBuffer->getFrameBuffer()->shareDepthStencilBuffer(glPostShaders[0]->getFrameBuffer());
 
   OpenGLDebugger::checkErrors("Initialization");
 }
@@ -193,7 +199,7 @@ void OpenGLVideoController::onRender(SDL_Window* sdlWindow) {
 
   renderGeometry();
 
-  screenShaders[0]->startWriting();
+  glPostShaders[0]->startWriting();
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
   glClear(GL_COLOR_BUFFER_BIT);
   glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -202,7 +208,8 @@ void OpenGLVideoController::onRender(SDL_Window* sdlWindow) {
   renderEmissiveSurfaces();
   glIlluminator->renderIlluminatedSurfaces();
   glIlluminator->renderShadowCasters();
-  renderScreenShaders();
+  renderPreShaders();
+  renderPostShaders();
 
   glStencilMask(0xFF);
 
@@ -241,11 +248,11 @@ void OpenGLVideoController::onScreenSizeChange(int width, int height) {
 
   gBuffer->createFrameBuffer(width, height);
 
-  for (auto* shader : screenShaders) {
+  for (auto* shader : glPostShaders) {
     shader->createFrameBuffer({ 0, 0, width, height });
   }
 
-  gBuffer->getFrameBuffer()->shareDepthStencilBuffer(screenShaders[0]->getFrameBuffer());
+  gBuffer->getFrameBuffer()->shareDepthStencilBuffer(glPostShaders[0]->getFrameBuffer());
 }
 
 void OpenGLVideoController::renderEmissiveSurfaces() {
@@ -308,19 +315,33 @@ void OpenGLVideoController::renderGeometry() {
   glStencilMask(0x00);
 }
 
-void OpenGLVideoController::renderScreenShaders() {
+void OpenGLVideoController::renderPreShaders() {
+  glEnable(GL_BLEND);
+
+  for (auto* shader : glPreShaders) {
+    shader->getProgram().use();
+    shader->getProgram().setInt("colorTexture", 0);
+    shader->getProgram().setInt("normalDepthTexture", 1);
+    shader->getProgram().setInt("positionTexture", 2);
+    shader->render();
+  }
+
+  glDisable(GL_BLEND);
+}
+
+void OpenGLVideoController::renderPostShaders() {
   glDisable(GL_STENCIL_TEST);
 
-  for (int i = 0; i < screenShaders.length(); i++) {
-    bool isFinalShader = i == screenShaders.length() - 1;
+  for (int i = 0; i < glPostShaders.length(); i++) {
+    bool isFinalShader = i == glPostShaders.length() - 1;
 
     if (isFinalShader) {
       glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     } else {
-      screenShaders[i + 1]->startWriting();
+      glPostShaders[i + 1]->startWriting();
     }
 
-    screenShaders[i]->render();
+    glPostShaders[i]->render();
   }
 }
 
