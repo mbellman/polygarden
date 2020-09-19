@@ -174,7 +174,7 @@ void GardenScene::onInit() {
 
       light->onUpdate = [=](float dt) {
         light->power = 4.0f + (sinf(getRunningTime() * 10.0f + offset) + sinf(getRunningTime() * 21.3f + offset)) * 0.75f;
-        light->radius = std::max(750.0f - (camera.position - light->position).magnitude() * 0.5f, 100.0f);
+        light->radius = std::max(750.0f - (camera.position - light->position).magnitude() * 0.5f, 200.0f);
       };
     });
   });

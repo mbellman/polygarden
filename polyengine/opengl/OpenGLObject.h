@@ -31,7 +31,6 @@ private:
   GLuint vao;
   GLuint ebo;
   GLuint buffers[4];
-  unsigned int previousTotalInstances = 0;
   Object* sourceObject = nullptr;
   OpenGLTexture* glTexture = nullptr;
   OpenGLTexture* glNormalMap = nullptr;

@@ -73,17 +73,8 @@ void OpenGLObject::bufferColorData() {
 }
 
 void OpenGLObject::bufferInstanceData(const void* data, unsigned int size, GLuint vbo) {
-  unsigned int totalInstances = sourceObject->getTotalInstances();
-
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-  // TODO: Consider an alternate approach to determining
-  // when to recreate the data buffer
-  if (previousTotalInstances != totalInstances) {
-    glBufferData(GL_ARRAY_BUFFER, size, data, GL_DYNAMIC_DRAW);
-  } else {
-    glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
-  }
+  glBufferData(GL_ARRAY_BUFFER, size, data, GL_DYNAMIC_DRAW);
 }
 
 void OpenGLObject::bufferMatrixData() {
@@ -280,8 +271,6 @@ void OpenGLObject::render() {
   glBindVertexArray(vao);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
   glDrawElementsInstanced(GL_TRIANGLES, sourceObject->getPolygons().size() * 3, GL_UNSIGNED_INT, (void*)0, totalRenderableInstances);
-
-  previousTotalInstances = sourceObject->getTotalInstances();
 }
 
 std::map<int, OpenGLTexture*> OpenGLObject::textureMap;
