@@ -33,7 +33,7 @@ void GBuffer::createShaderPrograms() {
   geometryProgram.link();
 
   illuminationProgram.create();
-  illuminationProgram.attachShader(ShaderLoader::loadVertexShader("./shaders/quad.vertex.glsl"));
+  illuminationProgram.attachShader(ShaderLoader::loadVertexShader("./shaders/lighting-quad.vertex.glsl"));
   illuminationProgram.attachShader(ShaderLoader::loadFragmentShader("./shaders/illumination.fragment.glsl"));
   illuminationProgram.link();
 

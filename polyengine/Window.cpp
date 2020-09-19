@@ -25,6 +25,7 @@ Window::~Window() {
 void Window::handleStats() {
   char title[100];
 
+  // TODO: Determine stats in video controller instead
   auto stageStats = gameController->getActiveScene()->getStage().getStats();
 
   sprintf_s(

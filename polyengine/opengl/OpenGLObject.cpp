@@ -4,10 +4,10 @@
 #include "opengl/ShaderLoader.h"
 
 const static enum Buffer {
-  VERTEX = 0,
-  MATRIX = 1,
-  COLOR = 2,
-  ID = 3
+  VERTEX,
+  MATRIX,
+  COLOR,
+  ID
 };
 
 const static enum Attribute {

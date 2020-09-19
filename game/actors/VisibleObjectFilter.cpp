@@ -15,24 +15,20 @@ void VisibleObjectFilter::addObjects(const std::vector<Object*>& objects) {
 }
 
 void VisibleObjectFilter::onUpdate(float dt) {
-  Matrix4 viewMatrix = (
-    Matrix4::rotate(Camera::active->orientation * Vec3f(1.0f, -1.0f, 1.0f)) *
-    Matrix4::translate(Camera::active->position.invert())
-  );
-
+  Matrix4 view = Camera::active->getViewMatrix();
   float frustumFactor = std::tanf(0.5f * Camera::active->fov * M_PI / 180.0f);
 
   for (auto* object : objects) {
     object->enableRenderingWhere([&](Object* object) {
-      Vec3f relativePosition = viewMatrix * object->position;
-      float frustumLimit = 25.0f + relativePosition.z * frustumFactor;
+      Vec3f localPosition = view * object->position;
+      float frustumLimit = 25.0f + localPosition.z * frustumFactor;
 
       return (
-        relativePosition.z > 0.0f &&
-        relativePosition.x > -frustumLimit &&
-        relativePosition.x < frustumLimit &&
-        relativePosition.y > -frustumLimit &&
-        relativePosition.y < frustumLimit
+        localPosition.z > 0.0f &&
+        localPosition.x > -frustumLimit &&
+        localPosition.x < frustumLimit &&
+        localPosition.y > -frustumLimit &&
+        localPosition.y < frustumLimit
       );
     });
   }

@@ -115,12 +115,10 @@ void OpenGLVideoController::createScreenShaders() {
 
 Matrix4 OpenGLVideoController::createViewMatrix() {
   const Camera& camera = scene->getCamera();
-  Vec3f rotation = camera.orientation * Vec3f(-1.0f, 1.0f, 1.0f);
-  Vec3f translation = camera.position.invert().gl();
 
   return (
-    Matrix4::rotate(rotation) *
-    Matrix4::translate(translation)
+    Matrix4::rotate(camera.orientation) *
+    Matrix4::translate(camera.position.invert().gl())
   ).transpose();
 }
 
@@ -196,6 +194,9 @@ void OpenGLVideoController::onRender(SDL_Window* sdlWindow) {
   renderGeometry();
 
   screenShaders[0]->startWriting();
+  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+  glClear(GL_COLOR_BUFFER_BIT);
+  glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
   gBuffer->startReading();
 
   renderEmissiveSurfaces();

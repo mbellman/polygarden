@@ -12,10 +12,9 @@ uniform sampler2D colorTexture;
 uniform sampler2D normalDepthTexture;
 uniform sampler2D positionTexture;
 uniform vec3 cameraPosition;
-uniform int totalLights;
-uniform Light lights[MAX_LIGHTS];
 
 in vec2 fragmentUv;
+flat in Light light;
 
 layout (location = 0) out vec4 colorDepth;
 
@@ -27,20 +26,16 @@ void main() {
   vec3 normal = normalDepth.xyz;
   vec3 illuminatedColor = vec3(0.0);
 
-  for (int i = 0; i < totalLights; i++) {
-    Light light = lights[i];
-
-    switch (light.type) {
-      case POINT_LIGHT:
-        illuminatedColor += albedo * getPointLightFactor(lights[i], position, normal, surfaceToCamera);
-        break;
-      case DIRECTIONAL_LIGHT:
-        illuminatedColor += albedo * getDirectionalLightFactor(lights[i], normal, surfaceToCamera);
-        break;
-      case SPOT_LIGHT:
-        illuminatedColor += albedo * getSpotLightFactor(lights[i], position, normal, surfaceToCamera);
-        break;
-    }
+  switch (light.type) {
+    case POINT_LIGHT:
+      illuminatedColor = albedo * getPointLightFactor(light, position, normal, surfaceToCamera);
+      break;
+    case DIRECTIONAL_LIGHT:
+      illuminatedColor = albedo * getDirectionalLightFactor(light, normal, surfaceToCamera);
+      break;
+    case SPOT_LIGHT:
+      illuminatedColor = albedo * getSpotLightFactor(light, position, normal, surfaceToCamera);
+      break;
   }
 
   colorDepth = vec4(illuminatedColor, normalDepth.w);

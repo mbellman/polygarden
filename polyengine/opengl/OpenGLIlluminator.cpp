@@ -1,8 +1,19 @@
 #include <algorithm>
+#include <vector>
 
 #include "opengl/OpenGLIlluminator.h"
 #include "subsystem/entities/Object.h"
 #include "subsystem/entities/Light.h"
+#include "subsystem/entities/Camera.h"
+#include "opengl/OpenGLDebugger.h"
+
+OpenGLIlluminator::OpenGLIlluminator() {
+  glLightingQuad = new OpenGLLightingQuad();
+}
+
+OpenGLIlluminator::~OpenGLIlluminator() {
+  delete glLightingQuad;
+}
 
 bool OpenGLIlluminator::isObjectWithinLightRadius(const Object* object, const Light* light) {
   return (
@@ -21,33 +32,27 @@ void OpenGLIlluminator::renderIlluminatedSurfaces() {
   glDisable(GL_CULL_FACE);
   glEnable(GL_STENCIL_TEST);
   glStencilFunc(GL_EQUAL, 1, 0xFF);
+  glEnable(GL_BLEND);
 
   auto* scene = glVideoController->scene;
   auto& lights = scene->getStage().getLights();
-  int totalLights = lights.length() - scene->getStage().getStats().totalShadowCasters;
 
   illuminationProgram.setInt("colorTexture", 0);
   illuminationProgram.setInt("normalDepthTexture", 1);
   illuminationProgram.setInt("positionTexture", 2);
   illuminationProgram.setVec3f("cameraPosition", scene->getCamera().position);
-  illuminationProgram.setInt("totalLights", totalLights);
 
-  int index = 0;
+  std::vector<Light*> nonShadowCasterLights;
 
-  // TODO: Use instance-rendered lighting quad + buffered light structs
   for (auto* light : lights) {
     if (light->power > 0.0f && !light->canCastShadows) {
-      std::string idx = std::to_string(index++);
-
-      illuminationProgram.setVec3f("lights[" + idx + "].position", light->position);
-      illuminationProgram.setVec3f("lights[" + idx + "].direction", light->direction);
-      illuminationProgram.setVec3f("lights[" + idx + "].color", light->color * light->power);
-      illuminationProgram.setFloat("lights[" + idx + "].radius", light->radius);
-      illuminationProgram.setInt("lights[" + idx + "].type", light->type);
+      nonShadowCasterLights.push_back(light);
     }
   }
 
-  glVideoController->gBuffer->renderScreenQuad();
+  glLightingQuad->render(nonShadowCasterLights);
+
+  glDisable(GL_BLEND);
 }
 
 void OpenGLIlluminator::renderShadowCasters() {
@@ -167,6 +172,12 @@ void OpenGLIlluminator::renderDirectionalShadowCaster(OpenGLShadowCaster* glShad
 }
 
 void OpenGLIlluminator::renderPointShadowCaster(OpenGLShadowCaster* glShadowCaster) {
+  auto* light = glShadowCaster->getLight();
+
+  if (light->getLocalPosition().z < 0.0f && light->getLocalDistance() > light->radius * 0.25f) {
+    return;
+  }
+
   auto& pointLightViewProgram = glVideoController->pointShadowBuffer->getPointLightViewProgram();
   auto& pointShadowProgram = glVideoController->pointShadowBuffer->getPointShadowProgram();
 
@@ -175,7 +186,6 @@ void OpenGLIlluminator::renderPointShadowCaster(OpenGLShadowCaster* glShadowCast
   glVideoController->pointShadowBuffer->startWriting();
 
   const Camera& camera = glVideoController->scene->getCamera();
-  auto* light = glShadowCaster->getLight();
 
   glDisable(GL_BLEND);
   glDisable(GL_STENCIL_TEST);

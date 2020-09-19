@@ -18,6 +18,7 @@ void Background::onInit() {
     light->type = Light::LightType::DIRECTIONAL;
     light->color = Vec3f(0.2f, 0.2f, 0.3f);
     light->direction = Vec3f(0.0f, -1.0f, 0.0f);
+    light->power = 0.5f;
   });
 
   stage->add<Skybox>([&](Skybox* skybox) {

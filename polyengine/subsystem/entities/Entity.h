@@ -16,6 +16,8 @@ struct Entity {
   std::function<void(float)> onUpdate = nullptr;
 
   void expire();
+  float getLocalDistance() const;
+  Vec3f getLocalPosition() const;
   bool isExpired() const;
 
   template<typename T>

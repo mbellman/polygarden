@@ -57,6 +57,14 @@ void Vec3f::operator*=(float scalar) {
   z *= scalar;
 }
 
+Vec3f Vec3f::operator/(float scalar) const {
+  return {
+    x / scalar,
+    y / scalar,
+    z / scalar
+  };
+}
+
 Vec3f Vec3f::crossProduct(const Vec3f& v1, const Vec3f& v2) {
   return {
     v1.y * v2.z - v1.z * v2.y,

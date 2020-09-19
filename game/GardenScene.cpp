@@ -174,6 +174,7 @@ void GardenScene::onInit() {
 
       light->onUpdate = [=](float dt) {
         light->power = 4.0f + (sinf(getRunningTime() * 10.0f + offset) + sinf(getRunningTime() * 21.3f + offset)) * 0.75f;
+        light->radius = std::max(750.0f - (camera.position - light->position).magnitude() * 0.5f, 100.0f);
       };
     });
   });
@@ -196,7 +197,7 @@ void GardenScene::onInit() {
 
   input.onMouseMotion([=](const SDL_MouseMotionEvent& event) {
     if (SDL_GetRelativeMouseMode()) {
-      camera.orientation.x -= event.yrel / 1000.0f;
+      camera.orientation.x += event.yrel / 1000.0f;
       camera.orientation.y += event.xrel / 1000.0f;
     }
   });

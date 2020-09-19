@@ -23,7 +23,7 @@ Vec3f Camera::getOrientationDirection(const Vec3f& orientation) const {
 
   Vec3f direction = {
     sinf(yaw) * pitchFactor,
-    sinf(pitch),
+    -sinf(pitch),
     cosf(yaw) * pitchFactor
   };
 
@@ -32,6 +32,13 @@ Vec3f Camera::getOrientationDirection(const Vec3f& orientation) const {
 
 Vec3f Camera::getRightDirection() const {
   return getOrientationDirection({ 0, orientation.y + RAD_90, 0 });
+}
+
+Matrix4 Camera::getViewMatrix() const {
+  return (
+    Matrix4::rotate(Camera::active->orientation.invert()) *
+    Matrix4::translate(Camera::active->position.invert())
+  );
 }
 
 const Camera* Camera::active = nullptr;

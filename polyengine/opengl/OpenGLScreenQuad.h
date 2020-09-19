@@ -8,7 +8,6 @@ public:
   OpenGLScreenQuad();
   ~OpenGLScreenQuad();
 
-  void bindVBO();
   void render();
 
 private:

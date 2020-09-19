@@ -54,6 +54,7 @@ struct Vec3f : Vec2f {
   Vec3f operator*(float scalar) const;
   Vec3f operator*(const Vec3f& vector) const;
   void operator*=(float scalar);
+  Vec3f operator/(float scalar) const;
 
   void debug() const;
   const float* float3() const;

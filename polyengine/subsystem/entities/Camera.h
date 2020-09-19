@@ -14,4 +14,5 @@ public:
   Vec3f getLeftDirection() const;
   Vec3f getOrientationDirection(const Vec3f& orientation) const;
   Vec3f getRightDirection() const;
+  Matrix4 getViewMatrix() const;
 };
