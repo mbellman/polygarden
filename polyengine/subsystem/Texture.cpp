@@ -19,6 +19,10 @@ Texture::~Texture() {
   SDL_FreeSurface(surface);
 }
 
+void Texture::freeCache() {
+  Texture::textureCache.free();
+}
+
 const SDL_Surface* Texture::getData() const {
   return surface;
 }

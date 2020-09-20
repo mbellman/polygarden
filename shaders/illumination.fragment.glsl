@@ -13,7 +13,7 @@ uniform sampler2D normalDepthTexture;
 uniform sampler2D positionTexture;
 uniform vec3 cameraPosition;
 
-in vec2 fragmentUv;
+noperspective in vec2 fragmentUv;
 flat in Light light;
 
 layout (location = 0) out vec4 colorDepth;

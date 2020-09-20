@@ -171,6 +171,9 @@
     <ClCompile Include="polyengine\opengl\OpenGLPostShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="game\actors\Wall.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="external\glew\include\eglew.h">
@@ -600,6 +603,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="polyengine\opengl\OpenGLPostShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\actors\Wall.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -22,5 +22,5 @@ Vec3f HeightMap::getGroundPosition(float x, float z) {
 }
 
 Vec3f HeightMap::getRandomGroundPosition() {
-  return getGroundPosition(RNG::random(-1200.0f, 1200.0f), RNG::random(-1200.0f, 1200.0f));
+  return getGroundPosition(RNG::random(-1150.0f, 1150.0f), RNG::random(-1150.0f, 1150.0f));
 }

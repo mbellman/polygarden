@@ -11,7 +11,7 @@ uniform mat4 lightMatrixCascades[3];
 uniform vec3 cameraPosition;
 uniform Light light;
 
-in vec2 fragmentUv;
+noperspective in vec2 fragmentUv;
 
 layout (location = 0) out vec4 colorDepth;
 

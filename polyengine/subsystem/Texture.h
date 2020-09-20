@@ -10,6 +10,7 @@ public:
   Texture(std::string path);
   ~Texture();
 
+  static void freeCache();
   static Texture* use(std::string);
 
   const SDL_Surface* getData() const;

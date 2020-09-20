@@ -38,7 +38,7 @@ vec3 getPointLightFactor(Light light, vec3 surfacePosition, vec3 surfaceNormal, 
   vec3 halfVector = normalize(surfaceToCamera + normalizedSurfaceToLight);
   float specularDot = dot(halfVector, surfaceNormal);
   float specularity = pow(max(specularDot, 0.0), 50);
-  vec3 specular = lighting * specularity * 5.0;
+  vec3 specular = lighting * specularity;
   
   return diffuse + specular;
 }

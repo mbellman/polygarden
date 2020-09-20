@@ -9,6 +9,10 @@ template<typename T>
 class AssetCache {
 public:
   ~AssetCache() {
+    free();
+  }
+
+  void free() {
     for (auto& [ key, asset ] : assetMap) {
       delete asset;
     }

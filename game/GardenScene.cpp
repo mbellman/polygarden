@@ -15,6 +15,7 @@
 #include "Easing.h"
 #include "actors/GrassField.h"
 #include "actors/Background.h"
+#include "actors/Wall.h"
 #include "actors/ProximalShadowLight.h"
 #include "actors/VisibleObjectFilter.h"
 
@@ -167,20 +168,21 @@ void GardenScene::onInit() {
     stage.add<Light>([=](Light* light) {
       light->color = Vec3f(1.0f, 0.5f, 0.2f);
       light->position = lightPosition;
-      light->radius = 750.0f;
+      light->radius = 500.0f;
       light->power = 4.0f;
 
       float offset = RNG::random(0.0f, M_PI);
 
       light->onUpdate = [=](float dt) {
-        light->power = 4.0f + (sinf(getRunningTime() * 10.0f + offset) + sinf(getRunningTime() * 21.3f + offset)) * 0.75f;
-        light->radius = std::max(750.0f - (camera.position - light->position).magnitude() * 0.5f, 200.0f);
+        light->power = 4.0f + (sinf(getRunningTime() * 5.0f + offset) + sinf(getRunningTime() * 21.3f + offset)) * 0.75f;
+        light->radius = std::max(500.0f - (camera.position - light->position).magnitude() * 0.5f, 200.0f);
       };
     });
   });
 
   stage.add<GrassField>();
   stage.add<Background>();
+  stage.add<Wall>();
 
   addRocks();
   addTrees();

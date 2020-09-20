@@ -86,10 +86,10 @@ void OpenGLLightingQuad::bufferData(const std::vector<Light*>& lights) {
 
       transformBuffer[i].offset[0] = clip.x;
       transformBuffer[i].offset[1] = clip.y;
-      transformBuffer[i].scale[0] = 1.2f * light->radius / localLightPosition.z * (1.0f / aspectRatio);
-      transformBuffer[i].scale[1] = 1.2f * light->radius / localLightPosition.z;
+      transformBuffer[i].scale[0] = light->radius / localLightPosition.z * aspectRatio;
+      transformBuffer[i].scale[1] = light->radius / localLightPosition.z * 1.2f;
     } else {
-      float scale = (localLightPosition.magnitude() < light->radius * 0.25f || light->type == Light::LightType::DIRECTIONAL) ? 1.0f : 0.0f;
+      float scale = (localLightPosition.magnitude() < light->radius * 0.5f || light->type == Light::LightType::DIRECTIONAL) ? 1.0f : 0.0f;
 
       transformBuffer[i].offset[0] = 0.0f;
       transformBuffer[i].offset[1] = 0.0f;

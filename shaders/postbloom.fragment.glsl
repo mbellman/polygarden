@@ -5,7 +5,7 @@
 uniform sampler2D baseColor;
 uniform sampler2D bloomColor;
 
-in vec2 fragmentUv;
+noperspective in vec2 fragmentUv;
 
 layout (location = 0) out vec3 color;
 

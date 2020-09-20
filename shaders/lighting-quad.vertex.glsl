@@ -8,7 +8,7 @@ layout (location = 2) in vec2 quadOffset;
 layout (location = 3) in vec2 quadScale;
 layout (location = 4) in Light quadLight;
 
-out vec2 fragmentUv;
+noperspective out vec2 fragmentUv;
 flat out Light light;
 
 void main() {
