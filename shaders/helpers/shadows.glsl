@@ -1,9 +1,8 @@
-const vec2 SAMPLE_OFFSETS[9] = vec2[9](
+const vec2 SAMPLE_OFFSETS[8] = vec2[8](
   vec2(-0.7, -0.7),
   vec2(0.0, -1.0),
   vec2(0.7, -0.7),
   vec2(-1.0, 0.0),
-  vec2(0.0),
   vec2(1.0, 0.0),
   vec2(-0.7, 0.7),
   vec2(0.0, 1.0),
@@ -19,7 +18,7 @@ float getShadowFactor(vec3 worldPosition, mat4 lightMatrix, sampler2D lightMap, 
   vec2 sampleSpread = texelSize * MAX_SOFTNESS;
   float occludingSurfaceDistance = 1.0;
 
-  for (int i = 0; i < 9; i++) {
+  for (int i = 0; i < 8; i++) {
     float sampleDistance = texture(lightMap, projection.xy + SAMPLE_OFFSETS[i] * sampleSpread).r;
 
     if (sampleDistance < occludingSurfaceDistance) {

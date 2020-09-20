@@ -37,6 +37,26 @@ float getBias(int cascadeIndex) {
   }
 }
 
+vec3 getVolumetricLight(vec3 surfacePosition) {
+  vec3 surfaceToCamera = cameraPosition - surfacePosition;
+  float sampleFactor = 1.0 / 30.0;
+  vec3 volumetricLight = vec3(0.0);
+  vec3 ray = surfaceToCamera * sampleFactor;
+
+  for (int i = 1; i < 30; i++) {
+    vec3 samplePosition = surfacePosition + ray * float(i);
+    int cascadeIndex = getCascadeIndex(samplePosition);
+    mat4 lightMatrix = lightMatrixCascades[cascadeIndex];
+    vec4 lightSpacePosition = lightMatrix * vec4(samplePosition * vec3(1.0, 1.0, -1.0), 1.0);
+    vec3 projection = (lightSpacePosition.xyz / lightSpacePosition.w) * 0.5 + 0.5;
+    float closestDepth = texture(lightMaps[cascadeIndex], projection.xy).r;
+
+    volumetricLight += (closestDepth < projection.z) ? vec3(0.0) : (light.color * sampleFactor);
+  }
+
+  return volumetricLight;
+}
+
 void main() {
   vec3 albedo = texture(colorTexture, fragmentUv).xyz;
   vec3 position = texture(positionTexture, fragmentUv).xyz;
@@ -46,6 +66,7 @@ void main() {
   vec3 lighting = albedo * getDirectionalLightFactor(light, normal, surfaceToCamera);
   int cascadeIndex = getCascadeIndex(position);
   float shadowFactor = getShadowFactor(position, lightMatrixCascades[cascadeIndex], lightMaps[cascadeIndex], getBias(cascadeIndex));
+  vec3 volumetricLight = getVolumetricLight(position);
 
-  colorDepth = vec4(lighting * shadowFactor, normalDepth.w);
+  colorDepth = vec4(lighting * shadowFactor + volumetricLight * 0.25, normalDepth.w);
 }
