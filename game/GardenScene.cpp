@@ -158,24 +158,23 @@ void GardenScene::onInit() {
   });
 
   stage.addMultiple<Instance, 10>([&](Instance* lantern, int index) {
-    Vec3f lanternPosition = HeightMap::getRandomGroundPosition() - Vec3f(0.0f, 5.0f, 0.0f);
-    Vec3f lightPosition = lanternPosition + Vec3f(0.0f, 75.0f, 0.0f);
+    Vec3f lanternPosition = HeightMap::getRandomGroundPosition() - Vec3f(0.0f, 3.0f, 0.0f);
+    Vec3f lightPosition = lanternPosition + Vec3f(0.0f, 37.5f, 0.0f);
 
     lantern->from(stage.get<Mesh>("lantern"));
-    lantern->setScale(100.0f);
+    lantern->setScale(50.0f);
     lantern->setPosition(lanternPosition);
 
     stage.add<Light>([=](Light* light) {
       light->color = Vec3f(1.0f, 0.5f, 0.2f);
       light->position = lightPosition;
-      light->radius = 500.0f;
+      light->radius = 250.0f;
       light->power = 4.0f;
 
       float offset = RNG::random(0.0f, M_PI);
 
       light->onUpdate = [=](float dt) {
         light->power = 4.0f + (sinf(getRunningTime() * 5.0f + offset) + sinf(getRunningTime() * 21.3f + offset)) * 0.75f;
-        light->radius = std::max(500.0f - (camera.position - light->position).magnitude() * 0.5f, 200.0f);
       };
     });
   });
@@ -193,8 +192,7 @@ void GardenScene::onInit() {
     stage.get("flower-petals"),
     stage.get("lavender-stalk"),
     stage.get("lavender-flowers"),
-    stage.get("grass"),
-    stage.get("rock")
+    stage.get("grass")
   });
 
   input.onMouseMotion([=](const SDL_MouseMotionEvent& event) {
