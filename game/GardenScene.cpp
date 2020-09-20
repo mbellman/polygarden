@@ -62,9 +62,9 @@ void GardenScene::addTrees() {
 
   stage.addMultiple<Instance, 10>([&](Instance* tree, int index) {
     Vec3f position = HeightMap::getRandomGroundPosition();
-    Vec3f mushroomPosition = position + Vec3f(RNG::random(-30.0f, 30.0f), 0.0f, RNG::random(-30.0f, 30.0f));
-    Vec3f orientation(0.0f, RNG::random(0.0f, M_PI * 2.0f), 0.0f);
     float scale = 40.0f;
+    Vec3f mushroomPosition = position + Vec3f(RNG::random(-scale, scale), 0.0f, RNG::random(-scale, scale));
+    Vec3f orientation(0.0f, RNG::random(0.0f, M_PI * 2.0f), 0.0f);
 
     mushroomPosition.y = HeightMap::getGroundHeight(mushroomPosition.x, mushroomPosition.z);
 

@@ -173,7 +173,7 @@ void OpenGLIlluminator::renderDirectionalShadowCaster(OpenGLShadowCaster* glShad
 void OpenGLIlluminator::renderPointShadowCaster(OpenGLShadowCaster* glShadowCaster) {
   auto* light = glShadowCaster->getLight();
 
-  if (light->getLocalPosition().z < 0.0f && light->getLocalDistance() > light->radius) {
+  if (light->getLocalPosition().z < 0.0f && light->getLocalDistance() > light->radius * 0.5f) {
     return;
   }
 
