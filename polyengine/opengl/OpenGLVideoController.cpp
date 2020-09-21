@@ -44,8 +44,9 @@ OpenGLVideoController::~OpenGLVideoController() {
 }
 
 void OpenGLVideoController::createPostShaders() {
-  auto* dofShader = new OpenGLPostShader("./shaders/postshaders/dof.fragment.glsl");
-  auto* antiAliasingShader = new OpenGLPostShader("./shaders/postshaders/anti-aliasing.fragment.glsl");
+  auto* dofShader = new OpenGLPostShader("./shaders/post-fx/dof.fragment.glsl");
+  auto* antiAliasingShader = new OpenGLPostShader("./shaders/post-fx/anti-aliasing.fragment.glsl");
+  auto* chromaticAberrationShader = new OpenGLPostShader("./shaders/post-fx/chromatic-aberration.fragment.glsl");
 
   // Depth-of-field
   dofShader->setFrameBufferFactory([](auto screen) {
@@ -75,15 +76,31 @@ void OpenGLVideoController::createPostShaders() {
     program.setInt("screen", 0);
   });
 
+  // Chromatic aberration
+  chromaticAberrationShader->setFrameBufferFactory([](auto screen) {
+    auto* buffer = new FrameBuffer(screen.width, screen.height);
+
+    buffer->addColorTexture(GL_RGB32F, GL_RGB, GL_CLAMP_TO_EDGE);   // (0) Color
+    buffer->bindColorTextures();
+
+    return buffer;
+  });
+
+  chromaticAberrationShader->setRenderHandler([](const ShaderProgram& program) {
+    program.setInt("screen", 0);
+  });
+
   dofShader->createFrameBuffer(screenSize);
   antiAliasingShader->createFrameBuffer(screenSize);
+  chromaticAberrationShader->createFrameBuffer(screenSize);
 
   glPostShaders.push(dofShader);
   glPostShaders.push(antiAliasingShader);
+  glPostShaders.push(chromaticAberrationShader);
 }
 
 void OpenGLVideoController::createPreShaders() {
-  // glPreShaders.push(new OpenGLPreShader("./shaders/preshaders/fog.fragment.glsl"));
+  // glPreShaders.push(new OpenGLPreShader("./shaders/pre-fx/fog.fragment.glsl"));
 }
 
 Matrix4 OpenGLVideoController::createViewMatrix() {
