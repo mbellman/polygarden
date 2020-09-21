@@ -45,9 +45,10 @@ OpenGLVideoController::~OpenGLVideoController() {
 
 void OpenGLVideoController::createPostShaders() {
   auto* dofShader = new OpenGLPostShader("./shaders/postshaders/dof.fragment.glsl");
+  auto* antiAliasingShader = new OpenGLPostShader("./shaders/postshaders/anti-aliasing.fragment.glsl");
 
   // Depth-of-field
-  dofShader->onCreateFrameBuffer([](auto screen) {
+  dofShader->setFrameBufferFactory([](auto screen) {
     auto* buffer = new FrameBuffer(screen.width, screen.height);
 
     buffer->addColorTexture(GL_RGBA32F, GL_RGBA, GL_CLAMP_TO_EDGE);   // (0) Color/depth
@@ -56,13 +57,29 @@ void OpenGLVideoController::createPostShaders() {
     return buffer;
   });
 
-  dofShader->onRender([](const ShaderProgram& program) {
+  dofShader->setRenderHandler([](const ShaderProgram& program) {
+    program.setInt("screen", 0);
+  });
+
+  // Anti-aliasing
+  antiAliasingShader->setFrameBufferFactory([](auto screen) {
+    auto* buffer = new FrameBuffer(screen.width, screen.height);
+
+    buffer->addColorTexture(GL_RGB32F, GL_RGB, GL_CLAMP_TO_EDGE);   // (0) Color
+    buffer->bindColorTextures();
+
+    return buffer;
+  });
+
+  antiAliasingShader->setRenderHandler([](const ShaderProgram& program) {
     program.setInt("screen", 0);
   });
 
   dofShader->createFrameBuffer(screenSize);
+  antiAliasingShader->createFrameBuffer(screenSize);
 
   glPostShaders.push(dofShader);
+  glPostShaders.push(antiAliasingShader);
 }
 
 void OpenGLVideoController::createPreShaders() {

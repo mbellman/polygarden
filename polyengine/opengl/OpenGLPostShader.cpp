@@ -31,14 +31,6 @@ FrameBuffer* OpenGLPostShader::getFrameBuffer() const {
   return frameBuffer;
 }
 
-void OpenGLPostShader::onCreateFrameBuffer(FrameBufferFactory factory) {
-  frameBufferFactory = factory;
-}
-
-void OpenGLPostShader::onRender(RenderHandler handler) {
-  renderHandler = handler;
-}
-
 void OpenGLPostShader::render() {
   frameBuffer->startReading();
   program.use();
@@ -48,6 +40,14 @@ void OpenGLPostShader::render() {
   renderHandler(program);
 
   glScreenQuad->render();
+}
+
+void OpenGLPostShader::setFrameBufferFactory(FrameBufferFactory factory) {
+  frameBufferFactory = factory;
+}
+
+void OpenGLPostShader::setRenderHandler(RenderHandler handler) {
+  renderHandler = handler;
 }
 
 void OpenGLPostShader::startWriting() {
