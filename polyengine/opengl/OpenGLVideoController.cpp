@@ -100,7 +100,7 @@ void OpenGLVideoController::createPostShaders() {
 }
 
 void OpenGLVideoController::createPreShaders() {
-  // glPreShaders.push(new OpenGLPreShader("./shaders/pre-fx/fog.fragment.glsl"));
+  glPreShaders.push(new OpenGLPreShader("./shaders/pre-fx/fog.fragment.glsl"));
 }
 
 Matrix4 OpenGLVideoController::createViewMatrix() {

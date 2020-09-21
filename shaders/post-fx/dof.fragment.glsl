@@ -24,15 +24,15 @@ vec2 getBlur(float depth) {
 }
 
 vec3 getDoF() {
-  vec3 sum = vec3(0.0);
-  float depth = texture(screen, fragmentUv).w;
-  vec2 blur = getBlur(depth);
+  vec4 sample = texture(screen, fragmentUv);
+  vec2 blur = getBlur(sample.w);
+  vec3 sum = sample.rgb;
 
   for (int s = 0; s < 6; s++) {
-    sum += texture(screen, fragmentUv + RADIAL_SAMPLE_OFFSETS_6[s] * blur * 1.5).xyz;
+    sum += texture(screen, fragmentUv + RADIAL_SAMPLE_OFFSETS_6[s] * blur * 1.7).xyz;
   }
 
-  return sum / 6.0;
+  return sum / 7.0;
 }
 
 void main() {
