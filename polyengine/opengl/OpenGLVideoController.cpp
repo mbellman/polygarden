@@ -44,9 +44,9 @@ OpenGLVideoController::~OpenGLVideoController() {
 }
 
 void OpenGLVideoController::createPostShaders() {
-  auto* dofShader = new OpenGLPostShader("./shaders/dof.fragment.glsl");
-  auto* preBloomShader = new OpenGLPostShader("./shaders/prebloom.fragment.glsl");
-  auto* postBloomShader = new OpenGLPostShader("./shaders/postbloom.fragment.glsl");
+  auto* dofShader = new OpenGLPostShader("./shaders/postshaders/dof.fragment.glsl");
+  auto* preBloomShader = new OpenGLPostShader("./shaders/postshaders/prebloom.fragment.glsl");
+  auto* postBloomShader = new OpenGLPostShader("./shaders/postshaders/postbloom.fragment.glsl");
 
   // Depth-of-field
   dofShader->onCreateFrameBuffer([=](const ShaderProgram& program, auto screen) {
@@ -114,7 +114,7 @@ void OpenGLVideoController::createPostShaders() {
 }
 
 void OpenGLVideoController::createPreShaders() {
-  // glPreShaders.push(new OpenGLPreShader("./shaders/fog.fragment.glsl"));
+  // glPreShaders.push(new OpenGLPreShader("./shaders/preshaders/fog.fragment.glsl"));
 }
 
 Matrix4 OpenGLVideoController::createViewMatrix() {
