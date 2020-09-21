@@ -4,6 +4,7 @@
 #include <subsystem/entities/Plane.h>
 #include <subsystem/entities/Skybox.h>
 #include <subsystem/entities/Light.h>
+#include <subsystem/entities/Cube.h>
 #include <subsystem/entities/ReferenceMesh.h>
 #include <subsystem/entities/Instance.h>
 #include <subsystem/Texture.h>
@@ -159,7 +160,7 @@ void GardenScene::onInit() {
 
   stage.addMultiple<Instance, 10>([&](Instance* lantern, int index) {
     Vec3f lanternPosition = HeightMap::getRandomGroundPosition() - Vec3f(0.0f, 3.0f, 0.0f);
-    Vec3f lightPosition = lanternPosition + Vec3f(0.0f, 37.5f, 0.0f);
+    Vec3f lightPosition = lanternPosition + Vec3f(0.0f, 35.5f, 0.0f);
 
     lantern->from(stage.get<Mesh>("lantern"));
     lantern->setScale(50.0f);
@@ -169,13 +170,20 @@ void GardenScene::onInit() {
       light->color = Vec3f(1.0f, 0.5f, 0.2f);
       light->position = lightPosition;
       light->radius = 250.0f;
-      light->power = 4.0f;
+      light->power = 5.0f;
 
       float offset = RNG::random(0.0f, M_PI);
 
       light->onUpdate = [=](float dt) {
-        light->power = 4.0f + (sinf(getRunningTime() * 5.0f + offset) + sinf(getRunningTime() * 21.3f + offset)) * 0.75f;
+        light->power = 5.0f + (sinf(getRunningTime() * 5.0f + offset) + sinf(getRunningTime() * 21.3f + offset)) * 0.75f;
       };
+    });
+
+    stage.add<Cube>([=](Cube* cube) {
+      cube->setColor(Vec3f(1.0f));
+      cube->setPosition(lightPosition);
+      cube->setScale(Vec3f(1.0f, 3.0f, 1.0f));
+      cube->isEmissive = true;
     });
   });
 

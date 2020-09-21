@@ -20,7 +20,7 @@ const vec3 CUBE_SAMPLE_OFFSETS[7] = vec3[7](
   vec3(0.0, 0.0, -1.0)
 );
 
-const float DITHERING_OFFSETS[16] = float[16](
+const float DITHERING_KERNEL[16] = float[16](
   0.0,    0.5,    0.125,  0.625,
   0.75,   0.22,   0.875,  0.375,
   0.1875, 0.6875, 0.0625, 0.5625,
@@ -39,5 +39,5 @@ vec2 getRadialOffset(vec2 fragment, vec2 screenSize) {
 }
 
 float getDitheringFactor(vec2 fragment, vec2 screenSize) {
-  return DITHERING_OFFSETS[getSampleGridIndex(fragment, screenSize, 4)];
+  return DITHERING_KERNEL[getSampleGridIndex(fragment, screenSize, 4)];
 }

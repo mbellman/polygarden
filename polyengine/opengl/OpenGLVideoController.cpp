@@ -45,11 +45,9 @@ OpenGLVideoController::~OpenGLVideoController() {
 
 void OpenGLVideoController::createPostShaders() {
   auto* dofShader = new OpenGLPostShader("./shaders/postshaders/dof.fragment.glsl");
-  auto* preBloomShader = new OpenGLPostShader("./shaders/postshaders/prebloom.fragment.glsl");
-  auto* postBloomShader = new OpenGLPostShader("./shaders/postshaders/postbloom.fragment.glsl");
 
   // Depth-of-field
-  dofShader->onCreateFrameBuffer([=](const ShaderProgram& program, auto screen) {
+  dofShader->onCreateFrameBuffer([](auto screen) {
     auto* buffer = new FrameBuffer(screen.width, screen.height);
 
     buffer->addColorTexture(GL_RGBA32F, GL_RGBA, GL_CLAMP_TO_EDGE);   // (0) Color/depth
@@ -58,59 +56,13 @@ void OpenGLVideoController::createPostShaders() {
     return buffer;
   });
 
-  dofShader->onRender([=](const ShaderProgram& program, OpenGLScreenQuad* glScreenQuad) {
-    glClear(GL_COLOR_BUFFER_BIT);
-
+  dofShader->onRender([](const ShaderProgram& program) {
     program.setInt("screen", 0);
-
-    glScreenQuad->render();
-  });
-
-  // Pre-bloom
-  preBloomShader->onCreateFrameBuffer([=](const ShaderProgram& program, auto screen) {
-    auto* buffer = new FrameBuffer(screen.width, screen.height);
-
-    buffer->addColorTexture(GL_RGB32F, GL_RGB, GL_CLAMP_TO_EDGE);   // (0) Color
-    buffer->bindColorTextures();
-
-    return buffer;
-  });
-
-  preBloomShader->onRender([=](const ShaderProgram& program, OpenGLScreenQuad* glScreenQuad) {
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    program.setInt("screen", 0);
-
-    glScreenQuad->render();
-  });
-
-  // Post-bloom
-  postBloomShader->onCreateFrameBuffer([=](const ShaderProgram& program, auto screen) {
-    auto* buffer = new FrameBuffer(screen.width, screen.height);
-
-    buffer->addColorTexture(GL_RGB32F, GL_RGB, GL_CLAMP_TO_EDGE);   // (0) Base color
-    buffer->addColorTexture(GL_RGB32F, GL_RGB, GL_CLAMP_TO_EDGE);   // (0) Bright color
-    buffer->bindColorTextures();
-
-    return buffer;
-  });
-
-  postBloomShader->onRender([=](const ShaderProgram& program, OpenGLScreenQuad* glScreenQuad) {
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    program.setInt("baseColor", 0);
-    program.setInt("bloomColor", 1);
-
-    glScreenQuad->render();
   });
 
   dofShader->createFrameBuffer(screenSize);
-  preBloomShader->createFrameBuffer(screenSize);
-  postBloomShader->createFrameBuffer(screenSize);
 
   glPostShaders.push(dofShader);
-  glPostShaders.push(preBloomShader);
-  glPostShaders.push(postBloomShader);
 }
 
 void OpenGLVideoController::createPreShaders() {

@@ -1,4 +1,7 @@
 #include "opengl/OpenGLPostShader.h"
+#include "glew.h"
+#include "SDL_opengl.h"
+#include "glut.h"
 
 OpenGLPostShader::OpenGLPostShader(const char* path) {
   program.create();
@@ -21,7 +24,7 @@ void OpenGLPostShader::createFrameBuffer(const Region2d<int>& screen) {
 
   program.use();
 
-  frameBuffer = frameBufferFactory(program, screen);
+  frameBuffer = frameBufferFactory(screen);
 }
 
 FrameBuffer* OpenGLPostShader::getFrameBuffer() const {
@@ -40,7 +43,11 @@ void OpenGLPostShader::render() {
   frameBuffer->startReading();
   program.use();
 
-  renderHandler(program, glScreenQuad);
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  renderHandler(program);
+
+  glScreenQuad->render();
 }
 
 void OpenGLPostShader::startWriting() {

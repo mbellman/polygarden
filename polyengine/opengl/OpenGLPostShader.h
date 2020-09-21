@@ -8,8 +8,8 @@
 #include "opengl/FrameBuffer.h"
 #include "subsystem/Math.h"
 
-typedef std::function<FrameBuffer*(const ShaderProgram&, const Region2d<int>&)> FrameBufferFactory;
-typedef std::function<void(const ShaderProgram&, OpenGLScreenQuad* glScreenQuad)> RenderHandler;
+typedef std::function<FrameBuffer*(const Region2d<int>&)> FrameBufferFactory;
+typedef std::function<void(const ShaderProgram&)> RenderHandler;
 
 class OpenGLPostShader {
 public:
