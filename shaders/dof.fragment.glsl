@@ -1,21 +1,12 @@
 #version 330 core
 
+#include <helpers/sampling.glsl>
+
 uniform sampler2D screen;
 
 noperspective in vec2 fragmentUv;
 
 layout (location = 0) out vec3 color;
-
-const vec2 SAMPLE_OFFSETS[8] = vec2[8](
-  vec2(-0.7, -0.7),
-  vec2(0.0, -1.0),
-  vec2(0.7, -0.7),
-  vec2(-1.0, 0.0),
-  vec2(1.0, 0.0),
-  vec2(-0.7, 0.7),
-  vec2(0.0, 1.0),
-  vec2(0.7, 0.7)
-);
 
 const float MAX_BLUR_DEPTH = 1000.0;
 
@@ -38,7 +29,7 @@ vec3 getDoF() {
   vec2 blur = getBlur(depth);
 
   for (int s = 0; s < 8; s++) {
-    sum += texture(screen, fragmentUv + SAMPLE_OFFSETS[s] * blur * 1.5).xyz;
+    sum += texture(screen, fragmentUv + RADIAL_SAMPLE_OFFSETS_8[s] * blur * 1.5).xyz;
   }
 
   return sum / 8.0;

@@ -1,14 +1,4 @@
-const vec2 SAMPLE_OFFSETS[9] = vec2[9](
-  vec2(-0.7, -0.7),
-  vec2(0.0, -1.0),
-  vec2(0.7, -0.7),
-  vec2(-1.0, 0.0),
-  vec2(0.0, 0.0),
-  vec2(1.0, 0.0),
-  vec2(-0.7, 0.7),
-  vec2(0.0, 1.0),
-  vec2(0.7, 0.7)
-);
+#include <helpers/sampling.glsl>
 
 const float MAX_SOFTNESS = 30.0;
 
@@ -25,7 +15,7 @@ float getShadowFactor(vec3 worldPosition, mat4 lightMatrix, sampler2D lightMap, 
   float occludingSurfaceDistance = transform.z;
 
   for (int i = 0; i < 9; i++) {
-    float sampleDistance = texture(lightMap, transform.xy + SAMPLE_OFFSETS[i] * sampleSpread).r;
+    float sampleDistance = texture(lightMap, transform.xy + RADIAL_SAMPLE_OFFSETS_9[i] * sampleSpread).r;
 
     if (sampleDistance < occludingSurfaceDistance) {
       occludingSurfaceDistance = sampleDistance;
@@ -38,7 +28,7 @@ float getShadowFactor(vec3 worldPosition, mat4 lightMatrix, sampler2D lightMap, 
 
   for (int x = 1; x <= 2; x++) {
     for (int s = 0; s < 9; s++) {
-      float closestDepth = texture(lightMap, transform.xy + SAMPLE_OFFSETS[s] * float(x) * texelSize * blur).r;
+      float closestDepth = texture(lightMap, transform.xy + RADIAL_SAMPLE_OFFSETS_9[s] * float(x) * texelSize * blur).r;
 
       shadowSum += (closestDepth < transform.z - bias) ? 0.0 : 1.0;
     }

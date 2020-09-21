@@ -2,7 +2,7 @@
 
 #include <helpers/lighting.glsl>
 #include <helpers/shadows.glsl>
-#include <helpers/dithering.glsl>
+#include <helpers/sampling.glsl>
 
 uniform sampler2D colorTexture;
 uniform sampler2D normalDepthTexture;
@@ -39,23 +39,23 @@ float getBias(int cascadeIndex) {
 }
 
 vec3 getVolumetricLight(vec3 surfacePosition) {
-  const int SAMPLE_COUNT = 15;
+  const int STEP_COUNT = 15;
 
   vec3 surfaceToCamera = cameraPosition - surfacePosition;
-  float sampleFactor = 1.0 / float(SAMPLE_COUNT);
+  float stepFactor = 1.0 / float(STEP_COUNT);
   vec3 volumetricLight = vec3(0.0);
-  vec3 ray = surfaceToCamera * sampleFactor;
+  vec3 ray = surfaceToCamera * stepFactor;
 
-  surfacePosition += ray * getDithering(fragmentUv, textureSize(positionTexture, 0));
+  surfacePosition += ray * getDitheringFactor(fragmentUv, textureSize(positionTexture, 0));
 
-  for (int i = 1; i < SAMPLE_COUNT; i++) {
+  for (int i = 1; i < STEP_COUNT; i++) {
     vec3 samplePosition = surfacePosition + ray * float(i);
     int cascadeIndex = getCascadeIndex(samplePosition);
     mat4 lightMatrix = lightMatrixCascades[cascadeIndex];
     vec3 transform = getLightMapTransform(samplePosition, lightMatrix);
     float closestDepth = texture(lightMaps[cascadeIndex], transform.xy).r;
 
-    volumetricLight += (closestDepth < transform.z) ? vec3(0.0) : (light.color * sampleFactor);
+    volumetricLight += (closestDepth < transform.z) ? vec3(0.0) : (light.color * stepFactor);
   }
 
   return volumetricLight * 0.25;

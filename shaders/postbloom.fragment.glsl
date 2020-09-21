@@ -1,6 +1,7 @@
 #version 330 core
 
 #include <helpers/blur.glsl>
+#include <helpers/sampling.glsl>
 
 uniform sampler2D baseColor;
 uniform sampler2D bloomColor;
@@ -9,26 +10,16 @@ noperspective in vec2 fragmentUv;
 
 layout (location = 0) out vec3 color;
 
-const vec2 SAMPLE_OFFSETS[8] = vec2[8](
-  vec2(-0.7, -0.7),
-  vec2(0.0, -1.0),
-  vec2(0.7, -0.7),
-  vec2(-1.0, 0.0),
-  vec2(1.0, 0.0),
-  vec2(-0.7, 0.7),
-  vec2(0.0, 1.0),
-  vec2(0.7, 0.7)
-);
-
 void main() {
-  vec2 texelSize = 1.0 / textureSize(bloomColor, 0);
+  vec2 screenSize = textureSize(bloomColor, 0);
+  vec2 texelSize = 1.0 / screenSize;
   vec3 base = texture(baseColor, fragmentUv).xyz;
   vec3 bloom = vec3(0.0);
   
   for (int i = 1; i <= 3; i++) {
     for (int s = 0; s < 8; s++) {
       float factor = 4.0 - float(i);
-      vec2 sampleUv = fragmentUv + SAMPLE_OFFSETS[s] * texelSize * i * 3.0;
+      vec2 sampleUv = fragmentUv + RADIAL_SAMPLE_OFFSETS_8[s] * texelSize * i * 3.0;
 
       bloom += factor * texture(bloomColor, sampleUv).xyz;
     }

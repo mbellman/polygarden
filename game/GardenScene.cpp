@@ -251,7 +251,7 @@ void GardenScene::onUpdate(float dt) {
 }
 
 void GardenScene::spawnFlower(float x, float z) {
-  Vec3f position = HeightMap::getGroundPosition(x, z);
+  Vec3f position = HeightMap::getGroundPosition(x, z) - Vec3f(0.0f, 2.0f, 0.0f);
   Vec3f orientation = Vec3f(0.0f, RNG::random() * M_PI * 2.0f, 0.0f);
   float scale = RNG::random(6.0f, 10.0f);
 
@@ -334,7 +334,7 @@ void GardenScene::spawnLavender(float x, float z) {
 void GardenScene::spawnSprout(float x, float z) {
   stage.add<Instance>([&](Instance* sprout) {
     sprout->from(stage.get<Mesh>("sprout"));
-    sprout->setPosition(HeightMap::getGroundPosition(x, z));
+    sprout->setPosition(HeightMap::getGroundPosition(x, z) - Vec3f(0.0f, 1.0f, 0.0f));
     sprout->setOrientation(Vec3f(0.0f, RNG::random() * M_PI * 2.0f, 0.0f));
     sprout->color = Vec3f(0.1f, RNG::random(0.75f, 1.0f), RNG::random(0.1f, 0.3f));
 
