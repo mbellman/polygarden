@@ -12,7 +12,7 @@
 #include "opengl/OpenGLPostShaderPipeline.h"
 #include "opengl/OpenGLPreShader.h"
 #include "opengl/GBuffer.h"
-#include "opengl/SBuffer.h"
+#include "opengl/ShadowBuffer.h"
 #include "opengl/PointShadowBuffer.h"
 #include "subsystem/Geometry.h"
 #include "subsystem/entities/Entity.h"
@@ -37,7 +37,7 @@ public:
 private:
   SDL_GLContext glContext;
   GBuffer* gBuffer = nullptr;
-  SBuffer* sBuffer = nullptr;
+  ShadowBuffer* shadowBuffer = nullptr;
   PointShadowBuffer* pointShadowBuffer = nullptr;
   OpenGLIlluminator* glIlluminator = nullptr;
   OpenGLPostShaderPipeline* glPostShaderPipeline = nullptr;

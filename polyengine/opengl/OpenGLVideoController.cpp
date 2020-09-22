@@ -40,7 +40,7 @@ OpenGLVideoController::~OpenGLVideoController() {
   OpenGLObject::freeCachedResources();
 
   delete gBuffer;
-  delete sBuffer;
+  delete shadowBuffer;
   delete pointShadowBuffer;
   delete glIlluminator;
   delete glPostShaderPipeline;
@@ -115,13 +115,13 @@ void OpenGLVideoController::onInit(SDL_Window* sdlWindow, int width, int height)
   SDL_GL_SetSwapInterval(0);
 
   gBuffer = new GBuffer();
-  sBuffer = new SBuffer();
+  shadowBuffer = new ShadowBuffer();
   pointShadowBuffer = new PointShadowBuffer();
   glIlluminator = new OpenGLIlluminator();
   glPostShaderPipeline = new OpenGLPostShaderPipeline();
 
   gBuffer->createFrameBuffer(screenSize.width, screenSize.height);
-  sBuffer->createFrameBuffer(2048, 2048);
+  shadowBuffer->createFrameBuffer(2048, 2048);
   pointShadowBuffer->createFrameBuffer(1024, 1024);
   glIlluminator->setVideoController(this);
 

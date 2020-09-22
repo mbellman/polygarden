@@ -139,9 +139,9 @@
     <ClCompile Include="polyengine\opengl\post-fx\AntiAliasingShader.cpp" />
     <ClCompile Include="polyengine\opengl\post-fx\ChromaticAberrationShader.cpp" />
     <ClCompile Include="polyengine\opengl\post-fx\DofShader.cpp" />
-    <ClCompile Include="polyengine\opengl\SBuffer.cpp" />
     <ClCompile Include="polyengine\opengl\ShaderLoader.cpp" />
     <ClCompile Include="polyengine\opengl\ShaderProgram.cpp" />
+    <ClCompile Include="polyengine\opengl\ShadowBuffer.cpp" />
     <ClCompile Include="polyengine\Stats.cpp" />
     <ClCompile Include="polyengine\subsystem\AbstractGameController.cpp" />
     <ClCompile Include="polyengine\subsystem\AbstractLoader.cpp" />
@@ -286,9 +286,9 @@
     <ClInclude Include="polyengine\opengl\post-fx\AntiAliasingShader.h" />
     <ClInclude Include="polyengine\opengl\post-fx\ChromaticAberrationShader.h" />
     <ClInclude Include="polyengine\opengl\post-fx\DofShader.h" />
-    <ClInclude Include="polyengine\opengl\SBuffer.h" />
     <ClInclude Include="polyengine\opengl\ShaderLoader.h" />
     <ClInclude Include="polyengine\opengl\ShaderProgram.h" />
+    <ClInclude Include="polyengine\opengl\ShadowBuffer.h" />
     <ClInclude Include="polyengine\Stats.h" />
     <ClInclude Include="polyengine\subsystem\AbstractGameController.h" />
     <ClInclude Include="polyengine\subsystem\AbstractLoader.h" />

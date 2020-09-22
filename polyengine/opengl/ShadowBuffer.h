@@ -3,9 +3,9 @@
 #include "opengl/AbstractBuffer.h"
 #include "opengl/ShaderProgram.h"
 
-class SBuffer : public AbstractBuffer {
+class ShadowBuffer : public AbstractBuffer {
 public:
-  SBuffer();
+  ShadowBuffer();
 
   void createFrameBuffer(unsigned int width, unsigned int height) override;
   ShaderProgram& getDirectionalShadowProgram();

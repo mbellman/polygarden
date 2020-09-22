@@ -51,9 +51,6 @@
     <ClCompile Include="polyengine\opengl\PointShadowBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="polyengine\opengl\SBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="polyengine\opengl\ShaderLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -184,6 +181,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="polyengine\opengl\OpenGLPostShaderPipeline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="polyengine\opengl\ShadowBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -488,9 +488,6 @@
     <ClInclude Include="polyengine\opengl\PointShadowBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="polyengine\opengl\SBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="polyengine\opengl\ShaderLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -630,6 +627,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="polyengine\opengl\OpenGLPostShaderPipeline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="polyengine\opengl\ShadowBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

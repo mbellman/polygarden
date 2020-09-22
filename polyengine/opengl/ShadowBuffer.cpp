@@ -1,14 +1,14 @@
-#include "opengl/SBuffer.h"
+#include "opengl/ShadowBuffer.h"
 #include "opengl/ShaderLoader.h"
 #include "opengl/OpenGLScreenQuad.h"
 
-SBuffer::SBuffer() {
+ShadowBuffer::ShadowBuffer() {
   createShaderPrograms();
 
   glScreenQuad = new OpenGLScreenQuad();
 }
 
-void SBuffer::createFrameBuffer(unsigned int width, unsigned int height) {
+void ShadowBuffer::createFrameBuffer(unsigned int width, unsigned int height) {
   if (frameBuffer != nullptr) {
     delete frameBuffer;
   }
@@ -22,7 +22,7 @@ void SBuffer::createFrameBuffer(unsigned int width, unsigned int height) {
   frameBuffer->bindColorTextures();
 }
 
-void SBuffer::createShaderPrograms() {
+void ShadowBuffer::createShaderPrograms() {
   lightViewProgram.create();
   lightViewProgram.attachShader(ShaderLoader::loadVertexShader("./shaders/lightview.vertex.glsl"));
   lightViewProgram.attachShader(ShaderLoader::loadFragmentShader("./shaders/lightview.fragment.glsl"));
@@ -39,18 +39,18 @@ void SBuffer::createShaderPrograms() {
   spotShadowProgram.link();
 }
 
-ShaderProgram& SBuffer::getDirectionalShadowProgram() {
+ShaderProgram& ShadowBuffer::getDirectionalShadowProgram() {
   return directionalShadowProgram;
 }
 
-ShaderProgram& SBuffer::getLightViewProgram() {
+ShaderProgram& ShadowBuffer::getLightViewProgram() {
   return lightViewProgram;
 }
 
-ShaderProgram& SBuffer::getSpotShadowProgram() {
+ShaderProgram& ShadowBuffer::getSpotShadowProgram() {
   return spotShadowProgram;
 }
 
-void SBuffer::writeToShadowCascade(unsigned int cascadeIndex) {
+void ShadowBuffer::writeToShadowCascade(unsigned int cascadeIndex) {
   frameBuffer->bindColorTexture(GL_COLOR_ATTACHMENT0 + cascadeIndex);
 }

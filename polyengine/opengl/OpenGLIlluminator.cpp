@@ -100,13 +100,13 @@ void OpenGLIlluminator::renderShadowCasters() {
 }
 
 void OpenGLIlluminator::renderDirectionalShadowCaster(OpenGLShadowCaster* glShadowCaster) {
-  auto& lightViewProgram = glVideoController->sBuffer->getLightViewProgram();
-  auto& directionalShadowProgram = glVideoController->sBuffer->getDirectionalShadowProgram();
+  auto& lightViewProgram = glVideoController->shadowBuffer->getLightViewProgram();
+  auto& directionalShadowProgram = glVideoController->shadowBuffer->getDirectionalShadowProgram();
 
   lightViewProgram.use();
   lightViewProgram.setInt("modelTexture", 7);
 
-  glVideoController->sBuffer->startWriting();
+  glVideoController->shadowBuffer->startWriting();
 
   const Camera& camera = glVideoController->scene->getCamera();
 
@@ -122,7 +122,7 @@ void OpenGLIlluminator::renderDirectionalShadowCaster(OpenGLShadowCaster* glShad
   };
 
   for (int i = 0; i < 3; i++) {
-    glVideoController->sBuffer->writeToShadowCascade(i);
+    glVideoController->shadowBuffer->writeToShadowCascade(i);
     lightViewProgram.setMatrix4("lightMatrix", lightMatrixCascades[i]);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -142,7 +142,7 @@ void OpenGLIlluminator::renderDirectionalShadowCaster(OpenGLShadowCaster* glShad
   auto* light = glShadowCaster->getLight();
 
   glVideoController->glPostShaderPipeline->getFirstShader()->startWriting();
-  glVideoController->sBuffer->startReading();
+  glVideoController->shadowBuffer->startReading();
   glVideoController->gBuffer->startReading();
 
   glDisable(GL_DEPTH_TEST);
@@ -167,7 +167,7 @@ void OpenGLIlluminator::renderDirectionalShadowCaster(OpenGLShadowCaster* glShad
   directionalShadowProgram.setFloat("light.radius", light->radius);
   directionalShadowProgram.setInt("light.type", light->type);
 
-  glVideoController->sBuffer->renderScreenQuad();
+  glVideoController->shadowBuffer->renderScreenQuad();
 }
 
 void OpenGLIlluminator::renderPointShadowCaster(OpenGLShadowCaster* glShadowCaster) {
@@ -248,13 +248,13 @@ void OpenGLIlluminator::renderPointShadowCaster(OpenGLShadowCaster* glShadowCast
 }
 
 void OpenGLIlluminator::renderSpotShadowCaster(OpenGLShadowCaster* glShadowCaster) {
-  auto& lightViewProgram = glVideoController->sBuffer->getLightViewProgram();
-  auto& spotShadowProgram = glVideoController->sBuffer->getSpotShadowProgram();
+  auto& lightViewProgram = glVideoController->shadowBuffer->getLightViewProgram();
+  auto& spotShadowProgram = glVideoController->shadowBuffer->getSpotShadowProgram();
 
   // Light view pass
   lightViewProgram.use();
 
-  glVideoController->sBuffer->startWriting();
+  glVideoController->shadowBuffer->startWriting();
 
   glDisable(GL_BLEND);
   glDisable(GL_STENCIL_TEST);
@@ -265,7 +265,7 @@ void OpenGLIlluminator::renderSpotShadowCaster(OpenGLShadowCaster* glShadowCaste
   auto* light = glShadowCaster->getLight();
   Matrix4 lightMatrix = glShadowCaster->getLightMatrix(light->direction, Vec3f(0.0f, 1.0f, 0.0f));
 
-  glVideoController->sBuffer->writeToShadowCascade(0);
+  glVideoController->shadowBuffer->writeToShadowCascade(0);
   lightViewProgram.setMatrix4("lightMatrix", lightMatrix);
 
   for (auto* glObject : glVideoController->glObjects) {
@@ -285,7 +285,7 @@ void OpenGLIlluminator::renderSpotShadowCaster(OpenGLShadowCaster* glShadowCaste
   const Camera& camera = glVideoController->scene->getCamera();
 
   glVideoController->glPostShaderPipeline->getFirstShader()->startWriting();
-  glVideoController->sBuffer->startReading();
+  glVideoController->shadowBuffer->startReading();
   glVideoController->gBuffer->startReading();
 
   glDisable(GL_DEPTH_TEST);
@@ -306,7 +306,7 @@ void OpenGLIlluminator::renderSpotShadowCaster(OpenGLShadowCaster* glShadowCaste
   spotShadowProgram.setFloat("light.radius", light->radius);
   spotShadowProgram.setInt("light.type", light->type);
 
-  glVideoController->sBuffer->renderScreenQuad();
+  glVideoController->shadowBuffer->renderScreenQuad();
 }
 
 void OpenGLIlluminator::setVideoController(OpenGLVideoController* glVideoController) {
