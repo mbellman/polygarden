@@ -9,7 +9,7 @@
 #include "opengl/OpenGLObject.h"
 #include "opengl/OpenGLShadowCaster.h"
 #include "opengl/FrameBuffer.h"
-#include "opengl/OpenGLPostShader.h"
+#include "opengl/OpenGLPostShaderPipeline.h"
 #include "opengl/OpenGLPreShader.h"
 #include "opengl/GBuffer.h"
 #include "opengl/SBuffer.h"
@@ -40,8 +40,8 @@ private:
   SBuffer* sBuffer = nullptr;
   PointShadowBuffer* pointShadowBuffer = nullptr;
   OpenGLIlluminator* glIlluminator = nullptr;
+  OpenGLPostShaderPipeline* glPostShaderPipeline = nullptr;
   HeapList<OpenGLPreShader> glPreShaders;
-  HeapList<OpenGLPostShader> glPostShaders;
   HeapList<OpenGLObject> glObjects;
   HeapList<OpenGLShadowCaster> glShadowCasters;
 
@@ -52,7 +52,6 @@ private:
   void onEntityRemoved(Entity* entity);
   void renderEmissiveSurfaces();
   void renderGeometry();
-  void renderPostShaders();
   void renderPreShaders();
   void renderShadowCasters();
   void setObjectEffects(ShaderProgram& program, OpenGLObject* glObject);

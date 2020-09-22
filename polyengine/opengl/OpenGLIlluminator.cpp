@@ -141,7 +141,7 @@ void OpenGLIlluminator::renderDirectionalShadowCaster(OpenGLShadowCaster* glShad
   // Camera view shadowcaster lighting pass
   auto* light = glShadowCaster->getLight();
 
-  glVideoController->glPostShaders[0]->startWriting();
+  glVideoController->glPostShaderPipeline->getFirstShader()->startWriting();
   glVideoController->sBuffer->startReading();
   glVideoController->gBuffer->startReading();
 
@@ -222,7 +222,7 @@ void OpenGLIlluminator::renderPointShadowCaster(OpenGLShadowCaster* glShadowCast
   }
 
   // Camera view shadowcaster lighting pass
-  glVideoController->glPostShaders[0]->startWriting();
+  glVideoController->glPostShaderPipeline->getFirstShader()->startWriting();
   glVideoController->pointShadowBuffer->startReading();
   glVideoController->gBuffer->startReading();
 
@@ -284,7 +284,7 @@ void OpenGLIlluminator::renderSpotShadowCaster(OpenGLShadowCaster* glShadowCaste
   // Camera view shadowcaster lighting pass
   const Camera& camera = glVideoController->scene->getCamera();
 
-  glVideoController->glPostShaders[0]->startWriting();
+  glVideoController->glPostShaderPipeline->getFirstShader()->startWriting();
   glVideoController->sBuffer->startReading();
   glVideoController->gBuffer->startReading();
 

@@ -2,17 +2,17 @@
 
 #include <helpers/sampling.glsl>
 
-uniform sampler2D screen;
+uniform sampler2D colorDepthIn;
 
 noperspective in vec2 fragmentUv;
 
-layout (location = 0) out vec3 color;
+layout (location = 0) out vec4 colorDepthOut;
 
 const float MAX_BLUR_DEPTH = 1000.0;
 
 vec2 getBlur(float depth) {
   vec2 MIN_BLUR = vec2(0.0);
-  vec2 MAX_BLUR = 1.0 / textureSize(screen, 0);
+  vec2 MAX_BLUR = 1.0 / textureSize(colorDepthIn, 0);
 
   float r = depth / MAX_BLUR_DEPTH;
 
@@ -23,18 +23,15 @@ vec2 getBlur(float depth) {
   return mix(MIN_BLUR, MAX_BLUR, pow(r, 3));
 }
 
-vec3 getDoF() {
-  vec4 sample = texture(screen, fragmentUv);
-  vec2 blur = getBlur(sample.w);
-  vec3 sum = sample.rgb;
+void main() {
+  vec4 colorDepth = texture(colorDepthIn, fragmentUv);
+  float depth = colorDepth.w;
+  vec2 blur = getBlur(depth);
+  vec3 color = colorDepth.rgb;
 
   for (int s = 0; s < 6; s++) {
-    sum += texture(screen, fragmentUv + RADIAL_SAMPLE_OFFSETS_6[s] * blur * 1.7).xyz;
+    color += texture(colorDepthIn, fragmentUv + RADIAL_SAMPLE_OFFSETS_6[s] * blur * 1.7).rgb;
   }
 
-  return sum / 7.0;
-}
-
-void main() {
-  color = getDoF();
+  colorDepthOut = vec4(color / 7.0, depth);
 }

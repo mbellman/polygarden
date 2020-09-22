@@ -11,7 +11,9 @@ FrameBuffer::FrameBuffer(int width, int height) {
 }
 
 FrameBuffer::~FrameBuffer() {
-  // TODO
+  colorTextures.clear();
+
+  glDeleteFramebuffers(1, &fbo);
 }
 
 void FrameBuffer::addColorTexture(GLint internalFormat, GLenum format) {

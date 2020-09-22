@@ -15,6 +15,9 @@
 #include "opengl/ShaderProgram.h"
 #include "opengl/ShaderLoader.h"
 #include "opengl/FrameBuffer.h"
+#include "opengl/post-fx/DofShader.h"
+#include "opengl/post-fx/AntiAliasingShader.h"
+#include "opengl/post-fx/ChromaticAberrationShader.h"
 #include "subsystem/entities/Object.h"
 #include "subsystem/entities/Light.h"
 #include "subsystem/entities/Instance.h"
@@ -31,7 +34,6 @@ OpenGLVideoController::OpenGLVideoController() {
 
 OpenGLVideoController::~OpenGLVideoController() {
   glPreShaders.free();
-  glPostShaders.free();
   glObjects.free();
   glShadowCasters.free();
 
@@ -41,62 +43,15 @@ OpenGLVideoController::~OpenGLVideoController() {
   delete sBuffer;
   delete pointShadowBuffer;
   delete glIlluminator;
+  delete glPostShaderPipeline;
 }
 
 void OpenGLVideoController::createPostShaders() {
-  auto* dofShader = new OpenGLPostShader("./shaders/post-fx/dof.fragment.glsl");
-  auto* antiAliasingShader = new OpenGLPostShader("./shaders/post-fx/anti-aliasing.fragment.glsl");
-  auto* chromaticAberrationShader = new OpenGLPostShader("./shaders/post-fx/chromatic-aberration.fragment.glsl");
+  glPostShaderPipeline->addPostShader(new AntiAliasingShader());
+  glPostShaderPipeline->addPostShader(new DofShader());
+  glPostShaderPipeline->addPostShader(new ChromaticAberrationShader());
 
-  // Depth-of-field
-  dofShader->setFrameBufferFactory([](auto screen) {
-    auto* buffer = new FrameBuffer(screen.width, screen.height);
-
-    buffer->addColorTexture(GL_RGBA32F, GL_RGBA, GL_CLAMP_TO_EDGE);   // (0) Color/depth
-    buffer->bindColorTextures();
-
-    return buffer;
-  });
-
-  dofShader->setRenderHandler([](const ShaderProgram& program) {
-    program.setInt("screen", 0);
-  });
-
-  // Anti-aliasing
-  antiAliasingShader->setFrameBufferFactory([](auto screen) {
-    auto* buffer = new FrameBuffer(screen.width, screen.height);
-
-    buffer->addColorTexture(GL_RGB32F, GL_RGB, GL_CLAMP_TO_EDGE);   // (0) Color
-    buffer->bindColorTextures();
-
-    return buffer;
-  });
-
-  antiAliasingShader->setRenderHandler([](const ShaderProgram& program) {
-    program.setInt("screen", 0);
-  });
-
-  // Chromatic aberration
-  chromaticAberrationShader->setFrameBufferFactory([](auto screen) {
-    auto* buffer = new FrameBuffer(screen.width, screen.height);
-
-    buffer->addColorTexture(GL_RGB32F, GL_RGB, GL_CLAMP_TO_EDGE);   // (0) Color
-    buffer->bindColorTextures();
-
-    return buffer;
-  });
-
-  chromaticAberrationShader->setRenderHandler([](const ShaderProgram& program) {
-    program.setInt("screen", 0);
-  });
-
-  dofShader->createFrameBuffer(screenSize);
-  antiAliasingShader->createFrameBuffer(screenSize);
-  chromaticAberrationShader->createFrameBuffer(screenSize);
-
-  glPostShaders.push(dofShader);
-  glPostShaders.push(antiAliasingShader);
-  glPostShaders.push(chromaticAberrationShader);
+  glPostShaderPipeline->createFrameBuffers({ 0, 0, screenSize.width, screenSize.height });
 }
 
 void OpenGLVideoController::createPreShaders() {
@@ -163,6 +118,7 @@ void OpenGLVideoController::onInit(SDL_Window* sdlWindow, int width, int height)
   sBuffer = new SBuffer();
   pointShadowBuffer = new PointShadowBuffer();
   glIlluminator = new OpenGLIlluminator();
+  glPostShaderPipeline = new OpenGLPostShaderPipeline();
 
   gBuffer->createFrameBuffer(screenSize.width, screenSize.height);
   sBuffer->createFrameBuffer(2048, 2048);
@@ -172,7 +128,7 @@ void OpenGLVideoController::onInit(SDL_Window* sdlWindow, int width, int height)
   createPreShaders();
   createPostShaders();
 
-  gBuffer->getFrameBuffer()->shareDepthStencilBuffer(glPostShaders[0]->getFrameBuffer());
+  gBuffer->getFrameBuffer()->shareDepthStencilBuffer(glPostShaderPipeline->getFirstShader()->getFrameBuffer());
 
   OpenGLDebugger::checkErrors("Initialization");
 }
@@ -185,7 +141,7 @@ void OpenGLVideoController::onRender(SDL_Window* sdlWindow) {
 
   renderGeometry();
 
-  glPostShaders[0]->startWriting();
+  glPostShaderPipeline->getFirstShader()->startWriting();
   glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
   glClear(GL_COLOR_BUFFER_BIT);
   glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -195,7 +151,7 @@ void OpenGLVideoController::onRender(SDL_Window* sdlWindow) {
   glIlluminator->renderIlluminatedSurfaces();
   glIlluminator->renderShadowCasters();
   renderPreShaders();
-  renderPostShaders();
+  glPostShaderPipeline->render();
 
   glStencilMask(0xFF);
 
@@ -232,13 +188,10 @@ void OpenGLVideoController::onScreenSizeChange(int width, int height) {
 
   glViewport(0, 0, width, height);
 
+  glPostShaderPipeline->createFrameBuffers({ 0, 0, width, height });
+
   gBuffer->createFrameBuffer(width, height);
-
-  for (auto* shader : glPostShaders) {
-    shader->createFrameBuffer({ 0, 0, width, height });
-  }
-
-  gBuffer->getFrameBuffer()->shareDepthStencilBuffer(glPostShaders[0]->getFrameBuffer());
+  gBuffer->getFrameBuffer()->shareDepthStencilBuffer(glPostShaderPipeline->getFirstShader()->getFrameBuffer());
 }
 
 void OpenGLVideoController::renderEmissiveSurfaces() {
@@ -313,22 +266,6 @@ void OpenGLVideoController::renderPreShaders() {
   }
 
   glDisable(GL_BLEND);
-}
-
-void OpenGLVideoController::renderPostShaders() {
-  glDisable(GL_STENCIL_TEST);
-
-  for (int i = 0; i < glPostShaders.length(); i++) {
-    bool isFinalShader = i == glPostShaders.length() - 1;
-
-    if (isFinalShader) {
-      glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-    } else {
-      glPostShaders[i + 1]->startWriting();
-    }
-
-    glPostShaders[i]->render();
-  }
 }
 
 void OpenGLVideoController::setObjectEffects(ShaderProgram& program, OpenGLObject* glObject) {

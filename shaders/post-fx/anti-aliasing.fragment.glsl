@@ -2,11 +2,11 @@
 
 #include <helpers/sampling.glsl>
 
-uniform sampler2D screen;
+uniform sampler2D colorDepthIn;
 
 noperspective in vec2 fragmentUv;
 
-layout (location = 0) out vec3 color;
+layout (location = 0) out vec4 colorDepthOut;
 
 float getColorDelta(vec3 colorA, vec3 colorB) {
   return (
@@ -17,29 +17,32 @@ float getColorDelta(vec3 colorA, vec3 colorB) {
 }
 
 vec3 getMixed(vec3 color, vec2 texelSize) {
-  for (int i = 0; i < 8; i++) {
-    color += texture(screen, fragmentUv + RADIAL_SAMPLE_OFFSETS_8[i] * texelSize).xyz * 0.25;
-  }
+  color += texture(colorDepthIn, fragmentUv + vec2(0.0, -1.0) * texelSize).rgb * 0.5;
+  color += texture(colorDepthIn, fragmentUv + vec2(0.0, 1.0) * texelSize).rgb * 0.5;
+  color += texture(colorDepthIn, fragmentUv + vec2(-1.0, 0.0) * texelSize).rgb * 0.5;
+  color += texture(colorDepthIn, fragmentUv + vec2(1.0, 0.0) * texelSize).rgb * 0.5;
 
-  return color / 3.0;
+  color += texture(colorDepthIn, fragmentUv + vec2(-1.0, -1.0) * texelSize).rgb * 0.25;
+  color += texture(colorDepthIn, fragmentUv + vec2(1.0, -1.0) * texelSize).rgb * 0.25;
+  color += texture(colorDepthIn, fragmentUv + vec2(-1.0, 1.0) * texelSize).rgb * 0.25;
+  color += texture(colorDepthIn, fragmentUv + vec2(1.0, 1.0) * texelSize).rgb * 0.25;
+
+  return color / 4.0;
 }
 
-vec3 getAntiAliasedColor() {
-  vec2 texelSize = 1.0 / textureSize(screen, 0);
-  vec3 color = texture(screen, fragmentUv).xyz;
+void main() {
+  vec2 texelSize = 1.0 / textureSize(colorDepthIn, 0);
+  vec4 colorDepth = texture(colorDepthIn, fragmentUv);
+  vec3 color = colorDepth.rgb;
 
   for (int i = 0; i < 4; i++) {
-    vec3 comparison = texture(screen, fragmentUv + CROSS_SAMPLE_OFFSETS[i] * texelSize).xyz;
-    float delta = getColorDelta(color, comparison);
+    vec3 comparisonColor = texture(colorDepthIn, fragmentUv + CROSS_SAMPLE_OFFSETS[i] * texelSize).rgb;
+    float delta = getColorDelta(color, comparisonColor);
 
     if (delta > 0.15) {
       color = getMixed(color, texelSize);
     }
   }
 
-  return color;
-}
-
-void main() {
-  color = getAntiAliasedColor();
+  colorDepthOut = vec4(color, colorDepth.w);
 }
