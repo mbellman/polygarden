@@ -1,18 +1,21 @@
+#include <algorithm>
+
 #include "Stats.h"
 #include "SDL.h"
 
 unsigned int Stats::getAverageFPS() {
-  if (frameCounter < 60) {
+  if (frameCounter == 0) {
     return 0;
   }
 
   unsigned int sum = 0;
+  int totalSamples = std::min(120, (int)frameCounter);
 
-  for (unsigned int i = 0; i < 60; i++) {
+  for (unsigned int i = 0; i < totalSamples; i++) {
     sum += fpsSamples[i];
   }
 
-  return (unsigned int)(sum / 60.0f);
+  return (unsigned int)(sum / (float)totalSamples);
 }
 
 unsigned int Stats::getFPS() {
@@ -29,7 +32,7 @@ void Stats::trackFrameStart() {
 
 void Stats::trackFrameEnd() {
   frame.end = SDL_GetTicks();
-  fpsSamples[frameCounter % 60] = getFPS();
+  fpsSamples[frameCounter % 120] = getFPS();
 
   frameCounter++;
 }

@@ -15,5 +15,5 @@ public:
 private:
   unsigned int frameCounter = 0;
   Range<SDL_Tick> frame = { 0, 0 };
-  unsigned int fpsSamples[60];
+  unsigned int fpsSamples[120];
 };
