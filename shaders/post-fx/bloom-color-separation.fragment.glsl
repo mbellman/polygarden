@@ -1,6 +1,6 @@
 #version 330 core
 
-uniform sampler2D colorIn;
+uniform sampler2D colorDepthIn;
 
 noperspective in vec2 fragmentUv;
 
@@ -11,7 +11,7 @@ bool isBloomColor(vec3 color) {
 }
 
 void main() {
-  vec3 color = texture(colorIn, fragmentUv).rgb;
+  vec3 color = texture(colorDepthIn, fragmentUv).rgb;
 
   bloomColorOut = isBloomColor(color) ? color : vec3(0.0);
 }

@@ -8,5 +8,5 @@ noperspective in vec2 fragmentUv;
 layout (location = 0) out vec4 colorDepthOut;
 
 void main() {
-  colorDepthOut = texture(colorDepthIn, fragmentUv) + texture(bloomColorIn, fragmentUv) * 0.75;
+  colorDepthOut = texture(colorDepthIn, fragmentUv) + texture(bloomColorIn, fragmentUv);
 }

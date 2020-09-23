@@ -15,5 +15,6 @@ public:
 private:
   FrameBuffer* blurLevel1 = nullptr;
   FrameBuffer* blurLevel2 = nullptr;
+  FrameBuffer* blurLevel3 = nullptr;
   OpenGLScreenQuad* glScreenQuad = nullptr;
 };
