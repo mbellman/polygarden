@@ -137,6 +137,7 @@
     <ClCompile Include="polyengine\opengl\OpenGLVideoController.cpp" />
     <ClCompile Include="polyengine\opengl\PointShadowBuffer.cpp" />
     <ClCompile Include="polyengine\opengl\post-fx\AntiAliasingShader.cpp" />
+    <ClCompile Include="polyengine\opengl\post-fx\BloomShader.cpp" />
     <ClCompile Include="polyengine\opengl\post-fx\ChromaticAberrationShader.cpp" />
     <ClCompile Include="polyengine\opengl\post-fx\DofShader.cpp" />
     <ClCompile Include="polyengine\opengl\ShaderLoader.cpp" />
@@ -284,6 +285,7 @@
     <ClInclude Include="polyengine\opengl\OpenGLVideoController.h" />
     <ClInclude Include="polyengine\opengl\PointShadowBuffer.h" />
     <ClInclude Include="polyengine\opengl\post-fx\AntiAliasingShader.h" />
+    <ClInclude Include="polyengine\opengl\post-fx\BloomShader.h" />
     <ClInclude Include="polyengine\opengl\post-fx\ChromaticAberrationShader.h" />
     <ClInclude Include="polyengine\opengl\post-fx\DofShader.h" />
     <ClInclude Include="polyengine\opengl\ShaderLoader.h" />

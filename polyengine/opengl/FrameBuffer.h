@@ -26,6 +26,7 @@ public:
   void addDepthStencilBuffer();
   void bindColorTexture(GLenum attachment);
   void bindColorTextures();
+  void blit(FrameBuffer* target);
   void clearColorTexture(GLint attachment);
   void shareDepthStencilBuffer(FrameBuffer* target);
   void startReading();

@@ -186,6 +186,9 @@
     <ClCompile Include="polyengine\opengl\ShadowBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="polyengine\opengl\post-fx\BloomShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="external\glew\include\eglew.h">
@@ -630,6 +633,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="polyengine\opengl\ShadowBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="polyengine\opengl\post-fx\BloomShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

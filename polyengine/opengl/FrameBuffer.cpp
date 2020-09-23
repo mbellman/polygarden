@@ -95,6 +95,13 @@ void FrameBuffer::bindColorTextures() {
   delete[] attachments;
 }
 
+void FrameBuffer::blit(FrameBuffer* target) {
+  startReading();
+  target->startWriting();
+
+  glBlitFramebuffer(0, 0, size.width, size.height, 0, 0, target->size.width, target->size.height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+}
+
 void FrameBuffer::clearColorTexture(GLint attachment) {
   float black[] = { 0.0f, 0.0f, 0.0f, 0.0f };
 

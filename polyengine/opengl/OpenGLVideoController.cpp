@@ -18,6 +18,7 @@
 #include "opengl/post-fx/DofShader.h"
 #include "opengl/post-fx/AntiAliasingShader.h"
 #include "opengl/post-fx/ChromaticAberrationShader.h"
+#include "opengl/post-fx/BloomShader.h"
 #include "subsystem/entities/Object.h"
 #include "subsystem/entities/Light.h"
 #include "subsystem/entities/Instance.h"
@@ -49,6 +50,7 @@ OpenGLVideoController::~OpenGLVideoController() {
 void OpenGLVideoController::createPostShaders() {
   glPostShaderPipeline->addPostShader(new AntiAliasingShader());
   glPostShaderPipeline->addPostShader(new DofShader());
+  glPostShaderPipeline->addPostShader(new BloomShader());
   glPostShaderPipeline->addPostShader(new ChromaticAberrationShader());
 
   glPostShaderPipeline->createFrameBuffers({ 0, 0, screenSize.width, screenSize.height });
@@ -110,7 +112,6 @@ void OpenGLVideoController::onInit(SDL_Window* sdlWindow, int width, int height)
   glCullFace(GL_BACK);
   glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
   glBlendFuncSeparate(GL_ONE, GL_ONE, GL_ONE, GL_ZERO);
-  glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
   SDL_GL_SetSwapInterval(0);
 
@@ -137,6 +138,7 @@ void OpenGLVideoController::onRender(SDL_Window* sdlWindow) {
   gBuffer->startWriting();
   gBuffer->writeToAllBuffers();
 
+  glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
   renderGeometry();
