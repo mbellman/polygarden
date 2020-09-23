@@ -1,10 +1,3 @@
-const vec2 RADIAL_SAMPLE_OFFSETS_6[6] = vec2[6](
-                     vec2(0.0, -1.0),
-  vec2(-1.0, -0.33),                  vec2(1.0, -0.33),
-  vec2(-1.0, 0.33),                   vec2(1.0, 0.33),
-                     vec2(0.0, 1.0)
-);
-
 const vec2 RADIAL_SAMPLE_OFFSETS_8[8] = vec2[8](
   vec2(-0.7, -0.7), vec2(0.0, -1.0), vec2(0.7, -0.7),
   vec2(-1.0, 0.0),                   vec2(1.0, 0.0),
@@ -21,6 +14,12 @@ const vec2 CROSS_SAMPLE_OFFSETS[4] = vec2[4](
                    vec2(0.0, -1.0),
   vec2(-1.0, 0.0),                  vec2(1.0, 0.0),
                    vec2(0.0, 1.0)
+);
+
+const vec2 DIAMOND_SAMPLE_OFFSETS[4] = vec2[4](
+  vec2(-1.0, -1.0),                 vec2(1.0, -1.0),
+
+  vec2(-1.0, 1.0),                  vec2(1.0, 1.0)
 );
 
 const vec3 CUBE_SAMPLE_OFFSETS[7] = vec3[7](

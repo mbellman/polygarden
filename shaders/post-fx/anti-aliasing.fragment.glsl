@@ -17,15 +17,13 @@ float getColorDelta(vec3 colorA, vec3 colorB) {
 }
 
 vec3 getMixed(vec3 color, vec2 texelSize) {
-  color += texture(colorDepthIn, fragmentUv + vec2(0.0, -1.0) * texelSize).rgb * 0.5;
-  color += texture(colorDepthIn, fragmentUv + vec2(0.0, 1.0) * texelSize).rgb * 0.5;
-  color += texture(colorDepthIn, fragmentUv + vec2(-1.0, 0.0) * texelSize).rgb * 0.5;
-  color += texture(colorDepthIn, fragmentUv + vec2(1.0, 0.0) * texelSize).rgb * 0.5;
+  for (int i = 0; i < 4; i++) {
+    color += texture(colorDepthIn, fragmentUv + CROSS_SAMPLE_OFFSETS[i] * texelSize).rgb * 0.5;
+  }
 
-  color += texture(colorDepthIn, fragmentUv + vec2(-1.0, -1.0) * texelSize).rgb * 0.25;
-  color += texture(colorDepthIn, fragmentUv + vec2(1.0, -1.0) * texelSize).rgb * 0.25;
-  color += texture(colorDepthIn, fragmentUv + vec2(-1.0, 1.0) * texelSize).rgb * 0.25;
-  color += texture(colorDepthIn, fragmentUv + vec2(1.0, 1.0) * texelSize).rgb * 0.25;
+  for (int i = 0; i < 4; i++) {
+    color += texture(colorDepthIn, fragmentUv + DIAMOND_SAMPLE_OFFSETS[i] * texelSize).rgb * 0.25;
+  }
 
   return color / 4.0;
 }

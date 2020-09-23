@@ -8,19 +8,20 @@ noperspective in vec2 fragmentUv;
 
 layout (location = 0) out vec4 colorDepthOut;
 
-const float MAX_BLUR_DEPTH = 1000.0;
-
 vec2 getBlur(float depth) {
   vec2 MIN_BLUR = vec2(0.0);
   vec2 MAX_BLUR = 1.0 / textureSize(colorDepthIn, 0);
 
-  float r = depth / MAX_BLUR_DEPTH;
+  float focalDistance = min(texture(colorDepthIn, vec2(0.5, 0.5)).w, 500.0);
+  float maxBlurDepth = min(focalDistance + 1000.0, 1500.0);
+  float factor = depth < focalDistance ? 5.0 : 1.0;
+  float alpha = factor * abs(depth - focalDistance) / maxBlurDepth;
 
-  if (r >= 1.0) {
+  if (alpha >= 1.0) {
     return MAX_BLUR;
   }
 
-  return mix(MIN_BLUR, MAX_BLUR, pow(r, 3));
+  return mix(MIN_BLUR, MAX_BLUR, pow(alpha, 3));
 }
 
 void main() {
@@ -29,9 +30,13 @@ void main() {
   vec2 blur = getBlur(depth);
   vec3 color = colorDepth.rgb;
 
-  for (int s = 0; s < 6; s++) {
-    color += texture(colorDepthIn, fragmentUv + RADIAL_SAMPLE_OFFSETS_6[s] * blur * 1.7).rgb;
+  for (int s = 0; s < 4; s++) {
+    color += texture(colorDepthIn, fragmentUv + CROSS_SAMPLE_OFFSETS[s] * blur * 1.5).rgb;
   }
 
-  colorDepthOut = vec4(color / 7.0, depth);
+  for (int s = 0; s < 4; s++) {
+    color += texture(colorDepthIn, fragmentUv + DIAMOND_SAMPLE_OFFSETS[s] * blur * 3.0).rgb;
+  }
+
+  colorDepthOut = vec4(color / 9.0, depth);
 }
