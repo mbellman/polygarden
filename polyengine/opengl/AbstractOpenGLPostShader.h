@@ -18,7 +18,9 @@ public:
   virtual void onInit() = 0;
   virtual void onConfigureFrameBuffer() = 0;
   virtual void onRender() = 0;
-  void startWriting();
+  void setNextShader(AbstractOpenGLPostShader* glPostShader);
+  void writeToInputBuffer();
+  void writeToOutputBuffer();
 
 protected:
   FrameBuffer* frameBuffer = nullptr;
@@ -30,4 +32,5 @@ protected:
 
 private:
   std::map<std::string, ShaderProgram*> programMap;
+  AbstractOpenGLPostShader* nextShader = nullptr;
 };

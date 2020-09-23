@@ -13,7 +13,7 @@ vec2 getBlur(float depth) {
   vec2 MAX_BLUR = 1.0 / textureSize(colorDepthIn, 0);
 
   float focalDistance = min(texture(colorDepthIn, vec2(0.5, 0.5)).w, 500.0);
-  float maxBlurDepth = min(focalDistance + 1000.0, 1500.0);
+  float maxBlurDepth = focalDistance + 1000.0;
   float factor = depth < focalDistance ? 5.0 : 1.0;
   float alpha = factor * abs(depth - focalDistance) / maxBlurDepth;
 

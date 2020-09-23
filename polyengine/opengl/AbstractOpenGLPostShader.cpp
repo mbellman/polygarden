@@ -45,14 +45,6 @@ FrameBuffer* AbstractOpenGLPostShader::getFrameBuffer() const {
   return frameBuffer;
 }
 
-void AbstractOpenGLPostShader::render() {
-  frameBuffer->startReading();
-  
-  glClear(GL_COLOR_BUFFER_BIT);
-
-  onRender();
-}
-
 ShaderProgram* AbstractOpenGLPostShader::getShaderProgram(std::string name) {
   return programMap.at(name);
 }
@@ -61,6 +53,26 @@ ShaderProgram* AbstractOpenGLPostShader::getShaderProgram() {
   return getShaderProgram("__main__");
 }
 
-void AbstractOpenGLPostShader::startWriting() {
+void AbstractOpenGLPostShader::render() {
+  frameBuffer->startReading();
+  
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  onRender();
+}
+
+void AbstractOpenGLPostShader::setNextShader(AbstractOpenGLPostShader* glPostShader) {
+  nextShader = glPostShader;
+}
+
+void AbstractOpenGLPostShader::writeToInputBuffer() {
   frameBuffer->startWriting();
+}
+
+void AbstractOpenGLPostShader::writeToOutputBuffer() {
+  if (nextShader != nullptr) {
+    nextShader->writeToInputBuffer();
+  } else {
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+  }
 }

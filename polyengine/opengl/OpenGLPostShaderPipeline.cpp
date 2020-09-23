@@ -19,6 +19,10 @@ OpenGLPostShaderPipeline::~OpenGLPostShaderPipeline() {
 void OpenGLPostShaderPipeline::addPostShader(AbstractOpenGLPostShader* glPostShader) {
   glPostShader->onInit();
 
+  if (glPostShaders.size() > 0) {
+    glPostShaders[glPostShaders.size() - 1]->setNextShader(glPostShader);
+  }
+
   glPostShaders.push_back(glPostShader);
 }
 
@@ -35,16 +39,9 @@ void OpenGLPostShaderPipeline::createFrameBuffers(const Region2d<int>& screen) {
 void OpenGLPostShaderPipeline::render() {
   glDisable(GL_STENCIL_TEST);
 
-  for (int i = 0; i < glPostShaders.size(); i++) {
-    bool isFinalShader = i == glPostShaders.size() - 1;
-
-    if (isFinalShader) {
-      glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-    } else {
-      glPostShaders[i + 1]->startWriting();
-    }
-
-    glPostShaders[i]->render();
+  for (auto* glPostShader : glPostShaders) {
+    glPostShader->writeToOutputBuffer();
+    glPostShader->render();
     glScreenQuad->render();
   }
 }
