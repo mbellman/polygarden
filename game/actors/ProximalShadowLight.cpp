@@ -8,12 +8,16 @@
 void ProximalShadowLight::onInit() {
   stage->add<Light>([=](Light* light) {
     fallbackLight = light;
+    
+    addPositionable(light);
   });
 
   stage->add<Light>([=](Light* light) {
     light->canCastShadows = true;
 
     shadowLight = light;
+
+    addPositionable(light);
   });
 }
 
@@ -35,11 +39,6 @@ void ProximalShadowLight::onUpdate(float dt) {
 void ProximalShadowLight::setColor(const Vec3f& color) {
   fallbackLight->color = color;
   shadowLight->color = color;
-}
-
-void ProximalShadowLight::setPosition(const Vec3f& position) {
-  fallbackLight->position = position;
-  shadowLight->position = position;
 }
 
 void ProximalShadowLight::setRadius(float radius) {

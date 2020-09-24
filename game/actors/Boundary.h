@@ -2,8 +2,7 @@
 
 #include <subsystem/entities/Actor.h>
 
-class Wall : public Actor {
+class Boundary : public Actor {
 public:
-  void onRegistered() override;
   void onInit() override;
 };

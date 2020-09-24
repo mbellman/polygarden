@@ -189,6 +189,12 @@
     <ClCompile Include="polyengine\opengl\post-fx\BloomShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="game\actors\Boundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="polyengine\subsystem\traits\Scalable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="external\glew\include\eglew.h">
@@ -636,6 +642,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="polyengine\opengl\post-fx\BloomShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\actors\Boundary.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="polyengine\subsystem\traits\Orientable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="polyengine\subsystem\traits\Positionable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="polyengine\subsystem\traits\Scalable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="polyengine\subsystem\traits\Transformable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

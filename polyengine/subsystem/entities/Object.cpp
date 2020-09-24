@@ -297,10 +297,6 @@ void Object::setScale(const Vec3f& scale) {
   recomputeMatrix();
 }
 
-void Object::setScale(float scale) {
-  setScale(Vec3f(scale));
-}
-
 void Object::trackInstance(Instance* instance) {
   instances.push(instance);
 

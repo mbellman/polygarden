@@ -11,38 +11,36 @@ void Wall::onRegistered() {
   stage->add<ReferenceMesh>("wall", [](ReferenceMesh* wall) {
     wall->from(ObjLoader("./assets/wall/wall-model.obj"));
     wall->texture = Texture::use("./assets/wall/wall-texture.png");
-    wall->normalMap = Texture::use("./assets/wall/normals.png");
+    wall->normalMap = Texture::use("./assets/wall/wall-normals.png");
+  });
+
+  stage->add<ReferenceMesh>("wall-wood", [](ReferenceMesh* wood) {
+    wood->from(ObjLoader("./assets/wall/wood-model.obj"));
+    wood->texture = Texture::use("./assets/wall/wood-texture.png");
+  });
+
+  stage->add<ReferenceMesh>("wall-roof", [](ReferenceMesh* roof) {
+    roof->from(ObjLoader("./assets/wall/roof-model.obj"));
+    roof->texture = Texture::use("./assets/wall/roof-texture.png");
   });
 }
 
 void Wall::onInit() {
-  // Left wall
-  stage->addMultiple<Instance, 7>([&](Instance* wall, int index) {
+  stage->add<Instance>([&](Instance* wall) {
     wall->from(stage->get("wall"));
-    wall->setScale(62.0f);
-    wall->setPosition(Vec3f(-1225.0f, -60.0f, -1050.0f + index * 350.0f));
+
+    addTransformable(wall);
   });
 
-  // Front wall
-  stage->addMultiple<Instance, 7>([&](Instance* wall, int index) {
-    wall->from(stage->get("wall"));
-    wall->setScale(62.0f);
-    wall->setPosition(Vec3f(-1050.0f + index * 350.0f, -60.0f, 1225.0f));
-    wall->setOrientation(Vec3f(0.0f, M_PI * 0.5f, 0.0f));
+  stage->add<Instance>([&](Instance* wood) {
+    wood->from(stage->get("wall-wood"));
+
+    addTransformable(wood);
   });
 
-  // Right wall
-  stage->addMultiple<Instance, 7>([&](Instance* wall, int index) {
-    wall->from(stage->get("wall"));
-    wall->setScale(62.0f);
-    wall->setPosition(Vec3f(1225.0f, -60.0f, -1050.0f + index * 350.0f));
-  });
+  stage->add<Instance>([&](Instance* roof) {
+    roof->from(stage->get("wall-roof"));
 
-  // Back wall
-  stage->addMultiple<Instance, 7>([&](Instance* wall, int index) {
-    wall->from(stage->get("wall"));
-    wall->setScale(62.0f);
-    wall->setPosition(Vec3f(-1050.0f + index * 350.0f, -60.0f, -1225.0f));
-    wall->setOrientation(Vec3f(0.0f, M_PI * 0.5f, 0.0f));
+    addTransformable(roof);
   });
 }

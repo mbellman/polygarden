@@ -4,6 +4,7 @@
 #include <functional>
 
 #include "subsystem/entities/Entity.h"
+#include "subsystem/traits/Transformable.h"
 #include "subsystem/Texture.h"
 #include "subsystem/Geometry.h"
 #include "subsystem/HeapList.h"
@@ -16,7 +17,7 @@ enum ObjectEffects {
 class Instance;
 class ReferenceMesh;
 
-class Object : public Entity {
+class Object : public Entity, public Transformable {
   friend class Instance;
   friend class ReferenceMesh;
 
@@ -51,10 +52,9 @@ public:
   virtual void rehydrate();
   void rotate(const Vec3f& rotation);
   void setColor(const Vec3f& color);
-  void setOrientation(const Vec3f& orientation);
-  void setPosition(const Vec3f& position);
-  void setScale(const Vec3f& scale);
-  void setScale(float scale);
+  virtual void setOrientation(const Vec3f& orientation) override;
+  virtual void setPosition(const Vec3f& position) override;
+  virtual void setScale(const Vec3f& scale) override;
 
 protected:
   std::vector<Vertex3d*> vertices;

@@ -112,6 +112,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="game\actors\Background.cpp" />
+    <ClCompile Include="game\actors\Boundary.cpp" />
     <ClCompile Include="game\actors\GrassField.cpp" />
     <ClCompile Include="game\actors\ProximalShadowLight.cpp" />
     <ClCompile Include="game\actors\VisibleObjectFilter.cpp" />
@@ -168,6 +169,7 @@
     <ClCompile Include="polyengine\subsystem\Stage.cpp" />
     <ClCompile Include="polyengine\subsystem\Texture.cpp" />
     <ClCompile Include="polyengine\subsystem\traits\LifeCycle.cpp" />
+    <ClCompile Include="polyengine\subsystem\traits\Scalable.cpp" />
     <ClCompile Include="polyengine\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -261,6 +263,7 @@
     <ClInclude Include="external\sdl2\include\SDL_vulkan.h" />
     <ClInclude Include="external\sdl_image\include\SDL_image.h" />
     <ClInclude Include="game\actors\Background.h" />
+    <ClInclude Include="game\actors\Boundary.h" />
     <ClInclude Include="game\actors\GrassField.h" />
     <ClInclude Include="game\actors\ProximalShadowLight.h" />
     <ClInclude Include="game\actors\VisibleObjectFilter.h" />
@@ -318,6 +321,10 @@
     <ClInclude Include="polyengine\subsystem\Stage.h" />
     <ClInclude Include="polyengine\subsystem\Texture.h" />
     <ClInclude Include="polyengine\subsystem\traits\LifeCycle.h" />
+    <ClInclude Include="polyengine\subsystem\traits\Orientable.h" />
+    <ClInclude Include="polyengine\subsystem\traits\Positionable.h" />
+    <ClInclude Include="polyengine\subsystem\traits\Scalable.h" />
+    <ClInclude Include="polyengine\subsystem\traits\Transformable.h" />
     <ClInclude Include="polyengine\subsystem\Types.h" />
     <ClInclude Include="polyengine\Window.h" />
   </ItemGroup>

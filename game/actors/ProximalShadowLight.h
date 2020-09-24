@@ -9,7 +9,6 @@ public:
   void onInit() override;
   void onUpdate(float dt) override;
   void setColor(const Vec3f& color);
-  void setPosition(const Vec3f& position);
   void setRadius(float radius);
 
 private:

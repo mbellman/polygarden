@@ -16,7 +16,7 @@
 #include "Easing.h"
 #include "actors/GrassField.h"
 #include "actors/Background.h"
-#include "actors/Wall.h"
+#include "actors/Boundary.h"
 #include "actors/ProximalShadowLight.h"
 #include "actors/VisibleObjectFilter.h"
 
@@ -189,7 +189,7 @@ void GardenScene::onInit() {
 
   stage.add<GrassField>();
   stage.add<Background>();
-  stage.add<Wall>();
+  stage.add<Boundary>();
 
   addRocks();
   addTrees();

@@ -14,9 +14,9 @@ Matrix4 OpenGLShadowCaster::getCascadedLightMatrix(int cascadeIndex, const Camer
   const float range = sizes[0];
   const float depth = sizes[1];
 
-  Vec3f lightPosition = (camera.position + camera.getDirection().unit() * range);
+  Vec3f focalPosition = (camera.position + camera.getDirection().unit() * range);
   Matrix4 projection = Matrix4::orthographic(range, -range, -range, range, -depth, depth);
-  Matrix4 view = Matrix4::lookAt(lightPosition.invert().gl(), light->direction.invert().gl(), Vec3f(0.0f, 1.0f, 0.0f));
+  Matrix4 view = Matrix4::lookAt(focalPosition.invert().gl(), light->direction.invert().gl(), Vec3f(0.0f, 1.0f, 0.0f));
 
   return (projection * view).transpose();
 }
