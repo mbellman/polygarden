@@ -46,10 +46,20 @@ int getSampleGridIndex(vec2 fragment, vec2 screenSize, int gridSize) {
   return yOffset + xOffset;
 }
 
-vec2 getRadialOffset(vec2 fragment, vec2 screenSize) {
-  return RADIAL_SAMPLE_OFFSETS_9[getSampleGridIndex(fragment, screenSize, 3)];
-}
-
 float getDitheringFactor(vec2 fragment, vec2 screenSize) {
   return DITHERING_KERNEL[getSampleGridIndex(fragment, screenSize, 4)];
+}
+
+vec3 getWeightedSpread(sampler2D image, vec2 uv, int spread, vec2 direction) {
+  vec3 color = vec3(0.0);
+  vec2 texelSize = 1.0 / textureSize(image, 0);
+  int samples = spread * 2;
+
+  for (int i = -spread; i <= spread; i++) {
+    float weight = 1.5 * (spread - abs(i)) / float(spread);
+
+    color += weight * texture(image, uv + direction * i * texelSize).rgb;
+  }
+
+  return color / float(samples);
 }

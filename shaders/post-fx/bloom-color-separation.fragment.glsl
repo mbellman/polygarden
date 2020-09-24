@@ -7,7 +7,7 @@ noperspective in vec2 fragmentUv;
 layout (location = 0) out vec3 bloomColorOut;
 
 bool isBloomColor(vec3 color) {
-  return color.r > 0.9 || color.g > 0.9 || color.b > 0.9;
+  return color.g > 0.8 || color.r > 0.9 || color.b > 0.99;
 }
 
 void main() {

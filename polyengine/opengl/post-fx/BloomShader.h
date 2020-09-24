@@ -13,8 +13,9 @@ public:
   void onRender();
 
 private:
-  FrameBuffer* blurLevel1 = nullptr;
-  FrameBuffer* blurLevel2 = nullptr;
-  FrameBuffer* blurLevel3 = nullptr;
+  FrameBuffer* downsample1 = nullptr;
+  FrameBuffer* downsample2 = nullptr;
+  FrameBuffer* downsample3_h = nullptr;
+  FrameBuffer* downsample3_v = nullptr;
   OpenGLScreenQuad* glScreenQuad = nullptr;
 };

@@ -58,7 +58,9 @@ vec3 getVolumetricLight(vec3 surfacePosition) {
     volumetricLight += (closestDepth < transform.z) ? vec3(0.0) : (light.color * stepFactor);
   }
 
-  return volumetricLight * 0.25;
+  float strength = 0.25 + pow(max(dot(normalize(surfaceToCamera), normalize(light.direction)), 0.0), 10);
+
+  return volumetricLight * strength;
 }
 
 void main() {

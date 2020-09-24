@@ -14,13 +14,6 @@ void Background::onInit() {
     light->canCastShadows = true;
   });
 
-  // stage->add<Light>([](Light* light) {
-  //   light->type = Light::LightType::DIRECTIONAL;
-  //   light->color = Vec3f(0.2f, 0.2f, 0.3f);
-  //   light->direction = Vec3f(0.0f, -1.0f, 0.0f);
-  //   light->power = 0.25f;
-  // });
-
   stage->add<Skybox>([&](Skybox* skybox) {
     skybox->setScale(5000.0f);
     skybox->texture = Texture::use("./assets/skybox/night.png");
