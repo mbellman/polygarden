@@ -118,10 +118,11 @@ void OpenGLIlluminator::renderDirectionalShadowCaster(OpenGLShadowCaster* glShad
   Matrix4 lightMatrixCascades[] = {
     glShadowCaster->getCascadedLightMatrix(0, camera),
     glShadowCaster->getCascadedLightMatrix(1, camera),
-    glShadowCaster->getCascadedLightMatrix(2, camera)
+    glShadowCaster->getCascadedLightMatrix(2, camera),
+    glShadowCaster->getCascadedLightMatrix(3, camera)
   };
 
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < 4; i++) {
     glVideoController->shadowBuffer->writeToShadowCascade(i);
     lightViewProgram.setMatrix4("lightMatrix", lightMatrixCascades[i]);
 
@@ -157,9 +158,11 @@ void OpenGLIlluminator::renderDirectionalShadowCaster(OpenGLShadowCaster* glShad
   directionalShadowProgram.setInt("lightMaps[0]", 3);
   directionalShadowProgram.setInt("lightMaps[1]", 4);
   directionalShadowProgram.setInt("lightMaps[2]", 5);
+  directionalShadowProgram.setInt("lightMaps[3]", 6);
   directionalShadowProgram.setMatrix4("lightMatrixCascades[0]", lightMatrixCascades[0]);
   directionalShadowProgram.setMatrix4("lightMatrixCascades[1]", lightMatrixCascades[1]);
   directionalShadowProgram.setMatrix4("lightMatrixCascades[2]", lightMatrixCascades[2]);
+  directionalShadowProgram.setMatrix4("lightMatrixCascades[3]", lightMatrixCascades[3]);
   directionalShadowProgram.setVec3f("cameraPosition", camera.position);
   directionalShadowProgram.setVec3f("light.position", light->position);
   directionalShadowProgram.setVec3f("light.direction", light->direction);

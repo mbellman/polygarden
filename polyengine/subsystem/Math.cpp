@@ -1,5 +1,6 @@
 #include <cmath>
 #include <cstdio>
+#include <algorithm>
 
 #include "subsystem/Math.h"
 
@@ -108,6 +109,46 @@ Vec3f Vec3f::xz() const {
 }
 
 /**
+ * Frustum
+ * -------
+ */
+Bounds3d Frustum::getBounds() const {
+  Bounds3d bounds;
+
+  bounds.top = std::max({
+    near[0].y, near[1].y, near[2].y, near[3].y,
+    far[0].y, far[1].y, far[2].y, far[3].y
+  });
+
+  bounds.bottom = std::min({
+    near[0].y, near[1].y, near[2].y, near[3].y,
+    far[0].y, far[1].y, far[2].y, far[3].y
+  });
+
+  bounds.left = std::min({
+    near[0].x, near[1].x, near[2].x, near[3].x,
+    far[0].x, far[1].x, far[2].x, far[3].x
+  });
+
+  bounds.right = std::max({
+    near[0].x, near[1].x, near[2].x, near[3].x,
+    far[0].x, far[1].x, far[2].x, far[3].x
+  });
+
+  bounds.front = std::max({
+    near[0].z, near[1].z, near[2].z, near[3].z,
+    far[0].z, far[1].z, far[2].z, far[3].z
+  });
+
+  bounds.back = std::min({
+    near[0].z, near[1].z, near[2].z, near[3].z,
+    far[0].z, far[1].z, far[2].z, far[3].z
+  });
+
+  return bounds;
+}
+
+/**
  * Matrix4
  * -------
  */
@@ -143,7 +184,7 @@ Matrix4 Matrix4::lookAt(const Vec3f& eye, const Vec3f& direction, const Vec3f& t
   Vec3f forward = direction.unit();
   Vec3f right = Vec3f::crossProduct(top, forward).unit();
   Vec3f up = Vec3f::crossProduct(forward, right).unit();
-  Matrix4 translation = Matrix4::translate(eye);
+  Matrix4 translation = Matrix4::translate(eye.invert());
 
   Matrix4 rotation = {
     right.x, right.y, right.z, 0.0f,
@@ -240,6 +281,22 @@ Vec3f Matrix4::operator*(const Vec3f& vector) const {
     x * m[4] + y * m[5] + z * m[6] + w * m[7],
     x * m[8] + y * m[9] + z * m[10] + w * m[11]
   );
+}
+
+Frustum Matrix4::operator*(const Frustum& frustum) const {
+  Frustum product;
+
+  product.near[0] = *this * frustum.near[0];
+  product.near[1] = *this * frustum.near[1];
+  product.near[2] = *this * frustum.near[2];
+  product.near[3] = *this * frustum.near[3];
+
+  product.far[0] = *this * frustum.far[0];
+  product.far[1] = *this * frustum.far[1];
+  product.far[2] = *this * frustum.far[2];
+  product.far[3] = *this * frustum.far[3];
+
+  return product;
 }
 
 /**

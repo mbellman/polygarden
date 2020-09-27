@@ -28,7 +28,7 @@ public:
   const Texture* normalMap = nullptr;
   const char* shader = nullptr;
   unsigned int effects = 0;
-  unsigned int shadowCascadeLimit = 3;
+  unsigned int shadowCascadeLimit = 4;
   bool isEmissive = false;
 
   virtual ~Object();

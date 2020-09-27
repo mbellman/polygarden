@@ -7,8 +7,8 @@
 uniform sampler2D colorTexture;
 uniform sampler2D normalDepthTexture;
 uniform sampler2D positionTexture;
-uniform sampler2D lightMaps[3];
-uniform mat4 lightMatrixCascades[3];
+uniform sampler2D lightMaps[4];
+uniform mat4 lightMatrixCascades[4];
 uniform vec3 cameraPosition;
 uniform Light light;
 
@@ -16,25 +16,18 @@ noperspective in vec2 fragmentUv;
 
 layout (location = 0) out vec4 colorDepth;
 
-int getCascadeIndex(vec3 position) {
-  float fragDistance = length(cameraPosition - position);
+float SHADOW_BIAS_LEVELS[4] = float[](0.00025, 0.001, 0.002, 0.002);
+float MAX_SHADOW_SOFTNESS_LEVELS[4] = float[](50.0, 35, 25.0, 20.0);
 
-  if (fragDistance < 150.0) {
+int getCascadeIndex(float depth) {
+  if (depth < 100.0) {
     return 0;
-  } else if (fragDistance < 500.0) {
+  } else if (depth < 300.0) {
     return 1;
-  } else {
+  } else if (depth < 800.0) {
     return 2;
-  }
-}
-
-float getBias(int cascadeIndex) {
-  switch (cascadeIndex) {
-    case 0:
-    case 1:
-      return 0.0001;
-    case 2:
-      return 0.0002;
+  } else {
+    return 3;
   }
 }
 
@@ -45,20 +38,20 @@ vec3 getVolumetricLight(vec3 surfacePosition) {
   float stepFactor = 1.0 / float(STEP_COUNT);
   vec3 volumetricLight = vec3(0.0);
   vec3 ray = surfaceToCamera * stepFactor;
+  float strength = 0.2 + pow(max(dot(normalize(surfaceToCamera), normalize(light.direction)), 0.0), 10);
 
   surfacePosition += ray * getDitheringFactor(fragmentUv, textureSize(positionTexture, 0));
 
   for (int i = 1; i < STEP_COUNT; i++) {
     vec3 samplePosition = surfacePosition + ray * float(i);
-    int cascadeIndex = getCascadeIndex(samplePosition);
+    float depth = length(samplePosition - cameraPosition);
+    int cascadeIndex = getCascadeIndex(depth);
     mat4 lightMatrix = lightMatrixCascades[cascadeIndex];
     vec3 transform = getLightMapTransform(samplePosition, lightMatrix);
     float closestDepth = texture(lightMaps[cascadeIndex], transform.xy).r;
 
     volumetricLight += (closestDepth < transform.z) ? vec3(0.0) : (light.color * stepFactor);
   }
-
-  float strength = 0.25 + pow(max(dot(normalize(surfaceToCamera), normalize(light.direction)), 0.0), 10);
 
   return volumetricLight * strength;
 }
@@ -69,10 +62,15 @@ void main() {
   vec4 normalDepth = texture(normalDepthTexture, fragmentUv);
   vec3 surfaceToCamera = normalize(cameraPosition - position);
   vec3 normal = normalDepth.xyz;
+  float depth = normalDepth.w;
+
+  int cascadeIndex = getCascadeIndex(depth);
+  mat4 lightMatrix = lightMatrixCascades[cascadeIndex];
+  float shadowBias = SHADOW_BIAS_LEVELS[cascadeIndex];
+  float maxShadowSoftness = MAX_SHADOW_SOFTNESS_LEVELS[cascadeIndex];
   vec3 lighting = albedo * getDirectionalLightFactor(light, normal, surfaceToCamera);
-  int cascadeIndex = getCascadeIndex(position);
-  float shadowFactor = getShadowFactor(position, lightMatrixCascades[cascadeIndex], lightMaps[cascadeIndex], getBias(cascadeIndex));
+  float shadowFactor = getShadowFactor(position, lightMatrix, lightMaps[cascadeIndex], shadowBias, maxShadowSoftness);
   vec3 volumetricLight = getVolumetricLight(position);
 
-  colorDepth = vec4(lighting * shadowFactor + volumetricLight, normalDepth.w);
+  colorDepth = vec4(lighting * shadowFactor + volumetricLight, depth);
 }

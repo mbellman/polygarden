@@ -51,7 +51,6 @@ void OpenGLVideoController::createPostShaders() {
   glPostShaderPipeline->addPostShader(new AntiAliasingShader());
   glPostShaderPipeline->addPostShader(new BloomShader());
   glPostShaderPipeline->addPostShader(new DofShader());
-  glPostShaderPipeline->addPostShader(new ChromaticAberrationShader());
 
   glPostShaderPipeline->createFrameBuffers({ 0, 0, screenSize.width, screenSize.height });
 }

@@ -66,6 +66,28 @@ struct Vec3f : Vec2f {
 };
 
 /**
+ * A bounding area in local coordinate space.
+ */
+struct Bounds3d {
+  float top;
+  float bottom;
+  float left;
+  float right;
+  float front;
+  float back;
+};
+
+/**
+ * A viewing frustum in global coordinate space.
+ */
+struct Frustum {
+  Vec3f near[4];
+  Vec3f far[4];
+
+  Bounds3d getBounds() const;
+};
+
+/**
  * A 3x3 transformation matrix.
  */
 struct Matrix3 {
@@ -89,6 +111,7 @@ struct Matrix4 {
 
   Matrix4 operator*(const Matrix4& matrix) const;
   Vec3f operator*(const Vec3f& vector) const;
+  Frustum operator*(const Frustum& frustum) const;
 
   void debug() const;
   Matrix4 transpose() const;
