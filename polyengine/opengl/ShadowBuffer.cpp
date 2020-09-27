@@ -4,8 +4,6 @@
 
 ShadowBuffer::ShadowBuffer() {
   createShaderPrograms();
-
-  glScreenQuad = new OpenGLScreenQuad();
 }
 
 void ShadowBuffer::createFrameBuffer(unsigned int width, unsigned int height) {

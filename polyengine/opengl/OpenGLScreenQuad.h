@@ -5,12 +5,15 @@
 
 class OpenGLScreenQuad {
 public:
-  OpenGLScreenQuad();
-  ~OpenGLScreenQuad();
-
-  void render();
+  static void draw();
 
 private:
   GLuint vao;
   GLuint vbo;
+  static OpenGLScreenQuad* singleton;
+
+  OpenGLScreenQuad();
+  ~OpenGLScreenQuad();
+
+  void render();
 };

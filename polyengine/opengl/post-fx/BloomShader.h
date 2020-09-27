@@ -2,7 +2,6 @@
 
 #include "opengl/AbstractOpenGLPostShader.h"
 #include "opengl/FrameBuffer.h"
-#include "opengl/OpenGLScreenQuad.h"
 
 class BloomShader : public AbstractOpenGLPostShader {
 public:
@@ -17,5 +16,4 @@ private:
   FrameBuffer* downsample2 = nullptr;
   FrameBuffer* downsample3_h = nullptr;
   FrameBuffer* downsample3_v = nullptr;
-  OpenGLScreenQuad* glScreenQuad = nullptr;
 };

@@ -8,7 +8,6 @@
 
 class OpenGLPostShaderPipeline {
 public:
-  OpenGLPostShaderPipeline();
   ~OpenGLPostShaderPipeline();
 
   void addPostShader(AbstractOpenGLPostShader* glPostShader);
@@ -18,5 +17,4 @@ public:
 
 private:
   std::vector<AbstractOpenGLPostShader*> glPostShaders;
-  OpenGLScreenQuad* glScreenQuad = nullptr;
 };

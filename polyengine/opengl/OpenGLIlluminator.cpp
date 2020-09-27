@@ -2,10 +2,11 @@
 #include <vector>
 
 #include "opengl/OpenGLIlluminator.h"
+#include "opengl/OpenGLDebugger.h"
+#include "opengl/OpenGLScreenQuad.h"
 #include "subsystem/entities/Object.h"
 #include "subsystem/entities/Light.h"
 #include "subsystem/entities/Camera.h"
-#include "opengl/OpenGLDebugger.h"
 
 OpenGLIlluminator::OpenGLIlluminator() {
   glLightingQuad = new OpenGLLightingQuad();
@@ -170,7 +171,7 @@ void OpenGLIlluminator::renderDirectionalShadowCaster(OpenGLShadowCaster* glShad
   directionalShadowProgram.setFloat("light.radius", light->radius);
   directionalShadowProgram.setInt("light.type", light->type);
 
-  glVideoController->shadowBuffer->renderScreenQuad();
+  OpenGLScreenQuad::draw();
 }
 
 void OpenGLIlluminator::renderPointShadowCaster(OpenGLShadowCaster* glShadowCaster) {
@@ -247,7 +248,7 @@ void OpenGLIlluminator::renderPointShadowCaster(OpenGLShadowCaster* glShadowCast
   pointShadowProgram.setFloat("light.radius", light->radius);
   pointShadowProgram.setInt("light.type", light->type);
 
-  glVideoController->pointShadowBuffer->renderScreenQuad();
+  OpenGLScreenQuad::draw();
 }
 
 void OpenGLIlluminator::renderSpotShadowCaster(OpenGLShadowCaster* glShadowCaster) {
@@ -309,7 +310,7 @@ void OpenGLIlluminator::renderSpotShadowCaster(OpenGLShadowCaster* glShadowCaste
   spotShadowProgram.setFloat("light.radius", light->radius);
   spotShadowProgram.setInt("light.type", light->type);
 
-  glVideoController->shadowBuffer->renderScreenQuad();
+  OpenGLScreenQuad::draw();
 }
 
 void OpenGLIlluminator::setVideoController(OpenGLVideoController* glVideoController) {

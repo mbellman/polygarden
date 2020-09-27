@@ -4,8 +4,6 @@
 
 GBuffer::GBuffer() {
   createShaderPrograms();
-
-  glScreenQuad = new OpenGLScreenQuad();
 }
 
 GBuffer::~GBuffer() {

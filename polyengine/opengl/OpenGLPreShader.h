@@ -1,7 +1,6 @@
 #pragma once
 
 #include "opengl/ShaderProgram.h"
-#include "opengl/OpenGLScreenQuad.h"
 
 class OpenGLPreShader {
 public:
@@ -13,5 +12,4 @@ public:
 
 private:
   ShaderProgram program;
-  OpenGLScreenQuad* glScreenQuad = nullptr;
 };

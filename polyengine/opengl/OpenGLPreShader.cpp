@@ -1,13 +1,12 @@
 #include "opengl/OpenGLPreShader.h"
 #include "opengl/ShaderLoader.h"
+#include "opengl/OpenGLScreenQuad.h"
 
 OpenGLPreShader::OpenGLPreShader(const char* path) {
   program.create();
   program.attachShader(ShaderLoader::loadVertexShader("./shaders/quad.vertex.glsl"));
   program.attachShader(ShaderLoader::loadFragmentShader(path));
   program.link();
-
-  glScreenQuad = new OpenGLScreenQuad();
 }
 
 OpenGLPreShader::~OpenGLPreShader() {
@@ -19,5 +18,5 @@ ShaderProgram& OpenGLPreShader::getProgram() {
 }
 
 void OpenGLPreShader::render() {
-  glScreenQuad->render();
+  OpenGLScreenQuad::draw();
 }

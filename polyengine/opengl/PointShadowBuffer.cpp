@@ -4,8 +4,6 @@
 
 PointShadowBuffer::PointShadowBuffer() {
   createShaderPrograms();
-
-  glScreenQuad = new OpenGLScreenQuad();
 }
 
 void PointShadowBuffer::createFrameBuffer(unsigned int width, unsigned int height) {

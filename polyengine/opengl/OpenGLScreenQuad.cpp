@@ -1,5 +1,7 @@
 #include "opengl/OpenGLScreenQuad.h"
 
+#include <cstdio>
+
 const float QUAD_DATA[] = {
   -1.0f, 1.0f, 0.0f, 1.0f,
   1.0f, 1.0f, 1.0f, 1.0f,
@@ -27,8 +29,18 @@ OpenGLScreenQuad::~OpenGLScreenQuad() {
   // TODO
 }
 
+void OpenGLScreenQuad::draw() {
+  if (OpenGLScreenQuad::singleton == nullptr) {
+    OpenGLScreenQuad::singleton = new OpenGLScreenQuad();
+  }
+
+  OpenGLScreenQuad::singleton->render();
+}
+
 void OpenGLScreenQuad::render() {
   glBindVertexArray(vao);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glDrawArrays(GL_TRIANGLES, 0, 6);
 }
+
+OpenGLScreenQuad* OpenGLScreenQuad::singleton = nullptr;

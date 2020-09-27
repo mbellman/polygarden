@@ -2,15 +2,10 @@
 
 AbstractBuffer::~AbstractBuffer() {
   delete frameBuffer;
-  delete glScreenQuad;
 }
 
 FrameBuffer* AbstractBuffer::getFrameBuffer() {
   return frameBuffer;
-}
-
-void AbstractBuffer::renderScreenQuad() {
-  glScreenQuad->render();
 }
 
 void AbstractBuffer::startReading() {

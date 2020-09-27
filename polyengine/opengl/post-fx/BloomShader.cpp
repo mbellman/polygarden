@@ -1,11 +1,11 @@
 #include "opengl/post-fx/BloomShader.h"
+#include "opengl/OpenGLScreenQuad.h"
 
 BloomShader::~BloomShader() {
   delete downsample1;
   delete downsample2;
   delete downsample3_h;
   delete downsample3_v;
-  delete glScreenQuad;
 }
 
 void BloomShader::onInit() {
@@ -18,7 +18,6 @@ void BloomShader::onInit() {
   downsample2 = new FrameBuffer(480, 270);
   downsample3_h = new FrameBuffer(240, 135);
   downsample3_v = new FrameBuffer(240, 135);
-  glScreenQuad = new OpenGLScreenQuad();
 
   downsample1->addColorTexture(GL_RGB32F, GL_RGB, GL_CLAMP_TO_EDGE, GL_TEXTURE1);
   downsample2->addColorTexture(GL_RGB32F, GL_RGB, GL_CLAMP_TO_EDGE, GL_TEXTURE0);
@@ -41,7 +40,7 @@ void BloomShader::onRender() {
 
   frameBuffer->startReading();
   downsample1->startWriting();
-  glScreenQuad->render();
+  OpenGLScreenQuad::draw();
 
   downsample1->blit(downsample2);
   downsample2->blit(downsample3_h);
@@ -51,14 +50,14 @@ void BloomShader::onRender() {
 
   downsample3_h->startReading();
   downsample3_v->startWriting();
-  glScreenQuad->render();
+  OpenGLScreenQuad::draw();
 
   getShaderProgram("vertical")->use();
   getShaderProgram("vertical")->setInt("colorIn", 0);
 
   downsample3_v->startReading();
   downsample2->startWriting();
-  glScreenQuad->render();
+  OpenGLScreenQuad::draw();
 
   downsample2->blit(downsample1);
 

@@ -207,7 +207,7 @@ void OpenGLVideoController::renderEmissiveSurfaces() {
   glEnable(GL_STENCIL_TEST);
   glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 
-  gBuffer->renderScreenQuad();
+  OpenGLScreenQuad::draw();
 }
 
 void OpenGLVideoController::renderGeometry() {

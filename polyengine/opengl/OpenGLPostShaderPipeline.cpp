@@ -1,10 +1,8 @@
+
 #include "opengl/OpenGLPostShaderPipeline.h"
+#include "opengl/OpenGLScreenQuad.h"
 #include "glew.h"
 #include "glut.h"
-
-OpenGLPostShaderPipeline::OpenGLPostShaderPipeline() {
-  glScreenQuad = new OpenGLScreenQuad();
-}
 
 OpenGLPostShaderPipeline::~OpenGLPostShaderPipeline() {
   for (auto* glPostShader : glPostShaders) {
@@ -12,8 +10,6 @@ OpenGLPostShaderPipeline::~OpenGLPostShaderPipeline() {
   }
 
   glPostShaders.clear();
-
-  delete glScreenQuad;
 }
 
 void OpenGLPostShaderPipeline::addPostShader(AbstractOpenGLPostShader* glPostShader) {
@@ -42,6 +38,7 @@ void OpenGLPostShaderPipeline::render() {
   for (auto* glPostShader : glPostShaders) {
     glPostShader->writeToOutputBuffer();
     glPostShader->render();
-    glScreenQuad->render();
+
+    OpenGLScreenQuad::draw();
   }
 }
