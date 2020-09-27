@@ -16,7 +16,6 @@ void Wall::onRegistered() {
 
   stage->add<ReferenceMesh>("wall-wood", [](ReferenceMesh* wood) {
     wood->from(ObjLoader("./assets/wall/wood-model.obj"));
-    wood->texture = Texture::use("./assets/wall/wood-texture.png");
   });
 
   stage->add<ReferenceMesh>("wall-roof", [](ReferenceMesh* roof) {
@@ -34,6 +33,7 @@ void Wall::onInit() {
 
   stage->add<Instance>([&](Instance* wood) {
     wood->from(stage->get("wall-wood"));
+    wood->setColor(Vec3f(1.0f, 0.9f, 0.8f));
 
     addTransformable(wood);
   });

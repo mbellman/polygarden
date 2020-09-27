@@ -14,7 +14,7 @@ float getShadowFactor(vec3 surfacePosition, mat4 lightMatrix, sampler2D lightMap
   }
 
   vec2 texelSize = 1.0 / textureSize(lightMap, 0);
-  vec2 sampleSpread = maxSoftness * texelSize * 0.5;
+  vec2 sampleSpread = maxSoftness * texelSize * 0.25;
   float occludingSurfaceDistance = transform.z;
 
   for (int s = 0; s < 9; s++) {
@@ -24,7 +24,7 @@ float getShadowFactor(vec3 surfacePosition, mat4 lightMatrix, sampler2D lightMap
   }
 
   float shadowDistance = transform.z - occludingSurfaceDistance;
-  float blur = maxSoftness * shadowDistance;
+  float blur = 1.0 + maxSoftness * shadowDistance;
   float shadowFactor = 0.0;
 
   for (int i = 1; i <= 2; i++) {

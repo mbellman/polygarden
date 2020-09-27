@@ -16,7 +16,7 @@ noperspective in vec2 fragmentUv;
 
 layout (location = 0) out vec4 colorDepth;
 
-float SHADOW_BIAS_LEVELS[4] = float[](0.00025, 0.001, 0.002, 0.002);
+float SHADOW_BIAS_LEVELS[4] = float[](0.0001, 0.00025, 0.0005, 0.001);
 float MAX_SHADOW_SOFTNESS_LEVELS[4] = float[](50.0, 35, 25.0, 20.0);
 
 int getCascadeIndex(float depth) {
