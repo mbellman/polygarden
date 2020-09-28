@@ -33,6 +33,8 @@ struct Vec2f {
 
   float x = 0.0f;
   float y = 0.0f;
+
+  const float* float2() const;
 };
 
 /**

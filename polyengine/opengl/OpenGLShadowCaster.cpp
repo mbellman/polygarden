@@ -4,10 +4,10 @@
 #include "opengl/FrameBuffer.h"
 
 const static Range<float> CASCADE_PARAMETERS[4][2] = {
-  { 1.0f, 100.0f },
-  { 100.0f, 300.0f },
-  { 300.0f, 800.0f },
-  { 800.0f, 2000.0f }
+  { 1.0f, 200.0f },
+  { 200.0f, 500.0f },
+  { 500.0f, 1250.0f },
+  { 1250.0f, 3000.0f }
 };
 
 OpenGLShadowCaster::OpenGLShadowCaster(const Light* light) {

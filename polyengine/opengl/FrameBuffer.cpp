@@ -99,7 +99,12 @@ void FrameBuffer::blit(FrameBuffer* target) {
   startReading();
   target->startWriting();
 
-  glBlitFramebuffer(0, 0, size.width, size.height, 0, 0, target->size.width, target->size.height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+  for (unsigned int i = 0; i < target->colorTextures.size(); i++) {
+    glReadBuffer(GL_COLOR_ATTACHMENT0 + i);
+    glDrawBuffer(GL_COLOR_ATTACHMENT0 + i);
+
+    glBlitFramebuffer(0, 0, size.width, size.height, 0, 0, target->size.width, target->size.height, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+  }
 }
 
 void FrameBuffer::clearColorTexture(GLint attachment) {

@@ -16,19 +16,24 @@ noperspective in vec2 fragmentUv;
 
 layout (location = 0) out vec4 colorDepth;
 
-float SHADOW_BIAS_LEVELS[4] = float[](0.0001, 0.00025, 0.0005, 0.001);
-float MAX_SHADOW_SOFTNESS_LEVELS[4] = float[](50.0, 35, 25.0, 20.0);
-
 int getCascadeIndex(float depth) {
-  if (depth < 100.0) {
+  if (depth < 200.0) {
     return 0;
-  } else if (depth < 300.0) {
+  } else if (depth < 500.0) {
     return 1;
-  } else if (depth < 800.0) {
+  } else if (depth < 1250.0) {
     return 2;
   } else {
     return 3;
   }
+}
+
+float getBias(float depth) {
+  return max(pow(depth / 10000.0, 2), 0.0001);
+}
+
+float getMaxSoftness(float depth) {
+  return min(1.0 / (depth / 10000.0), 25.0);
 }
 
 vec3 getVolumetricLight(vec3 surfacePosition) {
@@ -66,10 +71,8 @@ void main() {
 
   int cascadeIndex = getCascadeIndex(depth);
   mat4 lightMatrix = lightMatrixCascades[cascadeIndex];
-  float shadowBias = SHADOW_BIAS_LEVELS[cascadeIndex];
-  float maxShadowSoftness = MAX_SHADOW_SOFTNESS_LEVELS[cascadeIndex];
   vec3 lighting = albedo * getDirectionalLightFactor(light, normal, surfaceToCamera);
-  float shadowFactor = getShadowFactor(position, lightMatrix, lightMaps[cascadeIndex], shadowBias, maxShadowSoftness);
+  float shadowFactor = getPcfShadowFactor(position, lightMatrix, lightMaps[cascadeIndex], getBias(depth), getMaxSoftness(depth));
   vec3 volumetricLight = getVolumetricLight(position);
 
   colorDepth = vec4(lighting * shadowFactor + volumetricLight, depth);

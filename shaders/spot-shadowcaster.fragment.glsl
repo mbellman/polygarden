@@ -15,9 +15,6 @@ noperspective in vec2 fragmentUv;
 
 layout (location = 0) out vec4 colorDepth;
 
-float BIAS = 0.0001;
-float MAX_SOFTNESS = 30.0;
-
 void main() {
   vec3 albedo = texture(colorTexture, fragmentUv).xyz;
   vec3 position = texture(positionTexture, fragmentUv).xyz;
@@ -25,9 +22,7 @@ void main() {
   vec3 surfaceToCamera = normalize(cameraPosition - position);
   vec3 normal = normalDepth.xyz;
   vec3 lighting = albedo * getSpotLightFactor(light, position, normal, surfaceToCamera);
-  float bias = 0.0001;
-  float maxSoftness = 30.0;
-  float shadowFactor = getShadowFactor(position, lightMatrix, lightMap, BIAS, MAX_SOFTNESS);
+  float shadowFactor = getVsmShadowFactor(position, lightMatrix, lightMap);
 
   colorDepth = vec4(lighting * shadowFactor, normalDepth.w);
 }

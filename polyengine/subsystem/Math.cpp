@@ -5,6 +5,14 @@
 #include "subsystem/Math.h"
 
 /**
+ * Vec2f
+ * -----
+ */
+const float* Vec2f::float2() const {
+  return &x;
+}
+
+/**
  * Vec3f
  * -----
  */

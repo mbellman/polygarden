@@ -3,6 +3,7 @@
 #include "opengl/OpenGLVideoController.h"
 #include "opengl/OpenGLShadowCaster.h"
 #include "opengl/OpenGLLightingQuad.h"
+#include "opengl/FrameBuffer.h"
 
 class OpenGLIlluminator {
 public:

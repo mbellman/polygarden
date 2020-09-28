@@ -6,7 +6,21 @@ vec3 getLightMapTransform(vec3 surfacePosition, mat4 lightMatrix) {
   return (lightSpacePosition.xyz / lightSpacePosition.w) * 0.5 + 0.5;
 }
 
-float getShadowFactor(vec3 surfacePosition, mat4 lightMatrix, sampler2D lightMap, float bias, float maxSoftness) {
+float getVsmShadowFactor(vec3 surfacePosition, mat4 lightMatrix, sampler2D lightMap) {
+  vec3 transform = getLightMapTransform(surfacePosition, lightMatrix);
+  vec2 moments = texture(lightMap, transform.xy).rg;
+
+  if (transform.z > 1.0 || transform.z <= moments.x) {
+    return 1.0;
+  }
+
+  float variance = max(moments.y - moments.x * moments.x, 0.000005);
+  float delta = transform.z - moments.x;
+
+  return variance / (variance + delta * delta);
+}
+
+float getPcfShadowFactor(vec3 surfacePosition, mat4 lightMatrix, sampler2D lightMap, float bias, float maxSoftness) {
   vec3 transform = getLightMapTransform(surfacePosition, lightMatrix);
 
   if (transform.z > 1.0) {

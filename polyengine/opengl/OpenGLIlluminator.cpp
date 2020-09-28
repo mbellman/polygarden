@@ -143,12 +143,14 @@ void OpenGLIlluminator::renderDirectionalShadowCaster(OpenGLShadowCaster* glShad
   // Camera view shadowcaster lighting pass
   auto* light = glShadowCaster->getLight();
 
+  glDisable(GL_DEPTH_TEST);
+  glDisable(GL_CULL_FACE);
+
+  // glVideoController->shadowBuffer->blur();
   glVideoController->glPostShaderPipeline->getFirstShader()->writeToInputBuffer();
   glVideoController->shadowBuffer->startReading();
   glVideoController->gBuffer->startReading();
 
-  glDisable(GL_DEPTH_TEST);
-  glDisable(GL_CULL_FACE);
   glEnable(GL_STENCIL_TEST);
   glEnable(GL_BLEND);
 

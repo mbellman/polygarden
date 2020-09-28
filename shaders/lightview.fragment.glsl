@@ -5,12 +5,12 @@ uniform sampler2D modelTexture;
 
 in vec2 fragmentUv;
 
-layout (location = 0) out float depth;
+layout (location = 0) out vec2 depths;
 
 void main() {
   if (hasTexture && texture(modelTexture, fragmentUv).a == 0.0) {
     discard;
   }
 
-  depth = gl_FragCoord.z;
+  depths = vec2(gl_FragCoord.z, gl_FragCoord.z * gl_FragCoord.z);
 }
