@@ -7,7 +7,7 @@ struct Light {
 };
 
 vec3 getDirectionalLightFactor(Light light, vec3 surfaceNormal, vec3 surfaceToCamera) {
-  vec3 surfaceToLight = -1.0 * normalize(light.direction);
+  vec3 surfaceToLight = light.direction * -1.0;
 
   // Diffuse term
   float normalDot = dot(surfaceToLight, surfaceNormal);
@@ -45,7 +45,7 @@ vec3 getPointLightFactor(Light light, vec3 surfacePosition, vec3 surfaceNormal, 
 
 vec3 getSpotLightFactor(Light light, vec3 surfacePosition, vec3 surfaceNormal, vec3 surfaceToCamera) {
   vec3 surfaceToLight = light.position - surfacePosition;
-  float directionDot = max(dot(normalize(surfaceToLight), normalize(light.direction) * -1.0), 0.0);
+  float directionDot = max(dot(normalize(surfaceToLight), light.direction * -1.0), 0.0);
   float shine = directionDot >= 0.8 ? 1.0 : pow(directionDot + 0.2, 30);
 
   return getPointLightFactor(light, surfacePosition, surfaceNormal, surfaceToCamera) * shine;

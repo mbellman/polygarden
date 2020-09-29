@@ -28,12 +28,19 @@ int getCascadeIndex(float depth) {
   }
 }
 
-float getBias(float depth) {
-  return max(pow(depth / 10000.0, 2), 0.0001);
+float easeOut(float t) {
+  return 1.0 - pow(1.0 - t, 50);
+}
+
+float getBias(float depth, vec3 normal) {
+  float angle = 1.0 - max(dot(normal, light.direction), 0.0);
+  float base = angle * 0.0001;
+
+  return base + mix(0.00001, 0.001, easeOut(depth / 10000.0));
 }
 
 float getMaxSoftness(float depth) {
-  return min(1.0 / (depth / 10000.0), 25.0);
+  return mix(30.0, 2.0, easeOut(depth / 10000.0));
 }
 
 vec3 getVolumetricLight(vec3 surfacePosition) {
@@ -43,7 +50,7 @@ vec3 getVolumetricLight(vec3 surfacePosition) {
   float stepFactor = 1.0 / float(STEP_COUNT);
   vec3 volumetricLight = vec3(0.0);
   vec3 ray = surfaceToCamera * stepFactor;
-  float strength = 0.2 + pow(max(dot(normalize(surfaceToCamera), normalize(light.direction)), 0.0), 10);
+  float strength = 0.2 + pow(max(dot(normalize(surfaceToCamera), light.direction), 0.0), 10);
 
   surfacePosition += ray * getDitheringFactor(fragmentUv, textureSize(positionTexture, 0));
 
@@ -72,7 +79,9 @@ void main() {
   int cascadeIndex = getCascadeIndex(depth);
   mat4 lightMatrix = lightMatrixCascades[cascadeIndex];
   vec3 lighting = albedo * getDirectionalLightFactor(light, normal, surfaceToCamera);
-  float shadowFactor = getPcfShadowFactor(position, lightMatrix, lightMaps[cascadeIndex], getBias(depth), getMaxSoftness(depth));
+  float bias = getBias(depth, normal);
+  float maxSoftness = getMaxSoftness(depth);
+  float shadowFactor = getPcfShadowFactor(position, lightMatrix, lightMaps[cascadeIndex], bias, maxSoftness);
   vec3 volumetricLight = getVolumetricLight(position);
 
   colorDepth = vec4(lighting * shadowFactor + volumetricLight, depth);

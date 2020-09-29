@@ -168,7 +168,7 @@ void OpenGLIlluminator::renderDirectionalShadowCaster(OpenGLShadowCaster* glShad
   directionalShadowProgram.setMatrix4("lightMatrixCascades[3]", lightMatrixCascades[3]);
   directionalShadowProgram.setVec3f("cameraPosition", camera.position);
   directionalShadowProgram.setVec3f("light.position", light->position);
-  directionalShadowProgram.setVec3f("light.direction", light->direction);
+  directionalShadowProgram.setVec3f("light.direction", light->direction.unit());
   directionalShadowProgram.setVec3f("light.color", light->color * light->power);
   directionalShadowProgram.setFloat("light.radius", light->radius);
   directionalShadowProgram.setInt("light.type", light->type);
@@ -307,7 +307,7 @@ void OpenGLIlluminator::renderSpotShadowCaster(OpenGLShadowCaster* glShadowCaste
   spotShadowProgram.setMatrix4("lightMatrix", lightMatrix);
   spotShadowProgram.setVec3f("cameraPosition", camera.position);
   spotShadowProgram.setVec3f("light.position", light->position);
-  spotShadowProgram.setVec3f("light.direction", light->direction);
+  spotShadowProgram.setVec3f("light.direction", light->direction.unit());
   spotShadowProgram.setVec3f("light.color", light->color * light->power);
   spotShadowProgram.setFloat("light.radius", light->radius);
   spotShadowProgram.setInt("light.type", light->type);

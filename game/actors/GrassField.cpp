@@ -14,9 +14,10 @@ void GrassField::onInit() {
   stage->add<Plane>([&](Plane* plane) {
     float tileSize = 40.0f;
 
-    plane->setSize(60, 60, tileSize, Vec2f(5.0f, 5.0f));
+    plane->setSize(60, 60, tileSize, Vec2f(10.0f, 10.0f));
     plane->setPosition(Vec3f(0.0f));
     plane->texture = Texture::use("./assets/ground/grass-texture.png");
+    plane->normalMap = Texture::use("./assets/ground/normals.png");
     plane->shadowCascadeLimit = 0;
 
     plane->displaceVertices([=](Vec3f& vertex, int x, int z) {
