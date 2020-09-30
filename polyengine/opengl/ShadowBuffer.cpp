@@ -13,10 +13,10 @@ void ShadowBuffer::createFrameBuffer(unsigned int width, unsigned int height) {
 
   frameBuffer = new FrameBuffer(width, height);
 
-  frameBuffer->addColorTexture(GL_RG32F, GL_RG, GL_CLAMP_TO_BORDER, GL_TEXTURE3);   // Shadowcaster light view buffer, cascade 0
-  frameBuffer->addColorTexture(GL_RG32F, GL_RG, GL_CLAMP_TO_BORDER, GL_TEXTURE4);   // Shadowcaster light view buffer, cascade 1
-  frameBuffer->addColorTexture(GL_RG32F, GL_RG, GL_CLAMP_TO_BORDER, GL_TEXTURE5);   // Shadowcaster light view buffer, cascade 2
-  frameBuffer->addColorTexture(GL_RG32F, GL_RG, GL_CLAMP_TO_BORDER, GL_TEXTURE6);   // Shadowcaster light view buffer, cascade 3
+  frameBuffer->addColorTexture(GL_R32F, GL_RED, GL_CLAMP_TO_BORDER, GL_TEXTURE3);   // Shadowcaster light view buffer, cascade 0
+  frameBuffer->addColorTexture(GL_R32F, GL_RED, GL_CLAMP_TO_BORDER, GL_TEXTURE4);   // Shadowcaster light view buffer, cascade 1
+  frameBuffer->addColorTexture(GL_R32F, GL_RED, GL_CLAMP_TO_BORDER, GL_TEXTURE5);   // Shadowcaster light view buffer, cascade 2
+  frameBuffer->addColorTexture(GL_R32F, GL_RED, GL_CLAMP_TO_BORDER, GL_TEXTURE6);   // Shadowcaster light view buffer, cascade 3
   frameBuffer->addDepthStencilBuffer();
   frameBuffer->bindColorTextures();
 }
