@@ -10,8 +10,7 @@ BloomShader::~BloomShader() {
 
 void BloomShader::onInit() {
   addShaderProgram("color-separation", "./shaders/post-fx/bloom-color-separation.fragment.glsl");
-  addShaderProgram("horizontal", "./shaders/post-fx/bloom-horizontal.fragment.glsl");
-  addShaderProgram("vertical", "./shaders/post-fx/bloom-vertical.fragment.glsl");
+  addShaderProgram("blur", "./shaders/post-fx/bloom-blur.fragment.glsl");
   addShaderProgram("combine", "./shaders/post-fx/bloom-combine.fragment.glsl");
 
   downsample1 = new FrameBuffer(960, 540);
@@ -45,15 +44,15 @@ void BloomShader::onRender() {
   downsample1->blit(downsample2);
   downsample2->blit(downsample3_h);
 
-  getShaderProgram("horizontal")->use();
-  getShaderProgram("horizontal")->setInt("colorIn", 0);
+  getShaderProgram("blur")->use();
+  getShaderProgram("blur")->setInt("colorIn", 0);
+  getShaderProgram("blur")->setVec2f("direction", Vec2f(1.0f, 0.0f));
 
   downsample3_h->startReading();
   downsample3_v->startWriting();
   OpenGLScreenQuad::draw();
 
-  getShaderProgram("vertical")->use();
-  getShaderProgram("vertical")->setInt("colorIn", 0);
+  getShaderProgram("blur")->setVec2f("direction", Vec2f(0.0f, 1.0f));
 
   downsample3_v->startReading();
   downsample2->startWriting();

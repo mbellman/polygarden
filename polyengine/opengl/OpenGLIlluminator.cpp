@@ -146,7 +146,6 @@ void OpenGLIlluminator::renderDirectionalShadowCaster(OpenGLShadowCaster* glShad
   glDisable(GL_DEPTH_TEST);
   glDisable(GL_CULL_FACE);
 
-  // glVideoController->shadowBuffer->blur();
   glVideoController->glPostShaderPipeline->getFirstShader()->writeToInputBuffer();
   glVideoController->shadowBuffer->startReading();
   glVideoController->gBuffer->startReading();

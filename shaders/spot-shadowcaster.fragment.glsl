@@ -22,7 +22,7 @@ void main() {
   vec3 surfaceToCamera = normalize(cameraPosition - position);
   vec3 normal = normalDepth.xyz;
   vec3 lighting = albedo * getSpotLightFactor(light, position, normal, surfaceToCamera);
-  float shadowFactor = getVsmShadowFactor(position, lightMatrix, lightMap);
+  float shadowFactor = getShadowFactor(position, lightMatrix, lightMap, 0.0001, 30.0);
 
   colorDepth = vec4(lighting * shadowFactor, normalDepth.w);
 }

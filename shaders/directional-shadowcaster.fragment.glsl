@@ -81,7 +81,7 @@ void main() {
   vec3 lighting = albedo * getDirectionalLightFactor(light, normal, surfaceToCamera);
   float bias = getBias(depth, normal);
   float maxSoftness = getMaxSoftness(depth);
-  float shadowFactor = getPcfShadowFactor(position, lightMatrix, lightMaps[cascadeIndex], bias, maxSoftness);
+  float shadowFactor = getShadowFactor(position, lightMatrix, lightMaps[cascadeIndex], bias, maxSoftness);
   vec3 volumetricLight = getVolumetricLight(position);
 
   colorDepth = vec4(lighting * shadowFactor + volumetricLight, depth);
