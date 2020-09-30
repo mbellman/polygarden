@@ -7,7 +7,7 @@ const static Range<float> CASCADE_PARAMETERS[4][2] = {
   { 1.0f, 200.0f },
   { 200.0f, 500.0f },
   { 500.0f, 1250.0f },
-  { 1250.0f, 3000.0f }
+  { 1250.0f, 2500.0f }
 };
 
 OpenGLShadowCaster::OpenGLShadowCaster(const Light* light) {
