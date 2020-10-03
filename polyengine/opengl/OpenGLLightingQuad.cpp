@@ -1,6 +1,7 @@
 #include "opengl/OpenGLLightingQuad.h"
 #include "subsystem/entities/Camera.h"
 #include "subsystem/Math.h"
+#include "subsystem/PerformanceProfiler.h"
 
 const float QUAD_DATA[] = {
   -1.0f, 1.0f, 0.0f, 1.0f,
@@ -96,6 +97,10 @@ void OpenGLLightingQuad::bufferData(const std::vector<Light*>& lights) {
       transformBuffer[i].scale[0] = scale;
       transformBuffer[i].scale[1] = scale;
     }
+
+    if (transformBuffer[i].scale[0] > 0.0f && transformBuffer[i].scale[1] > 0.0f) {
+      PerformanceProfiler::trackLight(light);
+    }
   }
 
   glBindBuffer(GL_ARRAY_BUFFER, buffers[Buffer::LIGHT]);
@@ -163,4 +168,6 @@ void OpenGLLightingQuad::render(const std::vector<Light*>& lights) {
 
   glBindVertexArray(vao);
   glDrawArraysInstanced(GL_TRIANGLES, 0, 6, lights.size());
+
+  PerformanceProfiler::trackDrawCall();
 }

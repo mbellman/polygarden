@@ -23,6 +23,7 @@
 #include "subsystem/entities/Light.h"
 #include "subsystem/entities/Instance.h"
 #include "subsystem/Math.h"
+#include "subsystem/PerformanceProfiler.h"
 
 OpenGLVideoController::OpenGLVideoController() {
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);

@@ -47,35 +47,6 @@ const HeapList<Object>& Stage::getObjects() const {
   return objects;
 }
 
-StageStats Stage::getStats() const {
-  StageStats stats;
-
-  for (auto* object : objects) {
-    if (!object->isRenderable()) {
-      continue;
-    }
-
-    stats.totalObjects++;
-    stats.totalVertices += object->getReference()->getVertices().size();
-
-    if (object->isOfType<Instance>()) {
-      stats.totalInstances++;
-    }
-  }
-
-  for (auto* light : lights) {
-    if (light->power > 0.0f) {
-      stats.totalLights++;
-
-      if (light->canCastShadows) {
-        stats.totalShadowCasters++;
-      }
-    }
-  }
-
-  return stats;
-}
-
 bool Stage::isActorRegistered(Actor* actor) {
   return registeredActorTypes.find(typeid(*actor).hash_code()) != registeredActorTypes.end();
 }

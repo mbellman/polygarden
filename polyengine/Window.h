@@ -6,7 +6,6 @@
 #include "subsystem/AbstractGameController.h"
 #include "subsystem/InputSystem.h"
 #include "subsystem/Math.h"
-#include "Stats.h"
 
 class Window {
 public:
@@ -24,7 +23,6 @@ private:
   Region2d<int> size;
   AbstractVideoController* videoController = nullptr;
   AbstractGameController* gameController = nullptr;
-  Stats stats;
 
   void handleStats();
   void pollEvents();

@@ -3,9 +3,9 @@
 
 #include "Window.h"
 #include "SDL.h"
-#include "Stats.h"
 #include "subsystem/RNG.h"
 #include "subsystem/AbstractScene.h"
+#include "subsystem/PerformanceProfiler.h"
 
 Window::Window() {
   SDL_Init(SDL_INIT_EVERYTHING);
@@ -23,22 +23,22 @@ Window::~Window() {
 }
 
 void Window::handleStats() {
-  char title[100];
+  char title[150];
 
-  // TODO: Determine stats in video controller instead
-  auto stageStats = gameController->getActiveScene()->getStage().getStats();
+  auto& profile = PerformanceProfiler::getProfile();
 
   sprintf_s(
     title,
     sizeof(title),
-    "FPS: %d (%d), Objects: %d (%d instances), Vertices: %d, Lights: %d, Shadowcasters: %d",
-    stats.getFPS(),
-    stats.getAverageFPS(),
-    stageStats.totalObjects,
-    stageStats.totalInstances,
-    stageStats.totalVertices,
-    stageStats.totalLights,
-    stageStats.totalShadowCasters
+    "FPS: %u (%u), Objects: %u, Verts/Tris: %u/%u, Lights/Shadowcasters: %u/%u, Draw calls: %u",
+    profile.fps,
+    profile.averageFps,
+    profile.totalObjects,
+    profile.totalVertices,
+    profile.totalPolygons,
+    profile.totalLights,
+    profile.totalShadowCasters,
+    profile.totalDrawCalls
   );
 
   SDL_SetWindowTitle(sdlWindow, title);
@@ -98,13 +98,15 @@ void Window::run() {
 
     lastTick = SDL_GetTicks();
 
-    stats.trackFrameStart();
+    PerformanceProfiler::trackFrameStart();
+
     pollEvents();
     gameController->getActiveScene()->update(dt);
     videoController->onRender(sdlWindow);
-    stats.trackFrameEnd();
-    handleStats();
 
+    PerformanceProfiler::trackFrameEnd();
+
+    handleStats();
     SDL_Delay(1);
   }
 }

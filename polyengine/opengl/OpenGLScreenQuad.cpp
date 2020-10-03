@@ -1,6 +1,5 @@
 #include "opengl/OpenGLScreenQuad.h"
-
-#include <cstdio>
+#include "subsystem/PerformanceProfiler.h"
 
 const float QUAD_DATA[] = {
   -1.0f, 1.0f, 0.0f, 1.0f,
@@ -41,6 +40,8 @@ void OpenGLScreenQuad::render() {
   glBindVertexArray(vao);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glDrawArrays(GL_TRIANGLES, 0, 6);
+
+  PerformanceProfiler::trackDrawCall();
 }
 
 OpenGLScreenQuad* OpenGLScreenQuad::singleton = nullptr;

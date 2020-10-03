@@ -144,7 +144,6 @@
     <ClCompile Include="polyengine\opengl\ShaderLoader.cpp" />
     <ClCompile Include="polyengine\opengl\ShaderProgram.cpp" />
     <ClCompile Include="polyengine\opengl\ShadowBuffer.cpp" />
-    <ClCompile Include="polyengine\Stats.cpp" />
     <ClCompile Include="polyengine\subsystem\AbstractGameController.cpp" />
     <ClCompile Include="polyengine\subsystem\AbstractLoader.cpp" />
     <ClCompile Include="polyengine\subsystem\AbstractScene.cpp" />
@@ -165,6 +164,7 @@
     <ClCompile Include="polyengine\subsystem\InputSystem.cpp" />
     <ClCompile Include="polyengine\subsystem\Math.cpp" />
     <ClCompile Include="polyengine\subsystem\ObjLoader.cpp" />
+    <ClCompile Include="polyengine\subsystem\PerformanceProfiler.cpp" />
     <ClCompile Include="polyengine\subsystem\RNG.cpp" />
     <ClCompile Include="polyengine\subsystem\Stage.cpp" />
     <ClCompile Include="polyengine\subsystem\Texture.cpp" />
@@ -294,7 +294,6 @@
     <ClInclude Include="polyengine\opengl\ShaderLoader.h" />
     <ClInclude Include="polyengine\opengl\ShaderProgram.h" />
     <ClInclude Include="polyengine\opengl\ShadowBuffer.h" />
-    <ClInclude Include="polyengine\Stats.h" />
     <ClInclude Include="polyengine\subsystem\AbstractGameController.h" />
     <ClInclude Include="polyengine\subsystem\AbstractLoader.h" />
     <ClInclude Include="polyengine\subsystem\AbstractScene.h" />
@@ -317,6 +316,7 @@
     <ClInclude Include="polyengine\subsystem\InputSystem.h" />
     <ClInclude Include="polyengine\subsystem\Math.h" />
     <ClInclude Include="polyengine\subsystem\ObjLoader.h" />
+    <ClInclude Include="polyengine\subsystem\PerformanceProfiler.h" />
     <ClInclude Include="polyengine\subsystem\RNG.h" />
     <ClInclude Include="polyengine\subsystem\Stage.h" />
     <ClInclude Include="polyengine\subsystem\Texture.h" />

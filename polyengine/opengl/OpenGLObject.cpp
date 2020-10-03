@@ -2,6 +2,7 @@
 #include "opengl/OpenGLTexture.h"
 #include "opengl/ShaderProgram.h"
 #include "opengl/ShaderLoader.h"
+#include "subsystem/PerformanceProfiler.h"
 
 const static enum Buffer {
   VERTEX,
@@ -271,6 +272,9 @@ void OpenGLObject::render() {
   glBindVertexArray(vao);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
   glDrawElementsInstanced(GL_TRIANGLES, sourceObject->getPolygons().size() * 3, GL_UNSIGNED_INT, (void*)0, totalRenderableInstances);
+
+  PerformanceProfiler::trackObject(sourceObject, totalRenderableInstances);
+  PerformanceProfiler::trackDrawCall();
 }
 
 std::map<int, OpenGLTexture*> OpenGLObject::textureMap;

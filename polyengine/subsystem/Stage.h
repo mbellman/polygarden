@@ -14,14 +14,6 @@
 #include "subsystem/HeapList.h"
 #include "subsystem/Types.h"
 
-struct StageStats {
-  unsigned int totalObjects = 0;
-  unsigned int totalInstances = 0;
-  unsigned int totalVertices = 0;
-  unsigned int totalLights = 0;
-  unsigned int totalShadowCasters = 0;
-};
-
 class Stage {
 public:
   ~Stage();
@@ -77,7 +69,6 @@ public:
 
   const HeapList<Light>& getLights() const;
   const HeapList<Object>& getObjects() const;
-  StageStats getStats() const;
   void onEntityAdded(Callback<Entity*> handler);
   void onEntityRemoved(Callback<Entity*> handler);
   void remove(Entity* entity);

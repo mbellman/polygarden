@@ -7,6 +7,7 @@
 #include "subsystem/entities/Object.h"
 #include "subsystem/entities/Light.h"
 #include "subsystem/entities/Camera.h"
+#include "subsystem/PerformanceProfiler.h"
 
 OpenGLIlluminator::OpenGLIlluminator() {
   glLightingQuad = new OpenGLLightingQuad();
@@ -173,6 +174,7 @@ void OpenGLIlluminator::renderDirectionalShadowCaster(OpenGLShadowCaster* glShad
   directionalShadowProgram.setInt("light.type", light->type);
 
   OpenGLScreenQuad::draw();
+  PerformanceProfiler::trackLight(light);
 }
 
 void OpenGLIlluminator::renderPointShadowCaster(OpenGLShadowCaster* glShadowCaster) {
@@ -250,6 +252,7 @@ void OpenGLIlluminator::renderPointShadowCaster(OpenGLShadowCaster* glShadowCast
   pointShadowProgram.setInt("light.type", light->type);
 
   OpenGLScreenQuad::draw();
+  PerformanceProfiler::trackLight(light);
 }
 
 void OpenGLIlluminator::renderSpotShadowCaster(OpenGLShadowCaster* glShadowCaster) {
@@ -312,6 +315,7 @@ void OpenGLIlluminator::renderSpotShadowCaster(OpenGLShadowCaster* glShadowCaste
   spotShadowProgram.setInt("light.type", light->type);
 
   OpenGLScreenQuad::draw();
+  PerformanceProfiler::trackLight(light);
 }
 
 void OpenGLIlluminator::setVideoController(OpenGLVideoController* glVideoController) {
