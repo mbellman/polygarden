@@ -13,6 +13,8 @@ struct PerformanceProfile {
   unsigned int totalLights = 0;
   unsigned int totalShadowCasters = 0;
   unsigned int totalDrawCalls = 0;
+  unsigned int totalGpuMemory = 0;
+  unsigned int usedGpuMemory = 0;
 };
 
 class PerformanceProfiler {
@@ -21,6 +23,7 @@ public:
   static void trackDrawCall();
   static void trackFrameEnd();
   static void trackFrameStart();
+  static void trackGpuMemory(unsigned int totalMemory, unsigned int usedMemory);
   static void trackLight(const Light* light);
   static void trackObject(const Object* object, unsigned int totalRenderableInstances);
 

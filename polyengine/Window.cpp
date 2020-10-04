@@ -30,7 +30,7 @@ void Window::handleStats() {
   sprintf_s(
     title,
     sizeof(title),
-    "FPS: %u (%u), Objects: %u, Verts/Tris: %u/%u, Lights/Shadowcasters: %u/%u, Draw calls: %u",
+    "FPS: %u (%u), Objects: %u, Verts/Tris: %u/%u, Lights/Shadowcasters: %u/%u, Draw calls: %u, GPU Memory: %u/%u MB",
     profile.fps,
     profile.averageFps,
     profile.totalObjects,
@@ -38,7 +38,9 @@ void Window::handleStats() {
     profile.totalPolygons,
     profile.totalLights,
     profile.totalShadowCasters,
-    profile.totalDrawCalls
+    profile.totalDrawCalls,
+    profile.usedGpuMemory,
+    profile.totalGpuMemory
   );
 
   SDL_SetWindowTitle(sdlWindow, title);

@@ -42,8 +42,6 @@ OpenGLVideoController::~OpenGLVideoController() {
   OpenGLObject::freeCachedResources();
 
   delete gBuffer;
-  delete shadowBuffer;
-  delete pointShadowBuffer;
   delete glIlluminator;
   delete glPostShaderPipeline;
 }
@@ -116,14 +114,10 @@ void OpenGLVideoController::onInit(SDL_Window* sdlWindow, int width, int height)
   SDL_GL_SetSwapInterval(0);
 
   gBuffer = new GBuffer();
-  shadowBuffer = new ShadowBuffer();
-  pointShadowBuffer = new PointShadowBuffer();
   glIlluminator = new OpenGLIlluminator();
   glPostShaderPipeline = new OpenGLPostShaderPipeline();
 
   gBuffer->createFrameBuffer(screenSize.width, screenSize.height);
-  shadowBuffer->createFrameBuffer(2048, 2048);
-  pointShadowBuffer->createFrameBuffer(1024, 1024);
   glIlluminator->setVideoController(this);
 
   createPreShaders();
@@ -154,6 +148,7 @@ void OpenGLVideoController::onRender(SDL_Window* sdlWindow) {
   glIlluminator->renderShadowCasters();
   renderPreShaders();
   glPostShaderPipeline->render();
+  trackMemoryUsage();
 
   glStencilMask(0xFF);
 
@@ -276,4 +271,17 @@ void OpenGLVideoController::setObjectEffects(ShaderProgram& program, OpenGLObjec
   program.setFloat("time", scene->getRunningTime());
   program.setInt("treeTransformFactor", (effects & ObjectEffects::TREE_ANIMATION) ? 1.0f : 0.0f);
   program.setInt("grassTransformFactor", (effects & ObjectEffects::GRASS_ANIMATION) ? 1.0f : 0.0f);
+}
+
+void OpenGLVideoController::trackMemoryUsage() {
+  GLint totalMemory = 0;
+  GLint availableMemory = 0;
+  const char* vendor = (const char*)glGetString(GL_VENDOR);
+
+  if (strcmp(vendor, "NVIDIA Corporation") == 0) {
+    glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &totalMemory);
+    glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &availableMemory);
+  }
+
+  PerformanceProfiler::trackGpuMemory(totalMemory / 1000, (totalMemory - availableMemory) / 1000);
 }

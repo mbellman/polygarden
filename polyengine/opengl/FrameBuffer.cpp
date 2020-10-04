@@ -11,9 +11,18 @@ FrameBuffer::FrameBuffer(int width, int height) {
 }
 
 FrameBuffer::~FrameBuffer() {
-  colorTextures.clear();
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glBindTexture(GL_TEXTURE_2D, 0);
 
   glDeleteFramebuffers(1, &fbo);
+
+  for (auto& colorTexture : colorTextures) {
+    glDeleteTextures(1, &colorTexture.id);
+  }
+
+  glDeleteTextures(1, &depthStencilBuffer);
+
+  colorTextures.clear();
 }
 
 void FrameBuffer::addColorTexture(GLint internalFormat, GLenum format) {

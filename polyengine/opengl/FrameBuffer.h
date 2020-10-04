@@ -33,8 +33,8 @@ public:
   void startWriting();
 
 private:
-  GLuint fbo;
-  GLuint depthStencilBuffer;
+  GLuint fbo = 0;
+  GLuint depthStencilBuffer = 0;
   GLuint depthCubeMap = 0;
   GLenum depthCubeMapUnit;
   std::vector<ColorTexture> colorTextures;

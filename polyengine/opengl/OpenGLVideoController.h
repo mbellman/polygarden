@@ -37,8 +37,6 @@ public:
 private:
   SDL_GLContext glContext;
   GBuffer* gBuffer = nullptr;
-  ShadowBuffer* shadowBuffer = nullptr;
-  PointShadowBuffer* pointShadowBuffer = nullptr;
   OpenGLIlluminator* glIlluminator = nullptr;
   OpenGLPostShaderPipeline* glPostShaderPipeline = nullptr;
   HeapList<OpenGLPreShader> glPreShaders;
@@ -55,4 +53,5 @@ private:
   void renderPreShaders();
   void renderShadowCasters();
   void setObjectEffects(ShaderProgram& program, OpenGLObject* glObject);
+  void trackMemoryUsage();
 };

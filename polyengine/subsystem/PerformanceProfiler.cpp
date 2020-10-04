@@ -29,6 +29,8 @@ void PerformanceProfiler::resetProfile() {
   profile.totalLights = 0;
   profile.totalShadowCasters = 0;
   profile.totalDrawCalls = 0;
+  profile.totalGpuMemory = 0;
+  profile.usedGpuMemory = 0;
 }
 
 void PerformanceProfiler::trackDrawCall() {
@@ -50,6 +52,11 @@ void PerformanceProfiler::trackFrameStart() {
   resetProfile();
 
   frame.start = SDL_GetTicks();
+}
+
+void PerformanceProfiler::trackGpuMemory(unsigned int totalMemory, unsigned int usedMemory) {
+  profile.totalGpuMemory = totalMemory;
+  profile.usedGpuMemory = usedMemory;
 }
 
 void PerformanceProfiler::trackLight(const Light* light) {
