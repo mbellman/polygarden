@@ -21,5 +21,4 @@ private:
   ShaderProgram lightViewProgram;
   ShaderProgram directionalShadowProgram;
   ShaderProgram spotShadowProgram;
-  ShaderProgram blurProgram;
 };

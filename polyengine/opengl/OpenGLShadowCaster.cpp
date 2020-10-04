@@ -11,11 +11,11 @@ const static Range<float> CASCADE_PARAMETERS[4][2] = {
 };
 
 OpenGLShadowCaster::OpenGLShadowCaster(const Light* light) {
-  this->light = light;
+  sourceLight = light;
 }
 
-const Light* OpenGLShadowCaster::getLight() const {
-  return light;
+const Light* OpenGLShadowCaster::getSourceLight() const {
+  return sourceLight;
 }
 
 Matrix4 OpenGLShadowCaster::getCascadedLightMatrix(int cascadeIndex, const Camera& camera) const {
@@ -30,7 +30,7 @@ Matrix4 OpenGLShadowCaster::getCascadedLightMatrix(int cascadeIndex, const Camer
   Vec3f nearCenter = camera.position + forward * range.start;
   Vec3f farCenter = camera.position + forward * range.end;
   Vec3f frustumCenter = nearCenter + forward * (range.end - range.start) * 0.5f;
-  Matrix4 lightTransform = Matrix4::lookAt(frustumCenter, light->direction, Vec3f(0.0f, 1.0f, 0.0f));
+  Matrix4 lightTransform = Matrix4::lookAt(frustumCenter, sourceLight->direction, Vec3f(0.0f, 1.0f, 0.0f));
 
   Frustum frustum;
 
@@ -48,14 +48,14 @@ Matrix4 OpenGLShadowCaster::getCascadedLightMatrix(int cascadeIndex, const Camer
 
   Bounds3d bounds = frustum.getBounds();
   Matrix4 projection = Matrix4::orthographic(bounds.top, bounds.bottom, bounds.left, bounds.right, bounds.back - 1000.0f, bounds.front);
-  Matrix4 view = Matrix4::lookAt(frustumCenter.gl(), light->direction.invert().gl(), Vec3f(0.0f, 1.0f, 0.0f));
+  Matrix4 view = Matrix4::lookAt(frustumCenter.gl(), sourceLight->direction.invert().gl(), Vec3f(0.0f, 1.0f, 0.0f));
 
   return (projection * view).transpose();
 }
 
 Matrix4 OpenGLShadowCaster::getLightMatrix(const Vec3f& direction, const Vec3f& top) const {
-  Matrix4 projection = Matrix4::projection({ 0, 0, 1024, 1024 }, 90.0f, 1.0f, light->radius + 1000.0f);
-  Matrix4 view = Matrix4::lookAt(light->position.gl(), direction.invert().gl(), top);
+  Matrix4 projection = Matrix4::projection({ 0, 0, 1024, 1024 }, 90.0f, 1.0f, sourceLight->radius + 1000.0f);
+  Matrix4 view = Matrix4::lookAt(sourceLight->position.gl(), direction.invert().gl(), top);
 
   return (projection * view).transpose();
 }

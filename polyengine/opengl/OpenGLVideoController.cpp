@@ -92,7 +92,7 @@ void OpenGLVideoController::onEntityRemoved(Entity* entity) {
     });
   } else if (entity->isOfType<Light>() && ((Light*)entity)->canCastShadows) {
     glShadowCasters.removeWhere([=](OpenGLShadowCaster* glShadowCaster) {
-      return glShadowCaster->getLight() == entity;
+      return glShadowCaster->getSourceLight() == entity;
     });
   }
 }
