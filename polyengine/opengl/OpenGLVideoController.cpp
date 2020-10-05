@@ -144,8 +144,8 @@ void OpenGLVideoController::onRender(SDL_Window* sdlWindow) {
   gBuffer->startReading();
 
   renderEmissiveSurfaces();
-  glIlluminator->renderIlluminatedSurfaces();
-  glIlluminator->renderShadowCasters();
+  glIlluminator->renderNonShadowCasterLights();
+  glIlluminator->renderShadowCasterLights();
   renderPreShaders();
   glPostShaderPipeline->render();
   trackMemoryUsage();

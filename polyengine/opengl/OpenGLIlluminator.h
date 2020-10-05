@@ -10,8 +10,8 @@ public:
   OpenGLIlluminator();
   ~OpenGLIlluminator();
 
-  void renderIlluminatedSurfaces();
-  void renderShadowCasters();
+  void renderNonShadowCasterLights();
+  void renderShadowCasterLights();
   void setVideoController(OpenGLVideoController* glVideoController);
 
 private:
@@ -19,7 +19,10 @@ private:
   OpenGLLightingQuad* glLightingQuad = nullptr;
 
   bool isObjectWithinLightRadius(const Object* object, const Light* light);
-  void renderDirectionalShadowCaster(OpenGLShadowCaster* glShadowCaster);
-  void renderPointShadowCaster(OpenGLShadowCaster* glShadowCaster);
-  void renderSpotShadowCaster(OpenGLShadowCaster* glShadowCaster);
+  void renderDirectionalShadowCasterCameraView(OpenGLShadowCaster* OpenGLShadowCaster);
+  void renderDirectionalShadowCasterLightView(OpenGLShadowCaster* glShadowCaster);
+  void renderPointShadowCasterCameraView(OpenGLShadowCaster* glShadowCaster);
+  void renderPointShadowCasterLightView(OpenGLShadowCaster* glShadowCaster);
+  void renderSpotShadowCasterCameraView(OpenGLShadowCaster* glShadowCaster);
+  void renderSpotShadowCasterLightView(OpenGLShadowCaster* glShadowCaster);
 };
