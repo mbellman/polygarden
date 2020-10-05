@@ -2,8 +2,9 @@
 
 #include "opengl/OpenGLShadowCaster.h"
 #include "opengl/FrameBuffer.h"
-#include "opengl/ShadowBuffer.h"
-#include "opengl/PointShadowBuffer.h"
+#include "opengl/OpenGLDirectionalShadowBuffer.h"
+#include "opengl/OpenGLSpotShadowBuffer.h"
+#include "opengl/OpenGLPointShadowBuffer.h"
 
 const static Range<float> CASCADE_PARAMETERS[4][2] = {
   { 1.0f, 200.0f },
@@ -17,17 +18,17 @@ OpenGLShadowCaster::OpenGLShadowCaster(const Light* light) {
 
   switch (light->type) {
     case Light::LightType::DIRECTIONAL:
-      glShadowBuffer = new ShadowBuffer();
+      glShadowBuffer = new OpenGLDirectionalShadowBuffer();
 
       glShadowBuffer->createFrameBuffer(2048, 2048);
       break;
     case Light::LightType::SPOTLIGHT:
-      glShadowBuffer = new ShadowBuffer();
+      glShadowBuffer = new OpenGLSpotShadowBuffer();
 
       glShadowBuffer->createFrameBuffer(1024, 1024);
       break;
     case Light::LightType::POINT:
-      glShadowBuffer = new PointShadowBuffer();
+      glShadowBuffer = new OpenGLPointShadowBuffer();
 
       glShadowBuffer->createFrameBuffer(1024, 1024);
       break;

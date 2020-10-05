@@ -45,9 +45,6 @@
     <ClCompile Include="polyengine\opengl\OpenGLVideoController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="polyengine\opengl\PointShadowBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="polyengine\opengl\ShaderLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -180,9 +177,6 @@
     <ClCompile Include="polyengine\opengl\OpenGLPostShaderPipeline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="polyengine\opengl\ShadowBuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="polyengine\opengl\post-fx\BloomShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -193,6 +187,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="polyengine\subsystem\PerformanceProfiler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="polyengine\opengl\OpenGLDirectionalShadowBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="polyengine\opengl\OpenGLPointShadowBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="polyengine\opengl\OpenGLSpotShadowBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -491,9 +494,6 @@
     <ClInclude Include="polyengine\opengl\OpenGLVideoController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="polyengine\opengl\PointShadowBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="polyengine\opengl\ShaderLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -635,9 +635,6 @@
     <ClInclude Include="polyengine\opengl\OpenGLPostShaderPipeline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="polyengine\opengl\ShadowBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="polyengine\opengl\post-fx\BloomShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -657,6 +654,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="polyengine\subsystem\PerformanceProfiler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="polyengine\opengl\OpenGLDirectionalShadowBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="polyengine\opengl\OpenGLPointShadowBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="polyengine\opengl\OpenGLSpotShadowBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

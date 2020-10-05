@@ -4,14 +4,13 @@
 #include "opengl/ShaderProgram.h"
 #include "opengl/FrameBuffer.h"
 
-class ShadowBuffer : public AbstractBuffer {
+class OpenGLDirectionalShadowBuffer : public AbstractBuffer {
 public:
-  ShadowBuffer();
+  OpenGLDirectionalShadowBuffer();
 
   void createFrameBuffer(unsigned int width, unsigned int height) override;
-  ShaderProgram& getDirectionalShadowProgram();
+  ShaderProgram& getCameraViewProgram();
   ShaderProgram& getLightViewProgram();
-  ShaderProgram& getSpotShadowProgram();
   void writeToShadowCascade(unsigned int cascadeIndex);
 
 protected:
@@ -19,6 +18,5 @@ protected:
 
 private:
   ShaderProgram lightViewProgram;
-  ShaderProgram directionalShadowProgram;
-  ShaderProgram spotShadowProgram;
+  ShaderProgram cameraViewProgram;
 };

@@ -12,8 +12,6 @@
 #include "opengl/OpenGLPostShaderPipeline.h"
 #include "opengl/OpenGLPreShader.h"
 #include "opengl/GBuffer.h"
-#include "opengl/ShadowBuffer.h"
-#include "opengl/PointShadowBuffer.h"
 #include "subsystem/Geometry.h"
 #include "subsystem/entities/Entity.h"
 #include "subsystem/entities/Object.h"
