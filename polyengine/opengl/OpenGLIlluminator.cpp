@@ -12,6 +12,40 @@
 #include "subsystem/entities/Camera.h"
 #include "subsystem/PerformanceProfiler.h"
 
+static bool isActiveDirectionalShadowCaster(OpenGLShadowCaster* glShadowCaster) {
+  return (
+    glShadowCaster->getSourceLight()->type == Light::LightType::DIRECTIONAL &&
+    glShadowCaster->getSourceLight()->power > 0.0f
+  );
+};
+
+static bool isActivePointShadowCaster(OpenGLShadowCaster* glShadowCaster) {
+  auto* light = glShadowCaster->getSourceLight();
+
+  return (
+    light->type == Light::LightType::POINT &&
+    light->power > 0.0f && (
+      light->getLocalPosition().z > 0.0f ||
+      light->getLocalDistance() < light->radius * 0.5f
+    )
+  );
+};
+
+static bool isActiveSpotShadowCaster(OpenGLShadowCaster* glShadowCaster) {
+  return (
+    glShadowCaster->getSourceLight()->type == Light::LightType::SPOTLIGHT &&
+    glShadowCaster->getSourceLight()->power > 0.0f
+  );
+};
+
+static bool isObjectWithinLightRadius(const Object* object, const Light* light) {
+  return (
+    std::abs(object->position.x - light->position.x) < light->radius &&
+    std::abs(object->position.y - light->position.y) < light->radius &&
+    std::abs(object->position.z - light->position.z) < light->radius
+  );
+}
+
 OpenGLIlluminator::OpenGLIlluminator() {
   glLightingQuad = new OpenGLLightingQuad();
 }
@@ -20,12 +54,16 @@ OpenGLIlluminator::~OpenGLIlluminator() {
   delete glLightingQuad;
 }
 
-bool OpenGLIlluminator::isObjectWithinLightRadius(const Object* object, const Light* light) {
-  return (
-    std::abs(object->position.x - light->position.x) < light->radius &&
-    std::abs(object->position.y - light->position.y) < light->radius &&
-    std::abs(object->position.z - light->position.z) < light->radius
-  );
+unsigned int OpenGLIlluminator::getTotalActivePointShadowCasters() {
+  unsigned int total = 0;
+
+  for (auto* glShadowCaster : glVideoController->glShadowCasters) {
+    if (isActivePointShadowCaster(glShadowCaster)) {
+      total++;
+    }
+  }
+
+  return total;
 }
 
 void OpenGLIlluminator::renderNonShadowCasterLights() {
@@ -61,32 +99,6 @@ void OpenGLIlluminator::renderNonShadowCasterLights() {
 }
 
 void OpenGLIlluminator::renderShadowCasterLights() {
-  auto directionalShadowCasterPredicate = [&](OpenGLShadowCaster* glShadowCaster) {
-    return (
-      glShadowCaster->getSourceLight()->type == Light::LightType::DIRECTIONAL &&
-      glShadowCaster->getSourceLight()->power > 0.0f
-    );
-  };
-
-  auto spotShadowCasterPredicate = [&](OpenGLShadowCaster* glShadowCaster) {
-    return (
-      glShadowCaster->getSourceLight()->type == Light::LightType::SPOTLIGHT &&
-      glShadowCaster->getSourceLight()->power > 0.0f
-    );
-  };
-
-  auto pointShadowCasterPredicate = [&](OpenGLShadowCaster* glShadowCaster) {
-    auto* light = glShadowCaster->getSourceLight();
-
-    return (
-      light->type == Light::LightType::POINT &&
-      light->power > 0.0f && (
-        light->getLocalPosition().z > 0.0f ||
-        light->getLocalDistance() < light->radius * 0.5f
-      )
-    );
-  };
-
   auto& glShadowCasters = glVideoController->glShadowCasters;
 
   glDisable(GL_BLEND);
@@ -100,25 +112,36 @@ void OpenGLIlluminator::renderShadowCasterLights() {
   // object enabled/disabled states, which can be determined
   // in game logic rather than engine logic.
   for (auto* glShadowCaster : glShadowCasters) {
-    if (directionalShadowCasterPredicate(glShadowCaster)) {
+    if (isActiveDirectionalShadowCaster(glShadowCaster)) {
       renderDirectionalShadowCasterLightView(glShadowCaster);
     }
   }
 
   // Render spot/point lights next, since these dynamically update
   // object enabled/disabled states based on proximity.
-  //
-  // TODO: Allow objects to force spot/point lights to render them
-  // anyway, e.g. large objects with origins further away from the
-  // light source than their radius, but geometry within the radius
   for (auto* glShadowCaster : glShadowCasters) {
-    if (spotShadowCasterPredicate(glShadowCaster)) {
+    if (isActiveSpotShadowCaster(glShadowCaster)) {
       renderSpotShadowCasterLightView(glShadowCaster);
     }
   }
 
+  // Whenever there are multiple active point shadowcasters, render
+  // their light views on a rotating basis - the active one determined
+  // by the current frame - to reduce per-frame rendering work. This
+  // may result in a reduced apparent "shadow framerate" if too many
+  // are grouped together in close proximity.
+  //
+  // TODO: Allow point lights to override the active index check and
+  // update their shadow map every frame.
+  unsigned int totalActivePointShadowCasters = getTotalActivePointShadowCasters();
+  unsigned int cycleIndex = 0;
+
+  unsigned int activePointShadowCasterIndex = totalActivePointShadowCasters > 0
+    ? (PerformanceProfiler::getCurrentFrame() % totalActivePointShadowCasters)
+    : 0;
+
   for (auto* glShadowCaster : glShadowCasters) {
-    if (pointShadowCasterPredicate(glShadowCaster)) {
+    if (isActivePointShadowCaster(glShadowCaster) && cycleIndex++ == activePointShadowCasterIndex) {
       renderPointShadowCasterLightView(glShadowCaster);
     }
   }
@@ -130,19 +153,19 @@ void OpenGLIlluminator::renderShadowCasterLights() {
   glEnable(GL_BLEND);
 
   for (auto* glShadowCaster : glShadowCasters) {
-    if (directionalShadowCasterPredicate(glShadowCaster)) {
+    if (isActiveDirectionalShadowCaster(glShadowCaster)) {
       renderDirectionalShadowCasterCameraView(glShadowCaster);
     }
   }
 
   for (auto* glShadowCaster : glShadowCasters) {
-    if (spotShadowCasterPredicate(glShadowCaster)) {
+    if (isActiveSpotShadowCaster(glShadowCaster)) {
       renderSpotShadowCasterCameraView(glShadowCaster);
     }
   }
 
   for (auto* glShadowCaster : glShadowCasters) {
-    if (pointShadowCasterPredicate(glShadowCaster)) {
+    if (isActivePointShadowCaster(glShadowCaster)) {
       renderPointShadowCasterCameraView(glShadowCaster);
     }
   }
@@ -246,7 +269,7 @@ void OpenGLIlluminator::renderPointShadowCasterCameraView(OpenGLShadowCaster* gl
   cameraViewProgram.setInt("normalDepthTexture", 1);
   cameraViewProgram.setInt("positionTexture", 2);
   cameraViewProgram.setInt("lightCubeMap", 3);
-  cameraViewProgram.setFloat("farPlane", light->radius + 1000.0f);
+  cameraViewProgram.setFloat("farPlane", light->radius);
   cameraViewProgram.setVec3f("cameraPosition", Camera::active->position);
   cameraViewProgram.setVec3f("light.position", light->position);
   cameraViewProgram.setVec3f("light.direction", light->direction);
@@ -274,7 +297,7 @@ void OpenGLIlluminator::renderPointShadowCasterLightView(OpenGLShadowCaster* glS
 
   lightViewProgram.use();
   lightViewProgram.setVec3f("lightPosition", light->position.gl());
-  lightViewProgram.setFloat("farPlane", light->radius + 1000.0f);
+  lightViewProgram.setFloat("farPlane", light->radius);
 
   for (int i = 0; i < 6; i++) {
     lightViewProgram.setMatrix4("lightMatrices[" + std::to_string(i) + "]", lightMatrices[i]);
@@ -288,6 +311,9 @@ void OpenGLIlluminator::renderPointShadowCasterLightView(OpenGLShadowCaster* glS
     if (glObject->getSourceObject()->shadowCascadeLimit > 0) {
       glVideoController->setObjectEffects(lightViewProgram, glObject);
 
+      // TODO: Allow objects to force point lights to render them
+      // anyway, e.g. large objects with origins further away from the
+      // light source than their radius, but geometry within the radius
       glObject->getSourceObject()->enableRenderingWhere([&](Object* object) {
         return isObjectWithinLightRadius(object, glShadowCaster->getSourceLight());
       });
@@ -342,6 +368,9 @@ void OpenGLIlluminator::renderSpotShadowCasterLightView(OpenGLShadowCaster* glSh
     if (glObject->getSourceObject()->shadowCascadeLimit > 0) {
       glVideoController->setObjectEffects(lightViewProgram, glObject);
 
+      // TODO: Allow objects to force spot lights to render them
+      // anyway, e.g. large objects with origins further away from the
+      // light source than their radius, but geometry within the radius
       glObject->getSourceObject()->enableRenderingWhere([&](Object* object) {
         return isObjectWithinLightRadius(object, glShadowCaster->getSourceLight());
       });

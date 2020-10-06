@@ -2,6 +2,7 @@
 
 #include <helpers/lighting.glsl>
 #include <helpers/sampling.glsl>
+#include <helpers/random.glsl>
 
 uniform sampler2D colorTexture;
 uniform sampler2D normalDepthTexture;

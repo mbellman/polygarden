@@ -178,13 +178,6 @@ void GardenScene::onInit() {
         light->power = 5.0f + (sinf(getRunningTime() * 5.0f + offset) + sinf(getRunningTime() * 21.3f + offset)) * 0.75f;
       };
     });
-
-    stage.add<Cube>([=](Cube* cube) {
-      cube->setColor(Vec3f(1.0f));
-      cube->setPosition(lightPosition);
-      cube->setScale(Vec3f(1.0f, 3.0f, 1.0f));
-      cube->isEmissive = true;
-    });
   });
 
   stage.add<GrassField>();

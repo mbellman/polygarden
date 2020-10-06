@@ -19,6 +19,7 @@ struct PerformanceProfile {
 
 class PerformanceProfiler {
 public:
+  static unsigned int getCurrentFrame();
   static const PerformanceProfile& getProfile();
   static void trackDrawCall();
   static void trackFrameEnd();
@@ -30,7 +31,7 @@ public:
 private:
   static PerformanceProfile profile;
   static Range<int> frame;
-  static unsigned int frameCounter;
+  static unsigned int currentFrame;
   static unsigned int fpsSamples[120];
 
   static unsigned int getAverageFps();

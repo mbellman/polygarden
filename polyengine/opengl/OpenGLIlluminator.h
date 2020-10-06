@@ -18,7 +18,7 @@ private:
   OpenGLVideoController* glVideoController = nullptr;
   OpenGLLightingQuad* glLightingQuad = nullptr;
 
-  bool isObjectWithinLightRadius(const Object* object, const Light* light);
+  unsigned int getTotalActivePointShadowCasters();
   void renderDirectionalShadowCasterCameraView(OpenGLShadowCaster* OpenGLShadowCaster);
   void renderDirectionalShadowCasterLightView(OpenGLShadowCaster* glShadowCaster);
   void renderPointShadowCasterCameraView(OpenGLShadowCaster* glShadowCaster);

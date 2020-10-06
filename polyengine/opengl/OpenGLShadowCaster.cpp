@@ -30,7 +30,7 @@ OpenGLShadowCaster::OpenGLShadowCaster(const Light* light) {
     case Light::LightType::POINT:
       glShadowBuffer = new OpenGLPointShadowBuffer();
 
-      glShadowBuffer->createFrameBuffer(1024, 1024);
+      glShadowBuffer->createFrameBuffer(512, 512);
       break;
   }
 }
@@ -79,7 +79,7 @@ Matrix4 OpenGLShadowCaster::getCascadedLightMatrix(int cascadeIndex, const Camer
 }
 
 Matrix4 OpenGLShadowCaster::getLightMatrix(const Vec3f& direction, const Vec3f& top) const {
-  Matrix4 projection = Matrix4::projection({ 0, 0, 1024, 1024 }, 90.0f, 1.0f, sourceLight->radius + 1000.0f);
+  Matrix4 projection = Matrix4::projection({ 0, 0, 1024, 1024 }, 90.0f, 1.0f, sourceLight->radius);
   Matrix4 view = Matrix4::lookAt(sourceLight->position.gl(), direction.invert().gl(), top);
 
   return (projection * view).transpose();

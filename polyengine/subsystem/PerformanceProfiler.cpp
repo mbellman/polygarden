@@ -4,7 +4,7 @@
 #include "SDL.h"
 
 unsigned int PerformanceProfiler::getAverageFps() {
-  unsigned int samples = std::min(120, int(frameCounter));
+  unsigned int samples = std::min(120, int(currentFrame));
   unsigned int sum = 0;
 
   for (unsigned int i = 0; i < samples; i++) {
@@ -12,6 +12,10 @@ unsigned int PerformanceProfiler::getAverageFps() {
   }
 
   return unsigned int(sum / float(samples));
+}
+
+unsigned int PerformanceProfiler::getCurrentFrame() {
+  return currentFrame;
 }
 
 unsigned int PerformanceProfiler::getFps() {
@@ -42,7 +46,7 @@ void PerformanceProfiler::trackFrameEnd() {
 
   unsigned int fps = getFps();
 
-  fpsSamples[frameCounter++ % 120] = fps;
+  fpsSamples[currentFrame++ % 120] = fps;
 
   profile.fps = fps;
   profile.averageFps = getAverageFps();
@@ -75,5 +79,5 @@ void PerformanceProfiler::trackObject(const Object* object, unsigned int totalRe
 
 PerformanceProfile PerformanceProfiler::profile;
 Range<int> PerformanceProfiler::frame;
-unsigned int PerformanceProfiler::frameCounter = 0;
+unsigned int PerformanceProfiler::currentFrame = 0;
 unsigned int PerformanceProfiler::fpsSamples[120];
