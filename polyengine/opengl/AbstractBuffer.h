@@ -13,6 +13,4 @@ public:
 
 protected:
   FrameBuffer* frameBuffer = nullptr;
-
-  virtual void createShaderPrograms() = 0;
 };

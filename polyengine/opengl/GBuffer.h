@@ -23,11 +23,10 @@ public:
   ShaderProgram& getShaderProgram(GBuffer::Shader shader);
   void writeToAllBuffers();
 
-protected:
-  void createShaderPrograms() override;
-
 private:
   ShaderProgram geometryProgram;
   ShaderProgram illuminationProgram;
   ShaderProgram albedoProgram;
+
+  void createShaderPrograms();
 };

@@ -3,6 +3,7 @@
 #include "opengl/OpenGLVideoController.h"
 #include "opengl/OpenGLShadowCaster.h"
 #include "opengl/OpenGLLightingQuad.h"
+#include "opengl/ShaderProgram.h"
 #include "opengl/FrameBuffer.h"
 
 class OpenGLIlluminator {
@@ -17,8 +18,13 @@ public:
 private:
   OpenGLVideoController* glVideoController = nullptr;
   OpenGLLightingQuad* glLightingQuad = nullptr;
+  ShaderProgram lightViewProgram;
+  ShaderProgram pointLightViewProgram;
+  ShaderProgram directionalCameraViewProgram;
+  ShaderProgram spotCameraViewProgram;
+  ShaderProgram pointCameraViewProgram;
 
-  unsigned int getTotalActivePointShadowCasters();
+  void createShaderPrograms();
   void renderDirectionalShadowCasterCameraView(OpenGLShadowCaster* OpenGLShadowCaster);
   void renderDirectionalShadowCasterLightView(OpenGLShadowCaster* glShadowCaster);
   void renderPointShadowCasterCameraView(OpenGLShadowCaster* glShadowCaster);
