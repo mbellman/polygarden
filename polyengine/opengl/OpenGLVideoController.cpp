@@ -130,7 +130,6 @@ void OpenGLVideoController::onInit(SDL_Window* sdlWindow, int width, int height)
 
 void OpenGLVideoController::onRender(SDL_Window* sdlWindow) {
   gBuffer->startWriting();
-  gBuffer->writeToAllBuffers();
 
   glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);

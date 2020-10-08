@@ -41,7 +41,7 @@ float getShadowFactor(vec3 surfacePosition, mat4 lightMatrix, sampler2D lightMap
   for (int i = 1; i <= 2; i++) {
     for (int s = 0; s < 8; s++) {
       vec2 radialOffset = RADIAL_SAMPLE_OFFSETS_8[s] * float(i) * texelSize * blur * 0.5;
-      vec2 randomOffset = getRandomOffset2(float(s * i)) * float(i) * texelSize * 0.25;
+      vec2 randomOffset = getRandomOffset2(float(s * i)) * float(i) * texelSize * 0.3;
       float sampledClosestDepth = texture(lightMap, transform.xy + radialOffset + randomOffset).r;
 
       shadowFactor += (sampledClosestDepth < transform.z - bias) ? 0.0 : 1.0;

@@ -53,7 +53,3 @@ ShaderProgram& GBuffer::getShaderProgram(GBuffer::Shader shader) {
       return geometryProgram;
   }
 }
-
-void GBuffer::writeToAllBuffers() {
-  frameBuffer->bindColorTextures();
-}

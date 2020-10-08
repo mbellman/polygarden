@@ -21,7 +21,6 @@ public:
 
   void createFrameBuffer(unsigned int width, unsigned int height) override;
   ShaderProgram& getShaderProgram(GBuffer::Shader shader);
-  void writeToAllBuffers();
 
 private:
   ShaderProgram geometryProgram;
