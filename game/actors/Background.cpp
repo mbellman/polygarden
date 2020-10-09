@@ -12,6 +12,7 @@ void Background::onInit() {
     light->direction = Vec3f(-1.0f, -0.6f, 0.25f);
     light->power = 0.5f;
     light->canCastShadows = true;
+    light->shadowMapSize = { 2048, 2048 };
   });
 
   stage->add<Skybox>([&](Skybox* skybox) {

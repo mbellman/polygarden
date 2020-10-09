@@ -1,9 +1,20 @@
 #pragma once
 
 /**
+ * Defines an area or region size.
+ *
+ * @template T - A custom numeric type.
+ */
+template<typename T>
+struct Area {
+  T width;
+  T height;
+};
+
+/**
  * Defines a region of 2D space.
  *
- * @template T - A custom numeric type allowing for variable precision.
+ * @template T - A custom numeric type.
  */
 template<typename T>
 struct Region2d {

@@ -109,6 +109,7 @@ void GardenScene::addTrees() {
       light->setPosition(mushroomPosition + Vec3f(0.0f, 10.0f, 0.0f));
       light->setColor(Vec3f(0.2f, 1.0f, 0.4f));
       light->setRadius(250.0f);
+      light->setShadowMapSize({ 512, 512 });
     });
   });
 }

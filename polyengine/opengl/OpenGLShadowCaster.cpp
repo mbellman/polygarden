@@ -15,22 +15,23 @@ const static Range<float> CASCADE_PARAMETERS[4][2] = {
 
 OpenGLShadowCaster::OpenGLShadowCaster(const Light* light) {
   sourceLight = light;
+  auto& shadowMapSize = light->shadowMapSize;
 
   switch (light->type) {
     case Light::LightType::DIRECTIONAL:
       glShadowBuffer = new OpenGLDirectionalShadowBuffer();
 
-      glShadowBuffer->createFrameBuffer(2048, 2048);
+      glShadowBuffer->createFrameBuffer(shadowMapSize.width, shadowMapSize.height);
       break;
     case Light::LightType::SPOTLIGHT:
       glShadowBuffer = new OpenGLSpotShadowBuffer();
 
-      glShadowBuffer->createFrameBuffer(1024, 1024);
+      glShadowBuffer->createFrameBuffer(shadowMapSize.width, shadowMapSize.height);
       break;
     case Light::LightType::POINT:
       glShadowBuffer = new OpenGLPointShadowBuffer();
 
-      glShadowBuffer->createFrameBuffer(512, 512);
+      glShadowBuffer->createFrameBuffer(shadowMapSize.width, shadowMapSize.height);
       break;
   }
 }

@@ -38,19 +38,26 @@ public:
 
   template<typename T>
   void add(std::string name, std::function<void(T*)> handler) {
+    bool isEntity = std::is_base_of<Entity, T>::value;
+    bool isActor = std::is_base_of<Actor, T>::value;
+
     T* t = new T();
 
-    // TODO: Normalize ordering for both Actors and regular Entities,
-    // or consider calling entityAddedHandler() after adding/handling
-    if (std::is_base_of<Actor, T>::value) {
-      add(t);
-      handler(t);
-    } else {
-      handler(t);
-      add(t);
+    if (isEntity) {
+      saveEntity((Entity*)t);
+    } else if (isActor) {
+      saveActor((Actor*)t);
     }
 
+    handler(t);
+
     store.emplace(name, t);
+
+    if (isEntity && entityAddedHandler) {
+      entityAddedHandler((Entity*)t);
+    } else if (isActor) {
+      ((Actor*)t)->onAdded();
+    }
   }
 
   template<typename T, unsigned int total>
@@ -83,6 +90,8 @@ private:
   Callback<Entity*> entityAddedHandler = nullptr;
   Callback<Entity*> entityRemovedHandler = nullptr;
 
+  void saveActor(Actor* actor);
+  void saveEntity(Entity* entity);
   bool isActorRegistered(Actor* actor);
   void removeExpiredEntities();
 };

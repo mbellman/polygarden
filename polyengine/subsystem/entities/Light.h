@@ -20,6 +20,7 @@ struct Light : Entity, public Positionable {
   float radius = 100.0f;
   float power = 1.0f;
   bool canCastShadows = false;
+  Area<unsigned int> shadowMapSize = { 1024, 1024 };
 
   void setPosition(const Vec3f& position) override;
 };

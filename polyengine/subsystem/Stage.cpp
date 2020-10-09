@@ -14,11 +14,7 @@ Stage::~Stage() {
 }
 
 void Stage::add(Entity* entity) {
-  if (entity->isOfType<Object>()) {
-    objects.push((Object*)entity);
-  } else if (entity->isOfType<Light>()) {
-    lights.push((Light*)entity);
-  }
+  saveEntity(entity);
 
   if (entityAddedHandler) {
     entityAddedHandler(entity);
@@ -26,6 +22,12 @@ void Stage::add(Entity* entity) {
 }
 
 void Stage::add(Actor* actor) {
+  saveActor(actor);
+
+  actor->onAdded();
+}
+
+void Stage::saveActor(Actor* actor) {
   actor->setStage(this);
 
   if (!isActorRegistered(actor)) {
@@ -37,6 +39,14 @@ void Stage::add(Actor* actor) {
   actors.push(actor);
 
   actor->onInit();
+}
+
+void Stage::saveEntity(Entity* entity) {
+  if (entity->isOfType<Object>()) {
+    objects.push((Object*)entity);
+  } else if (entity->isOfType<Light>()) {
+    lights.push((Light*)entity);
+  }
 }
 
 const HeapList<Light>& Stage::getLights() const {

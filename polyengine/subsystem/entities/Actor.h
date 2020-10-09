@@ -11,6 +11,7 @@ class Actor : public LifeCycle, public Transformable {
 public:
   virtual ~Actor();
 
+  virtual void onAdded() {};
   virtual void onRegistered() {};
   void setOrientation(const Vec3f& orientation) override;
   void setPosition(const Vec3f& position) override;

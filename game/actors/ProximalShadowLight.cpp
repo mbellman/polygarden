@@ -1,24 +1,25 @@
 #include <algorithm>
+#include <cstdio>
 
 #include <subsystem/Stage.h>
 #include <subsystem/entities/Camera.h>
+#include <subsystem/entities/Light.h>
 
 #include "actors/ProximalShadowLight.h"
 
 void ProximalShadowLight::onInit() {
-  stage->add<Light>([=](Light* light) {
-    fallbackLight = light;
-    
-    addPositionable(light);
-  });
+  fallbackLight = new Light();
+  shadowLight = new Light();
 
-  stage->add<Light>([=](Light* light) {
-    light->canCastShadows = true;
+  shadowLight->canCastShadows = true;
 
-    shadowLight = light;
+  addPositionable(fallbackLight);
+  addPositionable(shadowLight);
+}
 
-    addPositionable(light);
-  });
+void ProximalShadowLight::onAdded() {
+  stage->add(fallbackLight);
+  stage->add(shadowLight);
 }
 
 void ProximalShadowLight::onUpdate(float dt) {
@@ -44,4 +45,9 @@ void ProximalShadowLight::setColor(const Vec3f& color) {
 void ProximalShadowLight::setRadius(float radius) {
   fallbackLight->radius = radius;
   shadowLight->radius = radius;
+}
+
+void ProximalShadowLight::setShadowMapSize(const Area<unsigned int>& shadowMapSize) {
+  fallbackLight->shadowMapSize = shadowMapSize;
+  shadowLight->shadowMapSize = shadowMapSize;
 }
