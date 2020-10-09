@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <cstdio>
 #include <typeinfo>
 
 #include "subsystem/Stage.h"

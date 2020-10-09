@@ -1,5 +1,3 @@
-#include <cstdio>
-
 #include "opengl/FrameBuffer.h"
 
 FrameBuffer::FrameBuffer(int width, int height) {

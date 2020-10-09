@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <cstdio>
 
 #include <subsystem/Stage.h>
 #include <subsystem/entities/Camera.h>

@@ -1,6 +1,5 @@
 #include <cmath>
 #include <ctime>
-#include <cstdio>
 #include <algorithm>
 
 #include "SDL.h"
