@@ -198,6 +198,9 @@
     <ClCompile Include="polyengine\opengl\OpenGLSpotShadowBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="game\actors\Rock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="external\glew\include\eglew.h">
@@ -663,6 +666,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="polyengine\opengl\OpenGLSpotShadowBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="game\actors\Rock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

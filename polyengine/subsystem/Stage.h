@@ -69,6 +69,11 @@ public:
     }
   }
 
+  template<typename T, unsigned int total>
+  void addMultiple() {
+    addMultiple<T, total>([](T* t, int index) {});
+  }
+
   template<typename T = Object>
   T* get(std::string name) {
     return (T*)store.at(name);

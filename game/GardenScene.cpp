@@ -17,23 +17,9 @@
 #include "actors/GrassField.h"
 #include "actors/Background.h"
 #include "actors/Boundary.h"
+#include "actors/Rock.h"
 #include "actors/ProximalShadowLight.h"
 #include "actors/VisibleObjectFilter.h"
-
-void GardenScene::addRocks() {
-  stage.add<ReferenceMesh>("rock", [&](ReferenceMesh* rock) {
-    rock->from(ObjLoader("./assets/rock-1/model.obj"));
-    rock->texture = Texture::use("./assets/rock-1/texture.png");
-    rock->normalMap = Texture::use("./assets/rock-1/normals.png");
-  });
-
-  stage.addMultiple<Instance, 20>([&](Instance* rock, int index) {
-    rock->from(stage.get<Mesh>("rock"));
-    rock->setPosition(HeightMap::getRandomGroundPosition());
-    rock->setScale(RNG::random(15.0f, 30.0f));
-    rock->setOrientation(Vec3f(0.0f, RNG::random(0.0f, M_PI * 2.0f), 0.0f));
-  });
-}
 
 void GardenScene::addTrees() {
   stage.add<ReferenceMesh>("tree", [&](ReferenceMesh* tree) {
@@ -184,8 +170,8 @@ void GardenScene::onInit() {
   stage.add<GrassField>();
   stage.add<Background>();
   stage.add<Boundary>();
+  stage.addMultiple<Rock, 20>();
 
-  addRocks();
   addTrees();
 
   stage.get<VisibleObjectFilter>("object-filter")->addObjects({
