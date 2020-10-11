@@ -24,7 +24,6 @@ class OpenGLVideoController final : public AbstractVideoController {
 
 public:
   OpenGLVideoController();
-  ~OpenGLVideoController();
 
   void onDestroy() override;
   void onInit(SDL_Window* sdlWindow, int width, int height) override;

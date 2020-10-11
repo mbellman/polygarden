@@ -26,7 +26,7 @@ public:
   Vec3f scale = Vec3f(1.0f, 1.0f, 1.0f);
   const Texture* texture = nullptr;
   const Texture* normalMap = nullptr;
-  const char* shader = nullptr;
+  const Object* shadowLod = nullptr;
   unsigned int effects = 0;
   unsigned int shadowCascadeLimit = 4;
   bool isEmissive = false;

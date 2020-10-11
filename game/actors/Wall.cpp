@@ -19,8 +19,13 @@ void Wall::onRegistered() {
   });
 
   stage->add<ReferenceMesh>("wall-roof", [](ReferenceMesh* roof) {
+    auto* shadowLod = new Mesh();
+
+    shadowLod->from(ObjLoader("./assets/wall/roof-model-lod.obj"));
+
     roof->from(ObjLoader("./assets/wall/roof-model.obj"));
     roof->texture = Texture::use("./assets/wall/roof-texture.png");
+    roof->shadowLod = shadowLod;
   });
 }
 

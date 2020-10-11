@@ -11,9 +11,14 @@
 
 void Rock::onRegistered() {
   stage->add<ReferenceMesh>("rock", [&](ReferenceMesh* rock) {
+    Mesh* shadowLod = new Mesh();
+
+    shadowLod->from(ObjLoader("./assets/rock-1/model-lod.obj"));
+
     rock->from(ObjLoader("./assets/rock-1/model.obj"));
     rock->texture = Texture::use("./assets/rock-1/texture.png");
     rock->normalMap = Texture::use("./assets/rock-1/normals.png");
+    rock->shadowLod = shadowLod;
   });
 }
 

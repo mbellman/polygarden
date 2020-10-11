@@ -33,18 +33,6 @@ OpenGLVideoController::OpenGLVideoController() {
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 1);
 }
 
-OpenGLVideoController::~OpenGLVideoController() {
-  glPreShaders.free();
-  glObjects.free();
-  glShadowCasters.free();
-
-  OpenGLObject::freeCachedResources();
-
-  delete gBuffer;
-  delete glIlluminator;
-  delete glPostShaderPipeline;
-}
-
 void OpenGLVideoController::createPostShaders() {
   glPostShaderPipeline->addPostShader(new AntiAliasingShader());
   glPostShaderPipeline->addPostShader(new BloomShader());
@@ -67,6 +55,16 @@ Matrix4 OpenGLVideoController::createViewMatrix() {
 }
 
 void OpenGLVideoController::onDestroy() {
+  glPreShaders.free();
+  glObjects.free();
+  glShadowCasters.free();
+
+  OpenGLObject::freeCachedResources();
+
+  delete gBuffer;
+  delete glIlluminator;
+  delete glPostShaderPipeline;
+
   SDL_GL_DeleteContext(glContext);
 }
 

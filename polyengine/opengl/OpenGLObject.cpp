@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "opengl/OpenGLObject.h"
 #include "opengl/OpenGLTexture.h"
 #include "opengl/ShaderProgram.h"
@@ -24,18 +26,7 @@ const static enum Attribute {
 OpenGLObject::OpenGLObject(Object* object) {
   sourceObject = object;
 
-  glGenVertexArrays(1, &vao);
-  glGenBuffers(4, &buffers[0]);
-  glGenBuffers(1, &ebo);
-  glBindVertexArray(vao);
-
-  bufferVertexData();
-  bufferVertexElementData();
-
-  defineVertexAttributes();
-  defineMatrixAttributes();
-  defineColorAttributes();
-  defineObjectIdAttributes();
+  addLod(object);
 
   if (object->texture != nullptr) {
     glTexture = OpenGLObject::createOpenGLTexture(object->texture, GL_TEXTURE7);
@@ -45,15 +36,42 @@ OpenGLObject::OpenGLObject(Object* object) {
     glNormalMap = OpenGLObject::createOpenGLTexture(object->normalMap, GL_TEXTURE8);
   }
 
-  if (object->shader != nullptr) {
-    std::string path(object->shader);
-
-    customShader = OpenGLObject::createShaderProgram(path);
+  if (object->shadowLod != nullptr) {
+    addLod(object->shadowLod);
+    setActiveLodIndex(0);
   }
 }
 
 OpenGLObject::~OpenGLObject() {
-  // TODO
+  for (auto* glLod : glLods) {
+    // TODO: Delete VAO/EBO/VBOs
+
+    delete glLod;
+  }
+
+  glLods.clear();
+}
+
+void OpenGLObject::addLod(const Object* object) {
+  auto* glLod = new OpenGLObjectLod();
+
+  glGenVertexArrays(1, &glLod->vao);
+  glGenBuffers(4, &glLod->buffers[0]);
+  glGenBuffers(1, &glLod->ebo);
+  glBindVertexArray(glLod->vao);
+
+  glLod->baseObject = object;
+
+  glLods.push_back(glLod);
+  setActiveLodIndex(glLods.size() - 1);
+
+  bufferVertexData();
+  bufferVertexElementData();
+
+  defineVertexAttributes();
+  defineMatrixAttributes();
+  defineColorAttributes();
+  defineObjectIdAttributes();
 }
 
 void OpenGLObject::bindTextures() {
@@ -66,34 +84,26 @@ void OpenGLObject::bindTextures() {
   }
 }
 
-void OpenGLObject::bufferColorData() {
-  auto* data = sourceObject->getColorBuffer();
-  unsigned int size = sourceObject->getTotalInstances() * 3 * sizeof(float);
-
-  bufferInstanceData(data, size, buffers[Buffer::COLOR]);
-}
-
-void OpenGLObject::bufferInstanceData(const void* data, unsigned int size, GLuint vbo) {
+void OpenGLObject::bufferDynamicData(const void* data, unsigned int size, GLuint vbo) {
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, size, data, GL_DYNAMIC_DRAW);
 }
 
-void OpenGLObject::bufferMatrixData() {
-  auto* data = sourceObject->getMatrixBuffer();
-  unsigned int size = sourceObject->getTotalInstances() * 16 * sizeof(float);
+void OpenGLObject::bufferInstanceData() {
+  unsigned int totalInstances = sourceObject->getTotalInstances();
+  const float* matrices = sourceObject->getMatrixBuffer();
+  const float* colors = sourceObject->getColorBuffer();
+  const int* objectIds = sourceObject->getObjectIdBuffer();
+  auto* glLod = getActiveLod();
 
-  bufferInstanceData(data, size, buffers[Buffer::MATRIX]);
-}
-
-void OpenGLObject::bufferObjectIdData() {
-  auto* data = sourceObject->getObjectIdBuffer();
-  unsigned int size = sourceObject->getTotalInstances() * sizeof(int);
-
-  bufferInstanceData(data, size, buffers[Buffer::ID]);
+  bufferDynamicData(matrices, totalInstances * 16 * sizeof(float), glLod->buffers[Buffer::MATRIX]);
+  bufferDynamicData(colors, totalInstances * 3 * sizeof(float), glLod->buffers[Buffer::COLOR]);
+  bufferDynamicData(objectIds, totalInstances * sizeof(int), glLod->buffers[Buffer::ID]);
 }
 
 void OpenGLObject::bufferVertexData() {
-  unsigned int totalVertices = sourceObject->getVertices().size();
+  auto* glLod = getActiveLod();
+  unsigned int totalVertices = glLod->baseObject->getVertices().size();
 
   if (totalVertices == 0) {
     return;
@@ -103,7 +113,7 @@ void OpenGLObject::bufferVertexData() {
   float* buffer = new float[bufferSize];
   unsigned int i = 0;
 
-  for (auto* vertex : sourceObject->getVertices()) {
+  for (auto* vertex : glLod->baseObject->getVertices()) {
     buffer[i++] = vertex->position.x;
     buffer[i++] = vertex->position.y;
     buffer[i++] = vertex->position.z;
@@ -120,30 +130,31 @@ void OpenGLObject::bufferVertexData() {
     buffer[i++] = vertex->uv.y;
   }
 
-  glBindBuffer(GL_ARRAY_BUFFER, buffers[Buffer::VERTEX]);
+  glBindBuffer(GL_ARRAY_BUFFER, glLod->buffers[Buffer::VERTEX]);
   glBufferData(GL_ARRAY_BUFFER, bufferSize * sizeof(float), buffer, GL_STATIC_DRAW);
 
   delete[] buffer;
 }
 
 void OpenGLObject::bufferVertexElementData() {
-  unsigned int totalFaces = sourceObject->getPolygons().size();
+  auto* glLod = getActiveLod();
+  unsigned int totalPolygons = glLod->baseObject->getPolygons().size();
 
-  if (totalFaces == 0) {
+  if (totalPolygons == 0) {
     return;
   }
 
-  unsigned int bufferSize = totalFaces * 3;
+  unsigned int bufferSize = totalPolygons * 3;
   unsigned int* buffer = new unsigned int[bufferSize];
   unsigned int i = 0;
 
-  for (auto* polygon : sourceObject->getPolygons()) {
+  for (auto* polygon : glLod->baseObject->getPolygons()) {
     for (unsigned int v = 0; v < 3; v++) {
       buffer[i++] = polygon->vertices[v]->index;
     }
   }
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glLod->ebo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, bufferSize * sizeof(unsigned int), buffer, GL_STATIC_DRAW);
 
   delete[] buffer;
@@ -163,26 +174,8 @@ OpenGLTexture* OpenGLObject::createOpenGLTexture(const Texture* texture, GLenum 
   }
 }
 
-ShaderProgram* OpenGLObject::createShaderProgram(std::string path) {
-  if (OpenGLObject::shaderMap.find(path) != OpenGLObject::shaderMap.end()) {
-    return OpenGLObject::shaderMap.at(path);
-  } else {
-    auto* program = new ShaderProgram();
-
-    program->create();
-    program->attachShader(ShaderLoader::loadVertexShader("./shaders/geometry.vertex.glsl"));
-    program->attachShader(ShaderLoader::loadFragmentShader(path.c_str()));
-    program->link();
-    program->use();
-
-    OpenGLObject::shaderMap.emplace(path, program);
-
-    return program;
-  }
-}
-
 void OpenGLObject::defineColorAttributes() {
-  glBindBuffer(GL_ARRAY_BUFFER, buffers[Buffer::COLOR]);
+  glBindBuffer(GL_ARRAY_BUFFER, getActiveLod()->buffers[Buffer::COLOR]);
 
   glEnableVertexAttribArray(Attribute::MODEL_COLOR);
   glVertexAttribPointer(Attribute::MODEL_COLOR, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
@@ -190,7 +183,7 @@ void OpenGLObject::defineColorAttributes() {
 }
 
 void OpenGLObject::defineMatrixAttributes() {
-  glBindBuffer(GL_ARRAY_BUFFER, buffers[Buffer::MATRIX]);
+  glBindBuffer(GL_ARRAY_BUFFER, getActiveLod()->buffers[Buffer::MATRIX]);
 
   for (unsigned int i = 0; i < 4; i++) {
     glEnableVertexAttribArray(Attribute::MODEL_MATRIX + i);
@@ -200,7 +193,7 @@ void OpenGLObject::defineMatrixAttributes() {
 }
 
 void OpenGLObject::defineObjectIdAttributes() {
-  glBindBuffer(GL_ARRAY_BUFFER, buffers[Buffer::ID]);
+  glBindBuffer(GL_ARRAY_BUFFER, getActiveLod()->buffers[Buffer::ID]);
 
   glEnableVertexAttribArray(Attribute::OBJECT_ID);
   glVertexAttribIPointer(Attribute::OBJECT_ID, 1, GL_INT, sizeof(int), (void*)0);
@@ -208,7 +201,7 @@ void OpenGLObject::defineObjectIdAttributes() {
 }
 
 void OpenGLObject::defineVertexAttributes() {
-  glBindBuffer(GL_ARRAY_BUFFER, buffers[Buffer::VERTEX]);
+  glBindBuffer(GL_ARRAY_BUFFER, getActiveLod()->buffers[Buffer::VERTEX]);
 
   glEnableVertexAttribArray(Attribute::VERTEX_POSITION);
   glVertexAttribPointer(Attribute::VERTEX_POSITION, 3, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)0);
@@ -221,6 +214,10 @@ void OpenGLObject::defineVertexAttributes() {
 
   glEnableVertexAttribArray(Attribute::VERTEX_UV);
   glVertexAttribPointer(Attribute::VERTEX_UV, 2, GL_FLOAT, GL_FALSE, 11 * sizeof(float), (void*)(9 * sizeof(float)));
+}
+
+OpenGLObjectLod* OpenGLObject::getActiveLod() {
+  return glLods[activeLodIndex];
 }
 
 void OpenGLObject::freeCachedResources() {
@@ -240,14 +237,6 @@ Object* OpenGLObject::getSourceObject() const {
   return sourceObject;
 }
 
-ShaderProgram* OpenGLObject::getCustomShader() const {
-  return customShader;
-}
-
-bool OpenGLObject::hasCustomShader() const {
-  return customShader != nullptr;
-}
-
 bool OpenGLObject::hasNormalMap() const {
   return glNormalMap != nullptr;
 }
@@ -263,18 +252,33 @@ void OpenGLObject::render() {
     return;
   }
 
+  auto* glLod = getActiveLod();
+
   bindTextures();
+  bufferInstanceData();
 
-  bufferMatrixData();
-  bufferColorData();
-  bufferObjectIdData();
-
-  glBindVertexArray(vao);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-  glDrawElementsInstanced(GL_TRIANGLES, sourceObject->getPolygons().size() * 3, GL_UNSIGNED_INT, (void*)0, totalRenderableInstances);
+  glBindVertexArray(glLod->vao);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, glLod->ebo);
+  glDrawElementsInstanced(GL_TRIANGLES, glLod->baseObject->getPolygons().size() * 3, GL_UNSIGNED_INT, (void*)0, totalRenderableInstances);
 
   PerformanceProfiler::trackObject(sourceObject, totalRenderableInstances);
   PerformanceProfiler::trackDrawCall();
+}
+
+void OpenGLObject::renderLod(unsigned int index) {
+  setActiveLodIndex(index);
+  render();
+}
+
+void OpenGLObject::renderShadowLod() {
+  unsigned int previousActiveLodIndex = activeLodIndex;
+
+  renderLod(glLods.size() - 1);
+  setActiveLodIndex(previousActiveLodIndex);
+}
+
+void OpenGLObject::setActiveLodIndex(unsigned int index) {
+  activeLodIndex = std::min((int)index, (int)glLods.size() - 1);
 }
 
 std::map<int, OpenGLTexture*> OpenGLObject::textureMap;

@@ -6,6 +6,10 @@
  * ------
  */
 Object::~Object() {
+  if (shadowLod != nullptr) {
+    delete shadowLod;
+  }
+
   if (matrixBuffer != nullptr) {
     delete[] matrixBuffer;
   }

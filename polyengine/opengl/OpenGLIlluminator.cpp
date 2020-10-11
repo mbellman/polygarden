@@ -285,7 +285,11 @@ void OpenGLIlluminator::renderDirectionalShadowCasterLightView(OpenGLShadowCaste
 
         glVideoController->setObjectEffects(lightViewProgram, glObject);
 
-        glObject->render();
+        if (glObject->getSourceObject()->shadowLod != nullptr) {
+          glObject->renderShadowLod();
+        } else {
+          glObject->render();
+        }
       }
     }
   }
@@ -341,18 +345,25 @@ void OpenGLIlluminator::renderPointShadowCasterLightView(OpenGLShadowCaster* glS
   glClear(GL_DEPTH_BUFFER_BIT);
 
   for (auto* glObject : glVideoController->glObjects) {
-    if (glObject->getSourceObject()->shadowCascadeLimit > 0) {
+    auto* sourceObject = glObject->getSourceObject();
+
+    if (sourceObject->shadowCascadeLimit > 0) {
       glVideoController->setObjectEffects(pointLightViewProgram, glObject);
 
       // TODO: Allow objects to force point lights to render them
       // anyway, e.g. large objects with origins further away from the
       // light source than their radius, but geometry within the radius
-      glObject->getSourceObject()->enableRenderingWhere([&](Object* object) {
+      sourceObject->enableRenderingWhere([&](Object* object) {
         return isObjectWithinLightRadius(object, glShadowCaster->getSourceLight());
       });
 
-      glObject->getSourceObject()->rehydrate();
-      glObject->render();
+      sourceObject->rehydrate();
+
+      if (sourceObject->shadowLod != nullptr) {
+        glObject->renderShadowLod();
+      } else {
+        glObject->render();
+      }
     }
   }
 }
@@ -393,18 +404,25 @@ void OpenGLIlluminator::renderSpotShadowCasterLightView(OpenGLShadowCaster* glSh
   glClear(GL_DEPTH_BUFFER_BIT);
 
   for (auto* glObject : glVideoController->glObjects) {
-    if (glObject->getSourceObject()->shadowCascadeLimit > 0) {
+    auto* sourceObject = glObject->getSourceObject();
+
+    if (sourceObject->shadowCascadeLimit > 0) {
       glVideoController->setObjectEffects(lightViewProgram, glObject);
 
       // TODO: Allow objects to force spot lights to render them
       // anyway, e.g. large objects with origins further away from the
       // light source than their radius, but geometry within the radius
-      glObject->getSourceObject()->enableRenderingWhere([&](Object* object) {
+      sourceObject->enableRenderingWhere([&](Object* object) {
         return isObjectWithinLightRadius(object, glShadowCaster->getSourceLight());
       });
 
-      glObject->getSourceObject()->rehydrate();
-      glObject->render();
+      sourceObject->rehydrate();
+
+      if (sourceObject->shadowLod != nullptr) {
+        glObject->renderShadowLod();
+      } else {
+        glObject->render();
+      }
     }
   }
 }

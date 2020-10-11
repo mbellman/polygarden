@@ -23,9 +23,14 @@
 
 void GardenScene::addTrees() {
   stage.add<ReferenceMesh>("tree", [&](ReferenceMesh* tree) {
+    auto* shadowLod = new Mesh();
+
+    shadowLod->from(ObjLoader("./assets/pine-tree/trunk-model-lod.obj"));
+
     tree->from(ObjLoader("./assets/pine-tree/trunk-model.obj"));
     tree->texture = Texture::use("./assets/pine-tree/bark-texture.png");
     tree->normalMap = Texture::use("./assets/pine-tree/bark-normals.png");
+    tree->shadowLod = shadowLod;
   });
 
   stage.add<ReferenceMesh>("leaves", [&](ReferenceMesh* leaves) {
