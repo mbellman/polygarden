@@ -35,7 +35,7 @@ float getShadowFactor(vec3 surfacePosition, mat4 lightMatrix, sampler2D lightMap
   // Use the distance between the light-space surface depth
   // and closest neighboring occluder depth to determine blur
   float occluderDistance = transform.z - closestNeighboringOccluderDepth;
-  float blur = 1.0 + maxSoftness * occluderDistance;
+  float blur = 1.5 + maxSoftness * occluderDistance;
 
   // Sample the region to take an average shadow factor
   for (int i = 1; i <= 2; i++) {

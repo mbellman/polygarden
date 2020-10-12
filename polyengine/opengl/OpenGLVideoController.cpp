@@ -23,6 +23,7 @@
 #include "subsystem/entities/Instance.h"
 #include "subsystem/Math.h"
 #include "subsystem/PerformanceProfiler.h"
+#include "Window.h"
 
 OpenGLVideoController::OpenGLVideoController() {
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -38,7 +39,7 @@ void OpenGLVideoController::createPostShaders() {
   glPostShaderPipeline->addPostShader(new BloomShader());
   glPostShaderPipeline->addPostShader(new DofShader());
 
-  glPostShaderPipeline->createFrameBuffers({ 0, 0, screenSize.width, screenSize.height });
+  glPostShaderPipeline->createFrameBuffers(Window::size);
 }
 
 void OpenGLVideoController::createPreShaders() {
@@ -92,10 +93,7 @@ void OpenGLVideoController::onEntityRemoved(Entity* entity) {
   }
 }
 
-void OpenGLVideoController::onInit(SDL_Window* sdlWindow, int width, int height) {
-  screenSize.width = width;
-  screenSize.height = height;
-
+void OpenGLVideoController::onInit(SDL_Window* sdlWindow) {
   glContext = SDL_GL_CreateContext(sdlWindow);
   glewExperimental = true;
 
@@ -114,7 +112,7 @@ void OpenGLVideoController::onInit(SDL_Window* sdlWindow, int width, int height)
   glIlluminator = new OpenGLIlluminator();
   glPostShaderPipeline = new OpenGLPostShaderPipeline();
 
-  gBuffer->createFrameBuffer(screenSize.width, screenSize.height);
+  gBuffer->createFrameBuffer(Window::size.width, Window::size.height);
   glIlluminator->setVideoController(this);
 
   createPreShaders();
@@ -175,15 +173,12 @@ void OpenGLVideoController::onSceneChange(AbstractScene* scene) {
   });
 }
 
-void OpenGLVideoController::onScreenSizeChange(int width, int height) {
-  screenSize.width = width;
-  screenSize.height = height;
+void OpenGLVideoController::onScreenSizeChange() {
+  glViewport(0, 0, Window::size.width, Window::size.height);
 
-  glViewport(0, 0, width, height);
+  glPostShaderPipeline->createFrameBuffers(Window::size);
 
-  glPostShaderPipeline->createFrameBuffers({ 0, 0, width, height });
-
-  gBuffer->createFrameBuffer(width, height);
+  gBuffer->createFrameBuffer(Window::size.width, Window::size.height);
   gBuffer->getFrameBuffer()->shareDepthStencilBuffer(glPostShaderPipeline->getFirstShader()->getFrameBuffer());
 }
 
@@ -213,7 +208,7 @@ void OpenGLVideoController::renderGeometry() {
   geometryProgram.setInt("modelTexture", 7);
   geometryProgram.setInt("normalMap", 8);
 
-  Matrix4 projectionMatrix = Matrix4::projection(screenSize, scene->getCamera().fov * 0.5f, 1.0f, 10000.0f).transpose();
+  Matrix4 projectionMatrix = Matrix4::projection(Window::size, scene->getCamera().fov * 0.5f, 1.0f, 10000.0f).transpose();
   Matrix4 viewMatrix = createViewMatrix();
 
   auto renderObject = [&](OpenGLObject* glObject) {

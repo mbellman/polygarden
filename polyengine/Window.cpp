@@ -46,13 +46,11 @@ void Window::handleStats() {
   SDL_SetWindowTitle(sdlWindow, title);
 }
 
-void Window::open(const char* title, Region2d<int> region) {
+void Window::open(const char* title, Region2d<unsigned int> region) {
+  Window::size = { region.width, region.height };
   Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
 
   sdlWindow = SDL_CreateWindow(title, region.x, region.y, region.width, region.height, flags);
-
-  size.width = region.width;
-  size.height = region.height;
 }
 
 void Window::pollEvents() {
@@ -65,10 +63,12 @@ void Window::pollEvents() {
         break;
       case SDL_WINDOWEVENT:
         if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
-          size.width = event.window.data1;
-          size.height = event.window.data2;
+          Window::size = {
+            (unsigned int)event.window.data1,
+            (unsigned int)event.window.data2
+          };
 
-          videoController->onScreenSizeChange(size.width, size.height);
+          videoController->onScreenSizeChange();
         }
 
         break;
@@ -126,7 +126,7 @@ void Window::setVideoController(AbstractVideoController* videoController) {
 
   this->videoController = videoController;
 
-  videoController->onInit(sdlWindow, size.width, size.height);
+  videoController->onInit(sdlWindow);
 
   // If the video controller is changed mid-scene, make sure
   // the new controller receives the existing scene instance
@@ -134,3 +134,5 @@ void Window::setVideoController(AbstractVideoController* videoController) {
     videoController->setScene(gameController->getActiveScene());
   }
 }
+
+Area<unsigned int> Window::size = { 0, 0 };

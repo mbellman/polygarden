@@ -12,7 +12,7 @@ class AbstractOpenGLPostShader {
 public:
   virtual ~AbstractOpenGLPostShader();
 
-  void createFrameBuffer(const Region2d<int>& screen);
+  void createFrameBuffer(const Area<unsigned int>& size);
   FrameBuffer* getFrameBuffer() const;
   void render();
   virtual void onInit() = 0;

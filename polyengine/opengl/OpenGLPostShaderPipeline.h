@@ -11,7 +11,7 @@ public:
   ~OpenGLPostShaderPipeline();
 
   void addPostShader(AbstractOpenGLPostShader* glPostShader);
-  void createFrameBuffers(const Region2d<int>& screen);
+  void createFrameBuffers(const Area<unsigned int>& size);
   AbstractOpenGLPostShader* getFirstShader();
   void render();
 

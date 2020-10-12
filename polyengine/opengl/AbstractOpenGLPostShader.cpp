@@ -29,12 +29,12 @@ void AbstractOpenGLPostShader::addShaderProgram(const char* path) {
   addShaderProgram("__main__", path);
 }
 
-void AbstractOpenGLPostShader::createFrameBuffer(const Region2d<int>& screen) {
+void AbstractOpenGLPostShader::createFrameBuffer(const Area<unsigned int>& size) {
   if (frameBuffer != nullptr) {
     delete frameBuffer;
   }
 
-  frameBuffer = new FrameBuffer(screen.width, screen.height);
+  frameBuffer = new FrameBuffer(size.width, size.height);
 
   onConfigureFrameBuffer();
 

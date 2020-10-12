@@ -2,6 +2,7 @@
 #include "subsystem/entities/Camera.h"
 #include "subsystem/Math.h"
 #include "subsystem/PerformanceProfiler.h"
+#include "Window.h"
 
 const float QUAD_DATA[] = {
   -1.0f, 1.0f, 0.0f, 1.0f,
@@ -66,9 +67,9 @@ OpenGLLightingQuad::~OpenGLLightingQuad() {
 void OpenGLLightingQuad::bufferData(const std::vector<Light*>& lights) {
   LightData* lightBuffer = new LightData[lights.size()];
   QuadTransformData* transformBuffer = new QuadTransformData[lights.size()];
-  Matrix4 projection = Matrix4::projection({ 0, 0, 1920, 1080 }, Camera::active->fov * 0.5f, 1.0f, 10000.0f);
+  Matrix4 projection = Matrix4::projection(Window::size, Camera::active->fov * 0.5f, 1.0f, 10000.0f);
   Matrix4 view = Camera::active->getViewMatrix();
-  float aspectRatio = 1920.0f / 1080.0f;
+  float aspectRatio = (float)Window::size.width / (float)Window::size.height;
 
   for (unsigned int i = 0; i < lights.size(); i++) {
     auto* light = lights[i];

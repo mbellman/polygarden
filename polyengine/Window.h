@@ -12,7 +12,9 @@ public:
   Window();
   ~Window();
 
-  void open(const char* title, Region2d<int> region);
+  static Area<unsigned int> size;
+
+  void open(const char* title, Region2d<unsigned int> region);
   void run();
   void setGameController(AbstractGameController* gameController);
   void setVideoController(AbstractVideoController* videoController);
@@ -20,7 +22,6 @@ public:
 private:
   bool didCloseWindow = false;
   SDL_Window* sdlWindow = nullptr;
-  Region2d<int> size;
   AbstractVideoController* videoController = nullptr;
   AbstractGameController* gameController = nullptr;
 

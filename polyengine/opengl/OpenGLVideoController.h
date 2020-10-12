@@ -26,10 +26,10 @@ public:
   OpenGLVideoController();
 
   void onDestroy() override;
-  void onInit(SDL_Window* sdlWindow, int width, int height) override;
+  void onInit(SDL_Window* sdlWindow) override;
   void onRender(SDL_Window* sdlWindow) override;
   void onSceneChange(AbstractScene* scene) override;
-  void onScreenSizeChange(int width, int height) override;
+  void onScreenSizeChange() override;
 
 private:
   SDL_GLContext glContext;

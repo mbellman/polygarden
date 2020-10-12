@@ -80,7 +80,7 @@ Matrix4 OpenGLShadowCaster::getCascadedLightMatrix(int cascadeIndex, const Camer
 }
 
 Matrix4 OpenGLShadowCaster::getLightMatrix(const Vec3f& direction, const Vec3f& top) const {
-  Matrix4 projection = Matrix4::projection({ 0, 0, 1024, 1024 }, 90.0f, 1.0f, sourceLight->radius);
+  Matrix4 projection = Matrix4::projection({ 1024, 1024 }, 90.0f, 1.0f, sourceLight->radius);
   Matrix4 view = Matrix4::lookAt(sourceLight->position.gl(), direction.invert().gl(), top);
 
   return (projection * view).transpose();

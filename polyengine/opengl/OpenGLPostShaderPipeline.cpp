@@ -26,9 +26,9 @@ AbstractOpenGLPostShader* OpenGLPostShaderPipeline::getFirstShader() {
   return glPostShaders[0];
 }
 
-void OpenGLPostShaderPipeline::createFrameBuffers(const Region2d<int>& screen) {
+void OpenGLPostShaderPipeline::createFrameBuffers(const Area<unsigned int>& size) {
   for (auto* glPostShader : glPostShaders) {
-    glPostShader->createFrameBuffer(screen);
+    glPostShader->createFrameBuffer(size);
   }
 }
 

@@ -23,5 +23,5 @@ void AbstractVideoController::toggleFullScreen(SDL_Window* sdlWindow) {
   SDL_SetWindowFullscreen(sdlWindow, isFullScreen ? 0 : SDL_WINDOW_FULLSCREEN);
   SDL_SetWindowSize(sdlWindow, updatedWidth, updatedHeight);
 
-  onScreenSizeChange(updatedWidth, updatedHeight);
+  onScreenSizeChange();
 }

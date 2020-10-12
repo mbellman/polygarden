@@ -38,5 +38,5 @@ private:
   GLuint depthCubeMap = 0;
   GLenum depthCubeMapUnit;
   std::vector<ColorTexture> colorTextures;
-  Region2d<int> size;
+  Area<unsigned int> size;
 };
