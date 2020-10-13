@@ -2,9 +2,7 @@
 
 #include <vector>
 
-#include <subsystem/entities/Actor.h>
-#include <subsystem/entities/Object.h>
-#include <subsystem/Math.h>
+#include <PolyEngine.h>
 
 class VisibleObjectFilter : public Actor {
 public:

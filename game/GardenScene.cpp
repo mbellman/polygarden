@@ -1,15 +1,7 @@
 #include <cmath>
 #include <algorithm>
-#include <subsystem/entities/Mesh.h>
-#include <subsystem/entities/Plane.h>
-#include <subsystem/entities/Skybox.h>
-#include <subsystem/entities/Light.h>
-#include <subsystem/entities/Cube.h>
-#include <subsystem/entities/ReferenceMesh.h>
-#include <subsystem/entities/Instance.h>
-#include <subsystem/Texture.h>
-#include <subsystem/ObjLoader.h>
-#include <subsystem/RNG.h>
+
+#include <PolyEngine.h>
 
 #include "GardenScene.h"
 #include "HeightMap.h"

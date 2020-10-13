@@ -1,11 +1,11 @@
 #include <cstdio>
 #include <cmath>
 
-#include "Window.h"
-#include "SDL.h"
+#include "subsystem/Window.h"
 #include "subsystem/RNG.h"
 #include "subsystem/AbstractScene.h"
 #include "subsystem/PerformanceProfiler.h"
+#include "SDL.h"
 
 Window::Window() {
   SDL_Init(SDL_INIT_EVERYTHING);

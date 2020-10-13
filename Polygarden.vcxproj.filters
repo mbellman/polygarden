@@ -21,9 +21,6 @@
     <ClCompile Include="game\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="polyengine\Window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="polyengine\opengl\AbstractBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -199,6 +196,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="game\actors\Rock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="polyengine\subsystem\Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -473,9 +473,6 @@
     <ClInclude Include="game\GardenScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="polyengine\Window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="polyengine\opengl\AbstractBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -669,6 +666,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="game\actors\Rock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="polyengine\subsystem\Window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="polyengine\PolyEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

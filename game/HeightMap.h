@@ -1,6 +1,6 @@
 #pragma once
 
-#include <subsystem/Math.h>
+#include <PolyEngine.h>
 
 namespace HeightMap {
   float getGroundHeight(float x, float z);

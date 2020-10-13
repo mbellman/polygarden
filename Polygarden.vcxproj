@@ -172,7 +172,7 @@
     <ClCompile Include="polyengine\subsystem\Texture.cpp" />
     <ClCompile Include="polyengine\subsystem\traits\LifeCycle.cpp" />
     <ClCompile Include="polyengine\subsystem\traits\Scalable.cpp" />
-    <ClCompile Include="polyengine\Window.cpp" />
+    <ClCompile Include="polyengine\subsystem\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="external\glew\include\eglew.h" />
@@ -298,6 +298,7 @@
     <ClInclude Include="polyengine\opengl\post-fx\DofShader.h" />
     <ClInclude Include="polyengine\opengl\ShaderLoader.h" />
     <ClInclude Include="polyengine\opengl\ShaderProgram.h" />
+    <ClInclude Include="polyengine\PolyEngine.h" />
     <ClInclude Include="polyengine\subsystem\AbstractGameController.h" />
     <ClInclude Include="polyengine\subsystem\AbstractLoader.h" />
     <ClInclude Include="polyengine\subsystem\AbstractScene.h" />
@@ -330,7 +331,7 @@
     <ClInclude Include="polyengine\subsystem\traits\Scalable.h" />
     <ClInclude Include="polyengine\subsystem\traits\Transformable.h" />
     <ClInclude Include="polyengine\subsystem\Types.h" />
-    <ClInclude Include="polyengine\Window.h" />
+    <ClInclude Include="polyengine\subsystem\Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

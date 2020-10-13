@@ -1,7 +1,4 @@
-#include <subsystem/entities/Light.h>
-#include <subsystem/entities/Skybox.h>
-#include <subsystem/entities/Camera.h>
-#include <subsystem/Stage.h>
+#include <PolyEngine.h>
 
 #include "actors/Background.h"
 

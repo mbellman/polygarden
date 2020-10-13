@@ -1,8 +1,6 @@
 #pragma once
 
-#include <subsystem/entities/Actor.h>
-#include <subsystem/entities/Light.h>
-#include <subsystem/Math.h>
+#include <PolyEngine.h>
 
 class ProximalShadowLight : public Actor {
 public:

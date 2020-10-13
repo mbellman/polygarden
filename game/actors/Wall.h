@@ -1,6 +1,6 @@
 #pragma once
 
-#include <subsystem/entities/Actor.h>
+#include <PolyEngine.h>
 
 class Wall : public Actor {
 public:

@@ -1,10 +1,4 @@
-#include <subsystem/Stage.h>
-#include <subsystem/entities/ReferenceMesh.h>
-#include <subsystem/entities/Instance.h>
-#include <subsystem/entities/Mesh.h>
-#include <subsystem/ObjLoader.h>
-#include <subsystem/Texture.h>
-#include <subsystem/RNG.h>
+#include <PolyEngine.h>
 
 #include "actors/Rock.h"
 #include "HeightMap.h"

@@ -1,8 +1,6 @@
 #include <algorithm>
 
-#include <subsystem/Stage.h>
-#include <subsystem/entities/Camera.h>
-#include <subsystem/entities/Light.h>
+#include <PolyEngine.h>
 
 #include "actors/ProximalShadowLight.h"
 

@@ -1,6 +1,6 @@
 #include <cmath>
 
-#include <subsystem/entities/Camera.h>
+#include <PolyEngine.h>
 
 #include "actors/VisibleObjectFilter.h"
 

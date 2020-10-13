@@ -2,8 +2,8 @@
 
 #include <map>
 #include <string>
-#include <subsystem/AbstractScene.h>
-#include <subsystem/Math.h>
+
+#include <PolyEngine.h>
 
 class GardenScene : public AbstractScene {
 public:

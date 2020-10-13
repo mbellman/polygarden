@@ -1,5 +1,4 @@
-#include <Window.h>
-#include <opengl/OpenGLVideoController.h>
+#include <PolyEngine.h>
 
 #include "GameController.h"
 #include "GardenScene.h"

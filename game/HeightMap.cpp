@@ -1,6 +1,6 @@
 #include <cmath>
 
-#include <subsystem/RNG.h>
+#include <PolyEngine.h>
 
 #include "HeightMap.h"
 

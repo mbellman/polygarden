@@ -1,4 +1,6 @@
-#include "subsystem/AbstractGameController.h"
+#pragma once
+
+#include <PolyEngine.h>
 
 class GameController : public AbstractGameController {
 public:

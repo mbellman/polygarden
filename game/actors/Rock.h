@@ -1,6 +1,6 @@
 #pragma once
 
-#include <subsystem/entities/Actor.h>
+#include <PolyEngine.h>
 
 class Rock : public Actor {
 public:

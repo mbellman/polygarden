@@ -2,7 +2,7 @@
 #include "subsystem/entities/Camera.h"
 #include "subsystem/Math.h"
 #include "subsystem/PerformanceProfiler.h"
-#include "Window.h"
+#include "subsystem/Window.h"
 
 const float QUAD_DATA[] = {
   -1.0f, 1.0f, 0.0f, 1.0f,

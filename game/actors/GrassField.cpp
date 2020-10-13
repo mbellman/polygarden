@@ -1,11 +1,4 @@
-#include <subsystem/entities/Mesh.h>
-#include <subsystem/entities/Camera.h>
-#include <subsystem/entities/Plane.h>
-#include <subsystem/entities/ReferenceMesh.h>
-#include <subsystem/entities/Instance.h>
-#include <subsystem/Stage.h>
-#include <subsystem/ObjLoader.h>
-#include <subsystem/RNG.h>
+#include <PolyEngine.h>
 
 #include "actors/GrassField.h"
 #include "HeightMap.h"
