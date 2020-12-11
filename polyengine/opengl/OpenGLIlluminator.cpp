@@ -13,21 +13,21 @@
 #include "subsystem/entities/Camera.h"
 #include "subsystem/PerformanceProfiler.h"
 
-static bool isActiveDirectionalShadowCaster(OpenGLShadowCaster* glShadowCaster) {
+static bool isActiveDirectionalShadowCaster(const OpenGLShadowCaster* glShadowCaster) {
   return (
     glShadowCaster->getSourceLight()->type == Light::LightType::DIRECTIONAL &&
     glShadowCaster->getSourceLight()->power > 0.0f
   );
 };
 
-static bool isActiveSpotShadowCaster(OpenGLShadowCaster* glShadowCaster) {
+static bool isActiveSpotShadowCaster(const OpenGLShadowCaster* glShadowCaster) {
   return (
     glShadowCaster->getSourceLight()->type == Light::LightType::SPOTLIGHT &&
     glShadowCaster->getSourceLight()->power > 0.0f
   );
 };
 
-static bool isActivePointShadowCaster(OpenGLShadowCaster* glShadowCaster) {
+static bool isActivePointShadowCaster(const OpenGLShadowCaster* glShadowCaster) {
   auto* light = glShadowCaster->getSourceLight();
 
   return (

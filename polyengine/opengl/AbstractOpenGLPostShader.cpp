@@ -3,6 +3,7 @@
 #include "glut.h"
 #include "opengl/AbstractOpenGLPostShader.h"
 #include "opengl/ShaderLoader.h"
+#include "subsystem/Window.h"
 
 AbstractOpenGLPostShader::~AbstractOpenGLPostShader() {
   delete frameBuffer;
@@ -74,5 +75,6 @@ void AbstractOpenGLPostShader::writeToOutputBuffer() {
     nextShader->writeToInputBuffer();
   } else {
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glViewport(0, 0, Window::size.width, Window::size.height);
   }
 }
