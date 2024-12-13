@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <map>
+#include <string>
 
 #include "glew.h"
 #include "SDL_opengl.h"

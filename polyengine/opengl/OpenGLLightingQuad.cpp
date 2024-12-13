@@ -73,10 +73,11 @@ void OpenGLLightingQuad::bufferData(const std::vector<Light*>& lights) {
 
   for (unsigned int i = 0; i < lights.size(); i++) {
     auto* light = lights[i];
+    auto live_color = light->color * light->power;
 
     memcpy(lightBuffer[i].position, &light->position, 3 * sizeof(float));
     memcpy(lightBuffer[i].direction, &light->direction, 3 * sizeof(float));
-    memcpy(lightBuffer[i].color, &(light->color * light->power), 3 * sizeof(float));
+    memcpy(lightBuffer[i].color, &live_color, 3 * sizeof(float));
 
     lightBuffer[i].radius = light->radius;
     lightBuffer[i].type = light->type;
